@@ -1,0 +1,1 @@
+# logsight-monolith
