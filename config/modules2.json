@@ -1,0 +1,158 @@
+{
+  "model_training": {
+    "data_source": {
+    },
+    "data_sink": {
+      "connection": "stdout",
+      "classname": "PrintSink",
+      "params": {
+      }
+    },
+    "internal_source": {
+      "connection": "socket",
+      "classname": "SocketSource",
+      "params": {
+        "port": 9980
+      }
+    },
+    "internal_sink": {
+      "connection": "socket",
+      "classname": "SocketSink",
+      "params": {
+        "port": 9981
+      }
+    },
+    "configs": {
+      "max_workers": 5
+    }
+  },
+  "anomaly_detection": {
+    "data_source": {
+      "connection": "queue",
+      "classname": "SourceQueue",
+      "params": {
+        "link": "log_parsing"
+      }
+    },
+    "data_sink": {
+      "connection": "multisink",
+      "classname": "MultiSink",
+      "params": {
+        "sinks": [
+          {
+            "connection": "file",
+            "classname": "FileSink",
+            "params": {
+              "module_name": "anomaly_detection"
+            }
+          },
+          {
+            "connection": "queue",
+            "classname": "SinkQueue",
+            "params": {
+              "link": "incidents"
+            }
+          }
+        ]
+      }
+    },
+    "internal_source": {
+      "connection": "socket",
+      "classname": "SocketSource",
+      "params": {
+        "port": 9990
+      }
+    },
+    "internal_sink": {
+      "connection": "socket",
+      "classname": "SocketSink",
+      "params": {
+        "port": 9991
+      }
+    },
+    "configs": {
+      "timeout_period": 20,
+      "buffer_size": 10
+    }
+  },
+  "count_ad": {
+    "data_source": {},
+    "data_sink": {},
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {}
+  },
+  "incidents": {
+    "data_source": {
+      "connection": "queue",
+      "classname": "SourceQueue",
+      "params": {
+        "link": "anomaly_detection"
+      }
+    },
+    "data_sink": {
+      "connection": "file",
+      "classname": "FileSink",
+      "params": {
+        "module_name": "incidents"
+      }
+    },
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {
+      "timeout_period": 30,
+      "buffer_size": 10
+    }
+  },
+  "log_parsing": {
+    "data_source": {
+      "connection": "file",
+      "classname": "FileSource",
+      "params": {
+        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
+      }
+    },
+    "data_sink": {
+      "connection": "queue",
+      "classname": "SinkQueue",
+      "params": {
+        "link": "model_training"
+      }
+    },
+    "internal_source": {
+      "connection": "socket",
+      "classname": "SocketSource",
+      "params": {
+        "port": 9992
+      }
+    },
+    "internal_sink": {
+      "connection": "socket",
+      "classname": "SocketSink",
+      "params": {
+        "port": 9993
+      }
+    },
+    "configs": {
+      "timeout_period": 10,
+      "state_configs": {
+        "buffer_size": 10,
+        "retrain_after": 10
+      }
+    }
+  },
+  "log_compare": {
+    "data_source": {},
+    "data_sink": {},
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {}
+  },
+  "log_quality": {
+    "data_source": {},
+    "data_sink": {},
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {}
+  }
+}

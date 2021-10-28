@@ -1,0 +1,40 @@
+{
+  "connectors": {
+    "source": {
+      "connection": "kafka",
+      "classname": "KafkaSource",
+      "params": {
+        "topic": "manager_settings"
+      }
+    },
+    "producer": {
+      "connection": "kafka",
+      "classname": "KafkaSink",
+      "params": {
+        "topic": "internal"
+      }
+    }
+  },
+  "services": {
+    "elasticsearch_admin": {
+      "classname": "ElasticSearchAdmin",
+      "connection": "elasticsearch"
+    },
+     "kafka_admin": {
+      "classname": "KafkaAdmin",
+      "connection": "kafka"
+    }
+  },
+  "topic_list": [
+    "manager_settings",
+    "internal",
+    "log_quality_settings",
+    "log_quality_ack",
+    "container_settings_ack",
+    "application_stats",
+    "logsight.logstash.logsight_json",
+    "logsight.logstash.logstash_json",
+    "logsight.logstash.syslog",
+    "logsight.log_receiver"
+  ]
+}
