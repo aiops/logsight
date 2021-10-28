@@ -1,0 +1,24 @@
+{
+  "kafka": {
+    "host": "localhost",
+    "port": "9093",
+    "offset": "latest",
+    "topic": "internal"
+  },
+  "elasticsearch": {
+    "host": "localhost",
+    "port": 9200,
+    "username": "elastic",
+    "password": "elasticsearchpassword"
+  },
+  "socket": {
+    "host": "localhost",
+    "port": 9999
+  },
+  "file": {
+  },
+  "queue": {
+  },
+  "stdout": {
+  }
+}
