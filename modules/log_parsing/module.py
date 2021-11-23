@@ -1,11 +1,16 @@
 import json
+import logging
 import threading
+from time import time
+
 from connectors.sink import Sink
 from connectors.source import Source
 from modules.api import StatefulModule, State
 from modules.log_parsing.parsers import DrainLogParser, TestParser
 from modules.log_parsing.states import ParserTrainState, ParserPredictState, ParserTuneState, Status
 from modules.api.wrappers import synchronized
+
+logger = logging.getLogger("logsight." + __name__)
 
 
 class ParserModule(StatefulModule):
@@ -19,11 +24,7 @@ class ParserModule(StatefulModule):
         self.timer = None
 
     def run(self):
-        self.internal_source.connect()
-        internal = threading.Thread(target=self.start_internal_listener)
-        internal.start()
-        stream = threading.Thread(target=self.start_data_stream)
-        stream.start()
+        super().run()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
         self.timer.start()
 
@@ -31,18 +32,21 @@ class ParserModule(StatefulModule):
     def process_input(self, input_data):
         # Process data based on internal state
         result, status = self.state.process(input_data)
-        # if ready to move to the next state, change state
         if status == Status.MOVE_STATE:
             self.state = self.state.next_state()
-            self.timer.cancel()
-        print("Current state:", self.state.__class__.__name__)
+            self._reset_timer()
         return result
 
     @synchronized
     def _timeout_call(self):
-        print("Initiating timer")
+        logger.debug("Initiating timer.")
         result, status = self.state.finish_state()
         self.data_sink.send(result)
         self.state = self.state.next_state()
 
         return result
+
+    def _reset_timer(self):
+        self.timer.cancel()
+        self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.start()

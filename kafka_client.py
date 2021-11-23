@@ -13,9 +13,9 @@ if mode == "train":
     data = {"type": "load"}
     topic = 'app_id_anomaly_detection_internal'
 else:
-    data = {'app_id': "app_id",
+    data = {'application_id': "app_id",
             'private_key': 'sample_key', 'user_name': 'sample_user', 'application_name': 'sample_app',
-            'status': "delete"}
+            'status': "create"}
     topic = 'manager_settings'
 
 

@@ -1,8 +1,8 @@
 import datetime
 import logging
 
-from parsing.grok import Grok, read_grok_datetime_parsers
-from parsing.log import Log
+from .grok import Grok, read_grok_datetime_parsers
+from .log import Log
 
 
 class _FieldParser:

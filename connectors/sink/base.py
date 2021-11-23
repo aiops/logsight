@@ -11,3 +11,6 @@ class Sink(ABC):
     @abstractmethod
     def send(self, data):
         raise NotImplementedError
+
+    def connect(self):
+        pass

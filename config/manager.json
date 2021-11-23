@@ -11,7 +11,7 @@
       "connection": "kafka",
       "classname": "KafkaSink",
       "params": {
-        "topic": "internal"
+        "topic": "manager_settings_ack"
       }
     }
   },
@@ -27,6 +27,7 @@
   },
   "topic_list": [
     "manager_settings",
+    "manager_settings_ack",
     "internal",
     "log_quality_settings",
     "log_quality_ack",

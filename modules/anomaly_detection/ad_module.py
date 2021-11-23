@@ -8,6 +8,8 @@ from modules.anomaly_detection.log_anomaly_detection import LogAnomalyDetector
 from modules.api.wrappers import synchronized
 from modules.api.enum import State
 
+logger = logging.getLogger("logsight." + __name__)
+
 
 class AnomalyDetectionModule(StatefulModule):
     def __init__(self, data_source: Source, data_sink: Sink, internal_source: Source, internal_sink: Sink,
@@ -24,10 +26,8 @@ class AnomalyDetectionModule(StatefulModule):
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
 
     def run(self):
-        self.internal_source.connect()
-        internal = threading.Thread(target=self.start_internal_listener)
-        internal.start()
         self._load_model(None, None)
+        super(StatefulModule, self).run()
 
     def process_internal_message(self, msg):
         if msg['type'] == "load":
@@ -42,19 +42,19 @@ class AnomalyDetectionModule(StatefulModule):
 
     def _set_loaded_state(self):
         self.state = State.MODEL_LOADED
+        logger.debug(f"Creating data source thread for module {self.module_name}.")
+        stream = threading.Thread(name=self.module_name + "DatSrc", target=self.start_data_stream, daemon=True)
+        stream.start()
         self.timer.start()
-        print("AD MODULE LOADED STATE")
-        data_stream = threading.Thread(target=self.start_data_stream)
-        data_stream.start()
 
     @synchronized
     def process_input(self, input_data):
         self.buffer.append(input_data)
         if len(self.buffer) == self.buffer_size:
-            print("Processing buffer")
+            # print("Processing buffer")
             return self._process_buffer()
-        else:
-            print(f"Buffering {input_data}")
+        # else:
+        #     print(f"Buffering {input_data}")
 
     @synchronized
     def _process_buffer(self):
@@ -65,10 +65,17 @@ class AnomalyDetectionModule(StatefulModule):
         return result
 
     def _timeout_call(self):
-        print("Initiating timer")
+        logger.debug("Initiating timer")
         result = self._process_buffer()
         self.buffer = []
+        self._reset_timer()
+
         try:
             self.data_sink.send(result)
         except Exception as e:
             print(f'{e}')
+
+    def _reset_timer(self):
+        self.timer.cancel()
+        self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.start()
