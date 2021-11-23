@@ -1,0 +1,186 @@
+{
+  "model_training": {
+    "data_source": {
+    },
+    "data_sink": {
+      "connection": "stdout",
+      "classname": "PrintSink",
+      "params": {
+      }
+    },
+    "internal_source": {
+      "connection": "socket",
+      "classname": "SocketSource",
+      "params": {
+        "port": 9980
+      }
+    },
+    "internal_sink": {
+      "connection": "socket",
+      "classname": "SocketSink",
+      "params": {
+        "port": 9981
+      }
+    },
+    "configs": {
+      "max_workers": 5
+    }
+  },
+  "anomaly_detection": {
+    "data_source": {
+      "connection": "kafka",
+      "classname": "KafkaSource",
+      "params": {
+        "topic": "anomaly_detection"
+      }
+    },
+    "data_sink": {
+      "connection": "multisink",
+      "classname": "MultiSink",
+      "params": {
+        "sinks": [
+          {
+            "connection": "elasticsearch",
+            "classname": "ElasticsearchSink",
+            "params": {
+              "index": "log_ad"
+            }
+          },
+          {
+            "connection": "kafka",
+            "classname": "KafkaSink",
+            "params": {
+              "topic": "log_aggregation"
+            }
+          }
+        ]
+      }
+    },
+    "internal_source": {
+      "connection": "kafka",
+      "classname": "KafkaSource",
+      "params": {
+        "topic": "anomaly_detection_internal"
+      }
+    },
+    "internal_sink": {
+      "connection": "kafka",
+      "classname": "KafkaSink",
+      "params": {
+        "topic": "internal"
+      }
+    },
+    "configs": {
+      "timeout_period": 20,
+      "buffer_size": 10
+    }
+  },
+  "count_ad": {
+    "data_source": {},
+    "data_sink": {},
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {}
+  },
+  "incidents": {
+    "data_source": {
+      "connection": "kafka",
+      "classname": "KafkaSource",
+      "params": {
+        "topic": "incidents"
+      }
+    },
+    "data_sink": {
+      "connection": "elasticsearch",
+      "classname": "ElasticsearchSink",
+      "params": {
+        "index": "incidents"
+      }
+    },
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {
+      "timeout_period": 30,
+      "buffer_size": 10
+    }
+  },
+  "log_parsing": {
+    "data_source": {
+      "connection": "kafka",
+      "classname": "KafkaSource",
+      "params": {
+        "topic": "field_parser"
+      }
+    },
+    "data_sink": {
+      "connection": "kafka",
+      "classname": "KafkaSink",
+      "params": {
+        "topic": "anomaly_detection"
+      }
+    },
+    "internal_source": {
+    },
+    "internal_sink": {
+    },
+    "configs": {
+      "timeout_period": 120,
+      "state_configs": {
+        "buffer_size": 100,
+        "retrain_after": 1000
+      }
+    }
+  },
+  "log_compare": {
+    "data_source": {},
+    "data_sink": {},
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {}
+  },
+  "log_quality": {
+    "data_source": {},
+    "data_sink": {},
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {}
+  },
+  "field_parser": {
+    "data_source": {
+      "connection": "file",
+      "classname": "FileSource",
+      "params": {
+        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
+      }
+    },
+    "data_sink": {
+      "connection": "kafka",
+      "classname": "KafkaSink",
+      "params": {
+        "topic": "field_parser"
+      }
+    },
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {}
+  },
+  "log_aggregation": {
+    "data_source": {
+      "connection": "kafka",
+      "classname": "KafkaSource",
+      "params": {
+        "topic": "log_aggregation"
+      }
+    },
+    "data_sink": {
+      "connection": "elasticsearch",
+      "classname": "ElasticsearchSink",
+      "params": {
+        "index": "log_agg"
+      }
+    },
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {"timeout_period": 20}
+  }
+}

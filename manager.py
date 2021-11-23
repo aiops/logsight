@@ -1,9 +1,14 @@
 import json
+import sys
 import threading
 
 from kafka.admin import NewTopic
 from application import Application, AppBuilder
 from config.globals import USES_KAFKA, USES_ES
+from multiprocessing import Process
+import logging
+
+logger = logging.getLogger("logsight." + __name__)
 
 
 class Manager:
@@ -15,58 +20,67 @@ class Manager:
         self.topic_list = topic_list or []
 
         self.active_apps = {}
+        self.active_process_apps = {}
 
     def create_topics_for_manager(self):
         for topic in self.topic_list:
             try:
                 self.kafka_admin.create_topics(
                     [NewTopic(name=topic, num_partitions=1, replication_factor=1)])
-                print("Created topic", topic)
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug(f"Created topic {topic}")
             except Exception as e:
-                print("Topic already exists with topic name", topic)
+                logger.error(f"Topic already exists with topic name: {topic}")
+        logger.info("Created topics for manager.")
 
     def delete_topics_for_manager(self):
         for topic in self.topic_list:
             try:
                 self.kafka_admin.delete_topics([topic])
-                print("Deleted topic", topic)
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug(f"Deleted topic {topic}")
             except Exception as e:
-                print(e)
+                logger.error(e)
+
+        logger.info("Created topics for manager.")
 
     def create_application(self, app_settings):
         if app_settings['application_id'] in self.active_apps.keys():
             return {"msg": f"Application {app_settings['application_id']} already created"}
-        print("[MANAGER] Building App.")
+        logger.info("[MANAGER] Building App.")
         application = AppBuilder(self.kafka_admin, self.elasticsearch_admin).build_app(app_settings)
+        app_process = Process(target=start_process, args=(application,))
         self.active_apps[app_settings['application_id']] = application
-        application.start()
-        return {"msg": f"Created application {app_settings['application_id']}"}
+        self.active_process_apps[app_settings['application_id']] = app_process
+        logger.info("Starting app process")
+        app_process.start()
+        app_json = application.to_json()
+        logger.info(app_json)
+        return app_json
 
     def delete_application(self, msg):
+        logger.info(f"Deleting application {msg['application_id']}")
+        app_process = self.active_process_apps[msg['application_id']]
+        app_process.terminate()
         application = self.active_apps[msg['application_id']]
-        application.stop()
         if self.elasticsearch_admin:
             self.elasticsearch_admin.create_indices(application.application_id)
         if self.kafka_admin:
             self.kafka_admin.delete_topics(application.topic_list)
         del self.active_apps[application.application_id]
+        del self.active_process_apps[application.application_id]
         return {"msg": f"Deleted application {application.application_id}"}
 
     def run(self):
-        thrd = threading.Thread(target=self.start_listener)
+        thrd = threading.Thread(name="MngrSrc", target=self.start_listener, daemon=True)
         thrd.start()
-
         while True:
             pass
 
     def start_listener(self):
         while self.source.has_next():
-            print("Getting message")
             msg = self.source.receive_message()
-            print("got message")
-
-            print(f"[Manager] Processing message {msg}")
-
+            logger.debug(f"[Manager] Processing message {msg}")
             result = self.process_message(msg)
             self.producer.send(result)
 
@@ -81,9 +95,16 @@ class Manager:
             return {"msg": "Invalid application status"}
 
     def setup(self):
-        print(self.kafka_admin)
         if self.kafka_admin:
             self.delete_topics_for_manager()
             self.create_topics_for_manager()
 
         self.source.connect()
+
+
+def start_process(app):
+    logger.debug(f'Starting application {app}.')
+    app.start()
+    logger.debug(f"Application {app} Started.")
+    while True:
+        pass

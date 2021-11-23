@@ -1,8 +1,15 @@
+import json
+import logging.config
+
+logging.config.dictConfig(json.load(open("config/log.json", 'r')))
+
 from manager import Manager
 from services.configurator import ManagerConfig
 from connectors.source import *
 from connectors.sink import *
 from services.admin_clients import KafkaAdmin, ElasticSearchAdmin
+
+logger = logging.getLogger('logsight')
 
 
 def setup_connector(config, connector):
@@ -34,11 +41,11 @@ def create_manager():
 
 
 def run():
-    print("[*] Creating manager")
+    with open('config/banner.txt', 'r') as f:
+        logger.info(f.read())
     manager = create_manager()
-    print("[*] Setup manager")
     manager.setup()
-    print("[*] Running manager")
+    logger.info("Running manager.")
     manager.run()
 
 

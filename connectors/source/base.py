@@ -27,6 +27,9 @@ class Source(ABC):
         """Whether the source has a next message."""
         return True
 
+    def to_json(self):
+        return {}
+
 
 class StreamSource(Source):
     """Abstract class depicting source of data. Every data source should implement a method for receiving

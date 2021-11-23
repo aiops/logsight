@@ -57,8 +57,7 @@ class LogIncidentModule(StatefulModule):
                 result = self._process_buffer()
                 self._reset_state()
 
-            if result is not None:
-                self.data_sink.send(result)
+        return result
 
     @synchronized
     def _process_buffer(self):

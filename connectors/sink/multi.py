@@ -11,3 +11,7 @@ class MultiSink(Sink):
     def send(self, data):
         for sink in self.sinks:
             sink.send(data)
+
+    def connect(self):
+        for sink in self.sinks:
+            sink.connect()

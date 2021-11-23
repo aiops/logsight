@@ -6,7 +6,8 @@ class ElasticSearchAdmin:
         self.client = Elasticsearch([{'host': host, 'port': port}],
                                     http_auth=(username, password))
 
-    def create_indices(self, app_id):
+    def create_indices(self, private_key, app_name):
+        app_id = "_".join([private_key, app_name])
         # create ES indices for the user/app
         mapping = {
             "mappings": {
@@ -27,8 +28,8 @@ class ElasticSearchAdmin:
 
         self.client.indices.create(index="_".join([app_id, "log_quality"]), ignore=400)
 
-        self.client.indices.create(index="_".join([app_id, "anomaly_detection"]), body=mapping, ignore=400)
-        self.client.index(index="_".join([app_id, "anomaly_detection"]), body=doc)
+        self.client.indices.create(index="_".join([app_id, "log_ad"]), body=mapping, ignore=400)
+        self.client.index(index="_".join([app_id, "log_ad"]), body=doc)
 
         mapping = {
             "mappings": {
@@ -71,15 +72,15 @@ class ElasticSearchAdmin:
         self.client.indices.create(index="_".join([app_id, "incidents"]), ignore=400, body=mapping)
         self.client.index(index="_".join([app_id, "incidents"]), body=doc)
 
-    def delete_indices(self, app_id):
-
+    def delete_indices(self, private_key, app_name):
+        app_id = "_".join([private_key, app_name])
         try:
             self.client.indices.delete("_".join([app_id, "log_quality"]))
         except Exception as e:
             print(e, " Error log quality!")
 
         try:
-            self.client.indices.delete("_".join([app_id, "anomaly_detection"]))
+            self.client.indices.delete("_".join([app_id, "log_ad"]))
         except Exception as e:
             print(e, "Error log ad!")
         try:
