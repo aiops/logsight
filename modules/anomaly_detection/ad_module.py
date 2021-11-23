@@ -65,7 +65,7 @@ class AnomalyDetectionModule(StatefulModule):
         return result
 
     def _timeout_call(self):
-        logger.debug("Initiating timer")
+        logger.debug("Initiating timer LogAD")
         result = self._process_buffer()
         self.buffer = []
         self._reset_timer()

@@ -39,7 +39,7 @@ class ParserModule(StatefulModule):
 
     @synchronized
     def _timeout_call(self):
-        logger.debug("Initiating timer.")
+        logger.debug("Initiating timer LogParse.")
         result, status = self.state.finish_state()
         self.data_sink.send(result)
         self.state = self.state.next_state()

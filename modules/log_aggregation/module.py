@@ -40,7 +40,7 @@ class LogAggregationModule(StatefulModule):
         return result
 
     def _timeout_call(self):
-        logger.debug("Initiating timer.")
+        logger.debug("Initiating timer LogAgg.")
         result = self._process_buffer()
         self.buffer = []
         try:
