@@ -43,14 +43,14 @@
             "connection": "elasticsearch",
             "classname": "ElasticsearchSink",
             "params": {
-              "index": "anomaly_detection"
+              "index": "log_ad"
             }
           },
           {
             "connection": "kafka",
             "classname": "KafkaSink",
             "params": {
-              "topic": "incidents"
+              "topic": "log_aggregation"
             }
           }
         ]
@@ -91,11 +91,11 @@
       }
     },
     "data_sink": {
-            "connection": "elasticsearch",
-            "classname": "ElasticsearchSink",
-            "params": {
-              "index": "incidents"
-            }
+      "connection": "elasticsearch",
+      "classname": "ElasticsearchSink",
+      "params": {
+        "index": "incidents"
+      }
     },
     "internal_source": {},
     "internal_sink": {},
@@ -106,10 +106,10 @@
   },
   "log_parsing": {
     "data_source": {
-      "connection": "file",
-      "classname": "FileSource",
+      "connection": "kafka",
+      "classname": "KafkaSource",
       "params": {
-        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
+        "topic": "field_parser"
       }
     },
     "data_sink": {
@@ -120,24 +120,14 @@
       }
     },
     "internal_source": {
-      "connection": "kafka",
-      "classname": "KafkaSource",
-      "params": {
-        "topic": "incidents_internal"
-      }
     },
     "internal_sink": {
-      "connection": "kafka",
-      "classname": "KafkaSink",
-      "params": {
-        "topic": "internal"
-      }
     },
     "configs": {
-      "timeout_period": 10,
+      "timeout_period": 120,
       "state_configs": {
-        "buffer_size": 10,
-        "retrain_after": 10
+        "buffer_size": 100,
+        "retrain_after": 1000
       }
     }
   },
@@ -154,5 +144,43 @@
     "internal_source": {},
     "internal_sink": {},
     "configs": {}
+  },
+  "field_parser": {
+    "data_source": {
+      "connection": "file",
+      "classname": "FileSource",
+      "params": {
+        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
+      }
+    },
+    "data_sink": {
+      "connection": "kafka",
+      "classname": "KafkaSink",
+      "params": {
+        "topic": "field_parser"
+      }
+    },
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {}
+  },
+  "log_aggregation": {
+    "data_source": {
+      "connection": "kafka",
+      "classname": "KafkaSource",
+      "params": {
+        "topic": "log_aggregation"
+      }
+    },
+    "data_sink": {
+      "connection": "elasticsearch",
+      "classname": "ElasticsearchSink",
+      "params": {
+        "index": "log_agg"
+      }
+    },
+    "internal_source": {},
+    "internal_sink": {},
+    "configs": {"timeout_period": 20}
   }
 }

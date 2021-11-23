@@ -153,7 +153,6 @@ class DrainLogParser(Parser):
         is_new = False
         if match_cluster is None:
             if (self.state == Parser.TRAIN_STATE) or (self.state == Parser.TUNE_STATE):
-                print('TRAINING PARSER FOR THIS MESSAGE')
                 new_cluster = LogCluster(log_message_preprocessed)
                 self.add_seq_to_prefix_tree(self.rootNode, new_cluster)
             log['template'] = ' '.join(log_message_preprocessed)

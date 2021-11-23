@@ -1,10 +1,12 @@
 import threading
 from abc import ABC
-from threading import Thread
+import logging
 
 from connectors.source import Source, SourceQueue
 from connectors.sink import Sink
 from .job_manager import JobManager
+
+logger = logging.getLogger("logsight." + __name__)
 
 
 class Module(ABC):
@@ -23,26 +25,43 @@ class Module(ABC):
             thread.stop()
 
     def run(self):
-        self.internal_source.connect()
-        thrd = threading.Thread(target=self.start_internal_listener)
-        thrd.start()
+        if self.internal_source:
+            logger.debug("Connecting to internal source.")
+            self.internal_source.connect()
+            logger.debug(f"Creating internal source thread for module {self.module_name}.")
+            internal = threading.Thread(name=self.module_name + "IntSrc", target=self.start_internal_listener,
+                                        daemon=True)
+            internal.start()
 
     def start_internal_listener(self):
         if self.internal_source is None:
             return
             # raise Exception("Object does not have a listener.")
         while self.internal_source.has_next():
-            print(self.module_name, "waiting message on topic", self.internal_source.topic)
+            logger.debug("Waiting for message")
             msg = self.internal_source.receive_message()
-            print(self.module_name, "recieved mesasge")
             self.process_internal_message(msg)
-        print("Thread listener ended?")
+        logger.debug("Thread ended.")
 
     def process_internal_message(self, msg):
         pass
 
     def process_input(self, input_data):
         pass
+
+    def connect(self):
+        if self.internal_source:
+            self.internal_source.connect()
+        if self.internal_sink:
+            self.internal_sink.connect()
+        if self.data_source:
+            self.data_source.connect()
+        if self.data_sink:
+            self.data_sink.connect()
+
+    def to_json(self):
+        return {"name": self.module_name,
+                "data_source": self.data_source.to_json()}
 
 
 class StatefulModule(Module):
@@ -54,15 +73,22 @@ class StatefulModule(Module):
         self.internal_sink = internal_sink
         self.state = None
 
+    def run(self):
+        super().run()
+        logger.debug(f"Creating data source thread for module {self.module_name}.")
+        stream = threading.Thread(name=self.module_name + "DatSrc", target=self.start_data_stream, daemon=True)
+        stream.start()
+
     def start_data_stream(self):
+
+        if hasattr(self.data_source, 'topic'):
+            logger.debug(f"starting to listen on topic {self.data_source.topic}")
         while self.data_source.has_next():
             line = self.data_source.receive_message()
             if not line:
                 continue
-            print(f"[{self.module_name}] Received message from source. Processing...")
             result = self.process_input(line)
             if result:
-                print(f"[{self.module_name}]Sending to sink. ")
                 self.data_sink.send(result)
 
     def process_internal_message(self, msg):
