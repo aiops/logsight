@@ -52,7 +52,7 @@ class LogAnomalyDetector:
         #     self.model = torch.load(os.path.join(cur_f, '/models/model_github.pth'),
         #                             map_location=torch.device('cpu'))
         # print("here")
-        self.model = torch.load("/home/petar/work/logsight/log-monolith/modules/anomaly_detection/models/model_github.pth")
+        self.model = torch.load(os.path.join(cur_f, "models/github_tokenizer.pickle"))
         self.model.cpu().eval()
         self.model_loaded = True
 
