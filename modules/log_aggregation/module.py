@@ -35,6 +35,8 @@ class LogAggregationModule(StatefulModule):
 
     def _process_buffer(self):
         result = self.aggregator.aggregate_logs(self.buffer)
+        print(self.buffer)
+        print(result)
         self.buffer = []
         self._reset_timer()
         return result
@@ -43,10 +45,11 @@ class LogAggregationModule(StatefulModule):
         logger.debug("Initiating timer LogAgg.")
         result = self._process_buffer()
         self.buffer = []
-        try:
-            self.data_sink.send(result)
-        except Exception as e:
-            print(f'{e}')
+        if result:
+            try:
+                self.data_sink.send(result)
+            except Exception as e:
+                logger.error(f'{e}')
 
     def _reset_timer(self):
         self.timer.cancel()

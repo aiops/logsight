@@ -7,6 +7,7 @@ import torch as torch
 from .core.log_level_config import ConfigLogLevelEstimation
 from .core.tokenizer import LogTokenizer
 from .core import tokenizer
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "core"))
 
 from .utils import get_padded_data, PREDICTION_THRESHOLD
@@ -38,21 +39,7 @@ class LogAnomalyDetector:
         print(os.path.join(cur_f, "models/github_tokenizer.pickle"))
         self.tokenizer = pickle.load(open(os.path.join(cur_f, "models/github_tokenizer.pickle"), 'rb'))
 
-        # print("loaded")
-        # if version is not None:
-        #     os.rename(os.path.join(cur_f, r'models/' + user_app + '_model_toy_example_plus_anomalies_fine_tuned0.pth'),
-        #               os.path.join(cur_f,
-        #                            r'models/' + user_app + '_model_toy_example_plus_anomalies_fine_tuned' + str(
-        #                                version) + '.pth'))
-        #     self.model = torch.load(os.path.join(cur_f,
-        #                                          'models/' + user_app + '_model_toy_example_plus_anomalies_fine_tuned' + str(
-        #                                              version) + '.pth'),
-        #                             map_location=torch.device('cpu'))
-        # else:
-        #     self.model = torch.load(os.path.join(cur_f, '/models/model_github.pth'),
-        #                             map_location=torch.device('cpu'))
-        # print("here")
-        self.model = torch.load(os.path.join(cur_f, "models/github_tokenizer.pickle"))
+        self.model = torch.load(os.path.join(cur_f, "models/model_github.pth"))
         self.model.cpu().eval()
         self.model_loaded = True
 
