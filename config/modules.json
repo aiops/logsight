@@ -52,6 +52,13 @@
             "params": {
               "topic": "log_aggregation"
             }
+          },
+          {
+            "connection": "kafka",
+            "classname": "KafkaSink",
+            "params": {
+              "topic": "log_incidents"
+            }
           }
         ]
       }
@@ -87,7 +94,7 @@
       "connection": "kafka",
       "classname": "KafkaSource",
       "params": {
-        "topic": "incidents"
+        "topic": "log_incidents"
       }
     },
     "data_sink": {
