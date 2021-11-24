@@ -109,7 +109,7 @@
       "connection": "kafka",
       "classname": "KafkaSource",
       "params": {
-        "topic": "field_parser"
+        "topic": "log_parsing"
       }
     },
     "data_sink": {
@@ -147,17 +147,17 @@
   },
   "field_parser": {
     "data_source": {
-      "connection": "file",
-      "classname": "FileSource",
+      "connection": "kafka",
+      "classname": "KafkaSource",
       "params": {
-        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
+        "topic": "field_parser"
       }
     },
     "data_sink": {
       "connection": "kafka",
       "classname": "KafkaSink",
       "params": {
-        "topic": "field_parser"
+        "topic": "log_parsing"
       }
     },
     "internal_source": {},
