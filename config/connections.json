@@ -20,5 +20,13 @@
   "queue": {
   },
   "stdout": {
+  },
+  "postgres": {
+    "host": "localhost",
+    "port": 5432,
+    "username": "logsight",
+    "password": "logsight",
+    "db_name": "logsight",
+    "driver": "postgresql+psycopg2"
   }
 }
