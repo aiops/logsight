@@ -34,12 +34,13 @@ class ParserModule(StatefulModule):
         result, status = self.state.process(input_data)
         if status == Status.MOVE_STATE:
             self.state = self.state.next_state()
-            self._reset_timer()
+            self.timer.cancel()
         return result
+        # return
 
     @synchronized
     def _timeout_call(self):
-        logger.debug("Initiating timer.")
+        logger.debug("Initiating timer LogParse.")
         result, status = self.state.finish_state()
         self.data_sink.send(result)
         self.state = self.state.next_state()

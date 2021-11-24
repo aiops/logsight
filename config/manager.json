@@ -20,9 +20,13 @@
       "classname": "ElasticSearchAdmin",
       "connection": "elasticsearch"
     },
-     "kafka_admin": {
+    "kafka_admin": {
       "classname": "KafkaAdmin",
       "connection": "kafka"
+    },
+    "database": {
+      "classname": "PostgresDBConnection",
+      "connection": "postgres"
     }
   },
   "topic_list": [

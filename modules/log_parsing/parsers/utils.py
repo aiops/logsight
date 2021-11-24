@@ -84,11 +84,11 @@ def get_template(seq1, seq2):
 
 
 def add_parameters_to_log_json(log, new_template, parameter_list):
-    i = 0
+    # i = 0
     for w in range(len(parameter_list)):
-        if is_date(parameter_list[w]):
-            log['param_' + str(w)] = json.dumps(parameter_list[w])
-        else:
-            log['param_' + str(w)] = parameter_list[w]
-        i += 1
+        # if is_date(parameter_list[w]):
+        #     log['param_' + str(w)] = json.dumps(parameter_list[w])
+        # else:
+        log['param_' + str(w)] = parameter_list[w]
+        # i += 1
     return log

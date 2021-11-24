@@ -51,10 +51,7 @@ class AnomalyDetectionModule(StatefulModule):
     def process_input(self, input_data):
         self.buffer.append(input_data)
         if len(self.buffer) == self.buffer_size:
-            # print("Processing buffer")
             return self._process_buffer()
-        # else:
-        #     print(f"Buffering {input_data}")
 
     @synchronized
     def _process_buffer(self):
@@ -65,15 +62,15 @@ class AnomalyDetectionModule(StatefulModule):
         return result
 
     def _timeout_call(self):
-        logger.debug("Initiating timer")
+        logger.debug("Initiating timer LogAD")
         result = self._process_buffer()
         self.buffer = []
         self._reset_timer()
-
-        try:
-            self.data_sink.send(result)
-        except Exception as e:
-            print(f'{e}')
+        if result:
+            try:
+                self.data_sink.send(result)
+            except Exception as e:
+                logger.error(f'{e}')
 
     def _reset_timer(self):
         self.timer.cancel()

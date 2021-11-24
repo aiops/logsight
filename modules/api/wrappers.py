@@ -8,5 +8,4 @@ def synchronized(func):
     def synced_func(*args, **kws):
         with func.__lock__:
             return func(*args, **kws)
-
     return synced_func

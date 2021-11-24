@@ -80,7 +80,7 @@ class DrainLogParser(Parser):
             # Add current log cluster to the leaf node
             if current_depth >= self.depth or current_depth > seq_len:
                 if len(parentn.child_d) == 0:
-                    parentn.child_d = deque(maxlen=250)
+                    parentn.child_d = deque(maxlen=100)
                     parentn.child_d.append(log_cluster)
                 else:
                     parentn.child_d.append(log_cluster)
@@ -152,19 +152,17 @@ class DrainLogParser(Parser):
         # Match no existing log cluster
         is_new = False
         if match_cluster is None:
-            if (self.state == Parser.TRAIN_STATE) or (self.state == Parser.TUNE_STATE):
+            if self.state in [Parser.TRAIN_STATE, Parser.TUNE_STATE]:
                 new_cluster = LogCluster(log_message_preprocessed)
                 self.add_seq_to_prefix_tree(self.rootNode, new_cluster)
             log['template'] = ' '.join(log_message_preprocessed)
             parameter_list = get_parameter_list(log_tmp, ' '.join(log_message_preprocessed))
             log = add_parameters_to_log_json(log, log_message_preprocessed, parameter_list)
-            is_new = True
         else:
             new_template = get_template(log_message_preprocessed, match_cluster.logTemplate)
             new_template_str = ' '.join(new_template)
             if ' '.join(new_template) != ' '.join(match_cluster.logTemplate):
                 match_cluster.logTemplate = new_template
-                is_new = True
             parameter_list = get_parameter_list(log_tmp, new_template_str)
             log['template'] = ' '.join(new_template)
             log = add_parameters_to_log_json(log, new_template, parameter_list)

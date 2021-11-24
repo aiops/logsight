@@ -1,3 +1,4 @@
+import logging
 import threading
 from .parsers import Parser
 
@@ -20,6 +21,7 @@ class Status:
     PARSED = 1
     MOVE_STATE = 2
 
+logger = logging.getLogger("logsight." + __name__)
 
 class ParserPredictState(State):
 
@@ -36,7 +38,12 @@ class ParserPredictState(State):
         return self.parser.parse(data), status
 
     def next_state(self):
+        logger.debug("MOVING TO TUNE STATE")
+
         return ParserTuneState(self.parser, self.configs)
+
+    def finish_state(self):
+        return self.next_state()
 
 
 class ParserTrainState(State):
@@ -81,6 +88,7 @@ class ParserTrainState(State):
         return parsed
 
     def next_state(self):
+        logger.debug("MOVING TO PREDICT STATE")
         return ParserPredictState(self.parser, self.configs)
 
 
@@ -99,4 +107,10 @@ class ParserTuneState(State):
         return self.parser.parse(data), status
 
     def next_state(self):
+        logger.debug("MOVING TO PREDICT STATE")
+
         return ParserPredictState(self.parser, self.configs)
+
+    def finish_state(self):
+
+        return self.next_state()

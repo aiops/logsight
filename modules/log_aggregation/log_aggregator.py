@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 class LogAggregator:
     def __init__(self):
         pass
@@ -11,13 +12,17 @@ class LogAggregator:
         if len(logs) == 0:
             return
         df = pd.DataFrame(logs).set_index('@timestamp')
+        df.index = pd.to_datetime(df.index)
+        grouped = df.groupby(pd.Grouper(freq='T')).agg(prediction=('prediction', 'sum'),
+                                                       level=('actual_level',
+                                                              lambda x: dict(zip(*np.unique(x, return_counts=True)))),
+                                                       count=('app_name', 'count'))
 
-        result = dict(zip(*np.unique(np.array([log['actual_level'] for log in logs]), return_counts=True)))
-        result.update(
-            {
-                "count": len(logs),
-                "@timestamp": logs[-1]['@timestamp'],
-                "prediction": np.sum([log['prediction'] for log in logs])
-            })
+        result = []
+        for tpl in grouped.itertuples():
+            tpl.level.update({"prediction": tpl.prediction})
+            tpl.level.update({"count": tpl.count})
+            tpl.level.update({"@timestamp": tpl.Index.strftime(format='%Y-%m-%dT%H:%M:%S.%f')})
+            result.append(tpl.level)
 
         return result
