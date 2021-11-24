@@ -35,8 +35,8 @@ class LogAggregationModule(StatefulModule):
 
     def _process_buffer(self):
         result = self.aggregator.aggregate_logs(self.buffer)
-        print(self.buffer)
-        print(result)
+        # print(self.buffer)
+        # print(result)
         self.buffer = []
         self._reset_timer()
         return result
