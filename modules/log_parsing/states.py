@@ -38,6 +38,9 @@ class ParserPredictState(State):
     def next_state(self):
         return ParserTuneState(self.parser, self.configs)
 
+    def finish_state(self):
+        return self.next_state()
+
 
 class ParserTrainState(State):
 
@@ -100,3 +103,6 @@ class ParserTuneState(State):
 
     def next_state(self):
         return ParserPredictState(self.parser, self.configs)
+
+    def finish_state(self):
+        return self.next_state()
