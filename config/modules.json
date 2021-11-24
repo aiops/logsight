@@ -113,10 +113,10 @@
   },
   "log_parsing": {
     "data_source": {
-      "connection": "kafka",
-      "classname": "KafkaSource",
+      "connection": "file",
+      "classname": "FileSource",
       "params": {
-        "topic": "log_parsing"
+        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
       }
     },
     "data_sink": {
@@ -131,10 +131,10 @@
     "internal_sink": {
     },
     "configs": {
-      "timeout_period": 120,
+      "timeout_period": 30,
       "state_configs": {
-        "buffer_size": 100,
-        "retrain_after": 1000
+        "buffer_size": 4096,
+        "retrain_after": 20000
       }
     }
   },
@@ -154,10 +154,10 @@
   },
   "field_parser": {
     "data_source": {
-      "connection": "kafka",
-      "classname": "KafkaSource",
+      "connection": "file",
+      "classname": "FileSource",
       "params": {
-        "topic": "field_parser"
+        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
       }
     },
     "data_sink": {
@@ -188,6 +188,8 @@
     },
     "internal_source": {},
     "internal_sink": {},
-    "configs": {"timeout_period": 20}
+    "configs": {
+      "timeout_period": 20
+    }
   }
 }

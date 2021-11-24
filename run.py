@@ -8,6 +8,7 @@ from services.configurator import ManagerConfig
 from connectors.source import *
 from connectors.sink import *
 from services.admin_clients import KafkaAdmin, ElasticSearchAdmin
+from services.database import PostgresDBConnection
 
 logger = logging.getLogger('logsight')
 

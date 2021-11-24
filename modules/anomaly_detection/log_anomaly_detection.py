@@ -71,6 +71,7 @@ class LogAnomalyDetector:
             try:
                 log_batch[i]["prediction"] = 1 if prediction[i] == 0 else 0
             except:
-                print(log_batch)
+                # print(log_batch)
+                print("exception ad batch")
 
         return log_batch

@@ -31,7 +31,8 @@ class FileSource(Source):
         files_list = []
         for root, folders, files in os.walk("/home/petar/work/logsight/data/test_log_dir"):
             for f in files:
-                files_list.append("/".join([str(root), str(f)]))
+                if "syslog" in f:
+                    files_list.append("/".join([str(root), str(f)]))
         self.files_list = files_list
         self.i = 0
         self.file = open(self.files_list[self.i], 'r')
@@ -41,7 +42,6 @@ class FileSource(Source):
 
     def receive_message(self):
         txt = self.file.readline()
-        sleep(0.05)
         self.cnt += 1
         if txt == "":
             return self._reopen_file()
@@ -56,7 +56,6 @@ class FileSource(Source):
             return
         self.file.close()
         self.file = open(self.files_list[self.i], 'r')
-        print(self.files_list[self.i])
         return self.receive_message()
 
     def has_next(self):
