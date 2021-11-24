@@ -137,7 +137,6 @@ dmypy.json
 .vscode/
 
 .pyc
-.idea
-.ipynb_checkpoints
 .gradle
+.bin
 
