@@ -27,12 +27,12 @@ class FileSource(Source):
     #     return {"message": txt}
     def __init__(self, path=None, **kwargs):
         super().__init__()
-        self.path = path or "/home/petar/work/logsight/log-monolith/logfile.txt"
-        files_list = []
-        for root, folders, files in os.walk("/home/sasho/test_log_dir"):
-            for f in files:
-                if "syslog" in f:
-                    files_list.append("/".join([str(root), str(f)]))
+        #self.path = path or "/home/petar/work/logsight/log-monolith/logfile.txt"
+        files_list = [path]
+        #for root, folders, files in os.walk("/home/sasho/test_log_dir"):
+        #    for f in files:
+        #        if "syslog" in f:
+        #            files_list.append("/".join([str(root), str(f)]))
         self.files_list = files_list
         self.i = 0
         self.file = open(self.files_list[self.i], 'r')

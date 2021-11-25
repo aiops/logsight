@@ -47,7 +47,7 @@ class Manager:
     def create_application(self, app_settings):
         if app_settings['application_id'] in self.active_apps.keys():
             return {"msg": f"Application {app_settings['application_id']} already created"}
-        logger.info("[MANAGER] Building App.")
+        logger.info("[MANAGER] Building App %s.", app_settings['application_id'])
         application = AppBuilder(self.kafka_admin, self.elasticsearch_admin).build_app(app_settings)
         app_process = Process(target=start_process, args=(application,))
         self.active_apps[app_settings['application_id']] = application
@@ -72,10 +72,11 @@ class Manager:
         return {"msg": f"Deleted application {application.application_id}"}
 
     def run(self):
-        thrd = threading.Thread(name="MngrSrc", target=self.start_listener, daemon=True)
+        logger.info("Starting manager.")
+        thrd = threading.Thread(name="MngrSrc", target=self.start_listener)
         thrd.start()
-        while True:
-            pass
+        logger.info("Manager started.")
+        thrd.join()
 
     def start_listener(self):
         while self.source.has_next():
@@ -109,5 +110,3 @@ def start_process(app):
     logger.debug(f'Starting application {app}.')
     app.start()
     logger.debug(f"Application {app} Started.")
-    while True:
-        pass

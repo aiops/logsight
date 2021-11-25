@@ -78,6 +78,7 @@ class StatefulModule(Module):
         logger.debug(f"Creating data source thread for module {self.module_name}.")
         stream = threading.Thread(name=self.module_name + "DatSrc", target=self.start_data_stream, daemon=True)
         stream.start()
+        stream.join()
 
     def start_data_stream(self):
 
