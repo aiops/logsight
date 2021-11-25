@@ -29,7 +29,7 @@ class FileSource(Source):
         super().__init__()
         self.path = path or "/home/petar/work/logsight/log-monolith/logfile.txt"
         files_list = []
-        for root, folders, files in os.walk("/home/petar/work/logsight/data/test_log_dir"):
+        for root, folders, files in os.walk("/home/sasho/test_log_dir"):
             for f in files:
                 if "syslog" in f:
                     files_list.append("/".join([str(root), str(f)]))

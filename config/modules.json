@@ -28,10 +28,10 @@
   },
   "anomaly_detection": {
     "data_source": {
-      "connection": "kafka",
-      "classname": "KafkaSource",
+      "connection": "queue",
+      "classname": "SourceQueue",
       "params": {
-        "topic": "anomaly_detection"
+        "link": "log_parsing"
       }
     },
     "data_sink": {
@@ -47,17 +47,17 @@
             }
           },
           {
-            "connection": "kafka",
-            "classname": "KafkaSink",
+            "connection": "queue",
+            "classname": "SinkQueue",
             "params": {
-              "topic": "log_aggregation"
+              "link": "log_aggregation"
             }
           },
           {
-            "connection": "kafka",
-            "classname": "KafkaSink",
+            "connection": "queue",
+            "classname": "SinkQueue",
             "params": {
-              "topic": "log_incidents"
+              "link": "incidents"
             }
           }
         ]
@@ -91,10 +91,10 @@
   },
   "incidents": {
     "data_source": {
-      "connection": "kafka",
-      "classname": "KafkaSource",
+      "connection": "queue",
+      "classname": "SourceQueue",
       "params": {
-        "topic": "log_incidents"
+        "link": "anomaly_detection"
       }
     },
     "data_sink": {
@@ -113,17 +113,17 @@
   },
   "log_parsing": {
     "data_source": {
-      "connection": "file",
-      "classname": "FileSource",
+      "connection": "queue",
+      "classname": "SourceQueue",
       "params": {
-        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
+        "link": "field_parser"
       }
     },
     "data_sink": {
-      "connection": "kafka",
-      "classname": "KafkaSink",
+      "connection": "queue",
+      "classname": "SinkQueue",
       "params": {
-        "topic": "anomaly_detection"
+        "link": "anomaly_detection"
       }
     },
     "internal_source": {
@@ -161,22 +161,26 @@
       }
     },
     "data_sink": {
-      "connection": "kafka",
-      "classname": "KafkaSink",
+      "connection": "queue",
+      "classname": "SinkQueue",
       "params": {
-        "topic": "log_parsing"
+        "link": "log_parsing"
       }
     },
     "internal_source": {},
     "internal_sink": {},
-    "configs": {}
+    "configs": {"timeout_period": 30,
+    "state_configs": {
+      "buffer_size": 50,
+      "provider_threshold": 0.5
+    }}
   },
   "log_aggregation": {
     "data_source": {
-      "connection": "kafka",
-      "classname": "KafkaSource",
+      "connection": "queue",
+      "classname": "SourceQueue",
       "params": {
-        "topic": "log_aggregation"
+        "link": "anomaly_detection"
       }
     },
     "data_sink": {
