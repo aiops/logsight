@@ -46,7 +46,6 @@ def run():
         logger.info(f.read())
     manager = create_manager()
     manager.setup()
-    logger.info("Running manager.")
     manager.run()
 
 

@@ -5,4 +5,5 @@ from .queue import SinkQueue
 from .file import FileSink
 from .multi import MultiSink
 from .kafka import KafkaSink
+from .empty import EmptySink
 from .elasticsearch import ElasticsearchSink
