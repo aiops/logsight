@@ -56,7 +56,7 @@ class ParserTrainState(State):
         self.buffer = []
         self.buffer_size = configs.get('buffer_size')
 
-    @synchronized
+    # @synchronized
     def process(self, data):
         result = None
 
@@ -76,7 +76,7 @@ class ParserTrainState(State):
         result = self._process_buffer()
         return result, Status.MOVE_STATE
 
-    @synchronized
+    # @synchronized
     def _process_buffer(self):
         if len(self.buffer) == 0:
             return None, Status.MOVE_STATE

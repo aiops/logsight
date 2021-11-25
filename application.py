@@ -55,10 +55,10 @@ class AppBuilder:
         self.module_config = ModuleConfig()
 
     def build_app(self, app_settings, modules='all'):
-        # modules = ['field_parser', 'log_parsing', 'anomaly_detection', 'log_aggregation', 'incidents']
-        modules = ['log_parsing', 'anomaly_detection', 'log_aggregation']
+        modules = ['field_parser', 'log_parsing', 'anomaly_detection', 'log_aggregation', 'incidents']
+        # modules = ['log_parsing', 'anomaly_detection']
         # modules = ['anomaly_detection']
-        INPUT_MODULE = "log_parsing"
+        INPUT_MODULE = "field_parser"
         if self.es_admin:
             self.es_admin.create_indices(app_settings['private_key'], app_settings['application_name'])
 
