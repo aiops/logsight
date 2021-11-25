@@ -78,7 +78,7 @@ class FieldParserCalibrationState(State):
     def _process_buffer(self):
         parser = self.parser_provider.get_parser(self.buffer)
         parser_state = FieldParserParseState(parser, self.configs)
-        results = [parser_state.process(element.log) for element in self.buffer]
+        results = [parser_state.process(element.log)[0] for element in self.buffer]
 
         return results, parser_state
 

@@ -55,7 +55,7 @@ class AppBuilder:
         self.module_config = ModuleConfig()
 
     def build_app(self, app_settings, modules='all'):
-        modules = ['field_parser', 'log_parsing', 'anomaly_detection', 'log_aggregation', 'incidents']
+        modules = ['field_parser', 'log_parsing']
         # modules = ['log_parsing', 'anomaly_detection']
         # modules = ['anomaly_detection']
         INPUT_MODULE = "field_parser"
