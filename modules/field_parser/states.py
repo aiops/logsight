@@ -1,3 +1,4 @@
+import time
 from abc import ABC
 from datetime import datetime
 import threading
@@ -33,8 +34,10 @@ class FieldParserParseState(State):
 
         log.set_field_parser_type(self.parser.type)
         log.set_prev_timestamp(self._prev_time)
-
+        t = time.time()
         parsed_message = self.parser.parse_fields(log.get_message())
+        # print("FIELD:", time.time() - t)
+
         if parsed_message:
             log.update(parsed_message)
         else:

@@ -41,7 +41,10 @@ class FileSource(Source):
         self.time = time()
 
     def receive_message(self):
-        txt = self.file.readline()
+        try:
+            txt = self.file.readline()
+        except Exception:
+            return
         self.cnt += 1
         if txt == "":
             return self._reopen_file()
