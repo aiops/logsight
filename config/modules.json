@@ -157,14 +157,14 @@
       "connection": "file",
       "classname": "FileSource",
       "params": {
-        "path": "/home/alex/Downloads/aaa/ten.json"
+        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
       }
     },
     "data_sink": {
-      "connection": "empty",
-      "classname": "EmptySink",
+      "connection": "queue",
+      "classname": "SinkQueue",
       "params": {
-
+        "link": "log_parsing"
       }
     },
     "internal_source": {},
