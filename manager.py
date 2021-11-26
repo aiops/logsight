@@ -73,10 +73,11 @@ class Manager:
 
     def run(self):
         logger.info("Starting manager.")
-        thrd = threading.Thread(name="MngrSrc", target=self.start_listener)
-        thrd.start()
+        self.start_listener()
+        #thrd = Process(name="MngrSrc", target=self.start_listener)
+        #thrd.start()
         logger.info("Manager started.")
-        thrd.join()
+        #thrd.join()
 
     def start_listener(self):
         while self.source.has_next():
@@ -107,6 +108,6 @@ class Manager:
 
 
 def start_process(app):
-    logger.debug(f'Starting application {app}.')
+    logger.info(f'Starting application {app}.')
     app.start()
-    logger.debug(f"Application {app} Started.")
+    logger.info(f"Application {app} Started.")

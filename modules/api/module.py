@@ -1,6 +1,7 @@
 import threading
 from abc import ABC
 import logging
+from time import time
 
 from connectors.source import Source, SourceQueue
 from connectors.sink import Sink
@@ -19,6 +20,12 @@ class Module(ABC):
         self.has_data_queue_src = isinstance(data_source, SourceQueue)
         self.module_name = "module"
         self.active_threads = []
+
+        self.total_recv = 0
+        self.total_process = 0
+        self.total_send = 0
+        self.cnt = 0
+        self.cnt_send = 0
 
     def stop(self):
         for thread in self.active_threads:
@@ -78,20 +85,45 @@ class StatefulModule(Module):
         logger.debug(f"Creating data source thread for module {self.module_name}.")
         stream = threading.Thread(name=self.module_name + "DatSrc", target=self.start_data_stream, daemon=True)
         stream.start()
-        stream.join()
+        #stream.join()
+
+    # def start_data_stream(self):
+    #
+    #     if hasattr(self.data_source, 'topic'):
+    #         logger.debug(f"starting to listen on topic {self.data_source.topic}")
+    #     while self.data_source.has_next():
+    #         line = self.data_source.receive_message()
+    #         if not line:
+    #             continue
+    #         result = self.process_input(line)
+    #         # logger.debug("Processing input message")
+    #         if result:
+    #             self.data_sink.send(result)
 
     def start_data_stream(self):
-
+        self.t = time()
         if hasattr(self.data_source, 'topic'):
             logger.debug(f"starting to listen on topic {self.data_source.topic}")
         while self.data_source.has_next():
+            t_recv = time()
             line = self.data_source.receive_message()
+            self.total_recv += (time() - t_recv)
             if not line:
                 continue
+            t_process = time()
             result = self.process_input(line)
-            # logger.debug("Processing input message")
+            self.total_process += (time() - t_process)
+            self.cnt += 1
+
             if result:
+                self.cnt_send += 1
+                t_send = time()
                 self.data_sink.send(result)
+                self.total_send += (time() - t_send)
+            if self.cnt % 1000 == 0:
+                logger.debug(f"{self.module_name} processed {self.cnt} / send {self.cnt_send} messages in {time() - self.t} ")
+                logger.debug(
+                    f"Recv time:{round(self.total_recv, 2)}, process {round(self.total_process, 2)}, send:{round(self.total_send, 2)}")
 
     def process_internal_message(self, msg):
         pass

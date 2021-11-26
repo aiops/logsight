@@ -15,6 +15,15 @@
         "port": 9980
       }
     },
+
+    "data_sink": {
+      "connection": "queue",
+      "classname": "SinkQueue",
+      "params": {
+        "link": "anomaly_detection"
+      }
+    },
+
     "internal_sink": {
       "connection": "socket",
       "classname": "SocketSink",
