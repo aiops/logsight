@@ -34,7 +34,8 @@ class ParserModule(StatefulModule):
         result, status = self.state.process(input_data)
         if status == Status.MOVE_STATE:
             self.state = self.state.next_state()
-            self.timer.cancel()
+            if self.timer:
+                self.timer.cancel()
         return result
         # return
 
@@ -48,6 +49,7 @@ class ParserModule(StatefulModule):
         return result
 
     def _reset_timer(self):
+
         self.timer.cancel()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
         self.timer.start()

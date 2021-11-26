@@ -36,20 +36,20 @@ class FieldParserModule(StatefulModule):
         return result
 
 
-if __name__ == '__main__':
-    class Configs:
-        state_configs = {
-            "buffer_size": 10,
-            "provider_threshold": 0.5
-        }
-        timeout_period = 5
-
-
-    sink = PrintSink()
-    sink_data = PrintSink()
-
-    #src_data = FileSource('/var/log/syslog')
-    src_data = FileSource('/home/alex/Downloads/aaa/ten.json')
-
-    module = FieldParserModule(src_data, sink_data, None, sink, Configs())
-    module.run()
+# if __name__ == '__main__':
+#     class Configs:
+#         state_configs = {
+#             "buffer_size": 10,
+#             "provider_threshold": 0.5
+#         }
+#         timeout_period = 5
+#
+#
+#     sink = PrintSink()
+#     sink_data = PrintSink()
+#
+#     #src_data = FileSource('/var/log/syslog')
+#     src_data = FileSource('/home/alex/Downloads/aaa/ten.json')
+#
+#     module = FieldParserModule(src_data, sink_data, None, sink, Configs())
+#     module.run()

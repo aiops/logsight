@@ -89,6 +89,7 @@ class StatefulModule(Module):
             if not line:
                 continue
             result = self.process_input(line)
+            # logger.debug("Processing input message")
             if result:
                 self.data_sink.send(result)
 
