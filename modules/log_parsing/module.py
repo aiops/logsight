@@ -44,11 +44,9 @@ class ParserModule(StatefulModule):
         result, status = self.state.finish_state()
         self.data_sink.send(result)
         self.state = self.state.next_state()
-
         return result
 
     def _reset_timer(self):
-
         self.timer.cancel()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
         self.timer.start()

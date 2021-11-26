@@ -39,7 +39,7 @@ class LogAnomalyDetector:
         print(os.path.join(cur_f, "models/github_tokenizer.pickle"))
         self.tokenizer = pickle.load(open(os.path.join(cur_f, "models/github_tokenizer.pickle"), 'rb'))
 
-        self.model = torch.load(os.path.join(cur_f, "models/model_github.pth"))
+        self.model = torch.load(os.path.join(cur_f, "models/model_github.pth"), map_location='cpu')
         self.model.cpu().eval()
         self.model_loaded = True
 
