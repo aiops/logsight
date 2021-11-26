@@ -45,20 +45,6 @@
             "params": {
               "index": "log_ad"
             }
-          },
-          {
-            "connection": "queue",
-            "classname": "SinkQueue",
-            "params": {
-              "link": "log_aggregation"
-            }
-          },
-          {
-            "connection": "queue",
-            "classname": "SinkQueue",
-            "params": {
-              "link": "incidents"
-            }
           }
         ]
       }
@@ -79,7 +65,7 @@
     },
     "configs": {
       "timeout_period": 20,
-      "buffer_size": 10
+      "buffer_size": 16384
     }
   },
   "count_ad": {
@@ -120,8 +106,8 @@
       }
     },
     "data_sink": {
-      "connection": "empty",
-      "classname": "EmptySink",
+      "connection": "queue",
+      "classname": "SinkQueue",
       "params": {
         "link": "anomaly_detection"
       }
@@ -157,7 +143,7 @@
       "connection": "file",
       "classname": "FileSource",
       "params": {
-        "path": "/home/alex/Downloads/aaa/ten.json"
+        "path": "/home/sasho/nova_1.txt"
       }
     },
     "data_sink": {
@@ -171,8 +157,8 @@
     "internal_sink": {},
     "configs": {"timeout_period": 30,
     "state_configs": {
-      "buffer_size": 50,
-      "provider_threshold": 0.5
+      "buffer_size": 10,
+      "provider_threshold": 0.9
     }}
   },
   "log_aggregation": {

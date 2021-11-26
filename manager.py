@@ -1,6 +1,7 @@
 import json
 import sys
 import threading
+from time import sleep
 
 from kafka.admin import NewTopic
 from application import Application, AppBuilder
@@ -110,4 +111,6 @@ class Manager:
 def start_process(app):
     logger.info(f'Starting application {app}.')
     app.start()
+    while True:
+        sleep(100)
     logger.info(f"Application {app} Started.")

@@ -1,7 +1,7 @@
 import threading
 from abc import ABC
 import logging
-from time import time
+from time import time, sleep
 
 from connectors.source import Source, SourceQueue
 from connectors.sink import Sink
@@ -105,6 +105,7 @@ class StatefulModule(Module):
         if hasattr(self.data_source, 'topic'):
             logger.debug(f"starting to listen on topic {self.data_source.topic}")
         while self.data_source.has_next():
+            # logger.debug(f"now here {self.module_name}")
             t_recv = time()
             line = self.data_source.receive_message()
             self.total_recv += (time() - t_recv)
@@ -125,6 +126,7 @@ class StatefulModule(Module):
                 logger.debug(
                     f"Recv time:{round(self.total_recv, 2)}, process {round(self.total_process, 2)}, send:{round(self.total_send, 2)}")
 
+            # logger.debug("now there")
     def process_internal_message(self, msg):
         pass
 

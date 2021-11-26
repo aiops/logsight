@@ -1,5 +1,7 @@
 import logging
 import threading
+import time
+
 from .parsers import Parser
 
 from modules.api import State
@@ -59,7 +61,6 @@ class ParserTrainState(State):
     # @synchronized
     def process(self, data):
         result = None
-
         self.buffer.append(data)
 
         if len(self.buffer) == self.buffer_size:
@@ -104,7 +105,10 @@ class ParserTuneState(State):
     def process(self, data):
         self.parse_count += 1
         status = Status.PARSED if self.parse_count <= self.retrain_size else Status.MOVE_STATE
-        return self.parser.parse(data), status
+        t = time.time()
+        result = self.parser.parse(data)
+        # print("DRAIN:", time.time() - t)
+        return result, status
 
     def next_state(self):
         logger.debug("MOVING TO PREDICT STATE")

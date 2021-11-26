@@ -1,5 +1,7 @@
 import json
 from collections import deque
+from multiprocessing import Queue
+
 from .base import Source
 
 
@@ -14,11 +16,11 @@ class SourceQueue(Source):
             self.queue = queue
 
     def receive_message(self):
-        if not isinstance(self.queue,deque):
+        if self.queue == None:
             raise Exception("Please connect with sink")
-        if not self.queue:
-            return
-        return self.queue.popleft()
+        # if not self.queue:
+        #     return
+        return self.queue.get()
 
     def process_message(self):
         pass
