@@ -120,7 +120,7 @@
       "timeout_period": 30,
       "state_configs": {
         "buffer_size": 4096,
-        "retrain_after": 20000
+        "retrain_after": 2000000
       }
     }
   },
@@ -143,7 +143,7 @@
       "connection": "file",
       "classname": "FileSource",
       "params": {
-        "path": "/home/sasho/nova_1.txt"
+        "path": "/home/alex/Downloads/aaa/syslog"
       }
     },
     "data_sink": {

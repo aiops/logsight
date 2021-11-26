@@ -2,9 +2,8 @@ import logging
 import threading
 import time
 
-from .parsers import Parser
-
 from modules.api import State
+from .parsers import Parser
 
 
 def synchronized(func):
@@ -23,7 +22,9 @@ class Status:
     PARSED = 1
     MOVE_STATE = 2
 
+
 logger = logging.getLogger("logsight." + __name__)
+
 
 class ParserPredictState(State):
 
@@ -37,7 +38,10 @@ class ParserPredictState(State):
     def process(self, data):
         self.parse_count += 1
         status = Status.PARSED if self.parse_count <= self.predict_limit else Status.MOVE_STATE
-        return self.parser.parse(data), status
+        t = time.time()
+        result = self.parser.parse(data)
+        #print(f"DRAIN: {time.time() - t}")
+        return result, status
 
     def next_state(self):
         logger.debug("MOVING TO TUNE STATE")
@@ -107,7 +111,6 @@ class ParserTuneState(State):
         status = Status.PARSED if self.parse_count <= self.retrain_size else Status.MOVE_STATE
         t = time.time()
         result = self.parser.parse(data)
-        # print("DRAIN:", time.time() - t)
         return result, status
 
     def next_state(self):
@@ -116,5 +119,4 @@ class ParserTuneState(State):
         return ParserPredictState(self.parser, self.configs)
 
     def finish_state(self):
-
         return self.next_state()
