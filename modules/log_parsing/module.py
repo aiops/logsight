@@ -37,7 +37,6 @@ class ParserModule(StatefulModule):
             if self.timer:
                 self.timer.cancel()
         return result
-        # return
 
     @synchronized
     def _timeout_call(self):

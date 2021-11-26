@@ -46,7 +46,7 @@ class FileSource(Source):
         if txt == "":
             return self._reopen_file()
         if self.cnt % 1000 == 0:
-            print("Processed", self.cnt, time() - self.time)
+            print("Read", self.cnt, time() - self.time)
         return {"app_name": "sample_app", "message": txt, "private_key": "sample_key"}
 
     def _reopen_file(self):

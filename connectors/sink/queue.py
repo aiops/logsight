@@ -7,7 +7,7 @@ class SinkQueue(Sink):
     def __init__(self, link=None, **kwargs):
         super().__init__()
         self.link = link
-        self.queue = deque(maxlen=6000)
+        self.queue = deque(maxlen=10000)
 
     def send(self, data):
         if not isinstance(data, list):
