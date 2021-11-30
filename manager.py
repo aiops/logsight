@@ -65,12 +65,13 @@ class Manager:
         app_process.terminate()
         application = self.active_apps[msg['application_id']]
         if self.elasticsearch_admin:
-            self.elasticsearch_admin.create_indices(application.application_id)
+            self.elasticsearch_admin.delete_indices(application.private_key, application.application_name)
         if self.kafka_admin:
             self.kafka_admin.delete_topics(application.topic_list)
         del self.active_apps[application.application_id]
         del self.active_process_apps[application.application_id]
-        return {"msg": f"Deleted application {application.application_id}"}
+        logger.info(f"Application successfully deleted with name: {application.application_name} and id: {application.application_id}")
+        return
 
     def run(self):
         logger.info("Starting manager.")
@@ -85,7 +86,8 @@ class Manager:
             msg = self.source.receive_message()
             logger.debug(f"[Manager] Processing message {msg}")
             result = self.process_message(msg)
-            self.producer.send(result)
+            if result:
+                self.producer.send(result)
 
     def process_message(self, msg):
         msg['application_id'] = str(msg['application_id'])

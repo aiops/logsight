@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import numpy as np
 import pandas as pd
 
@@ -20,9 +22,17 @@ class LogAggregator:
 
         result = []
         for tpl in grouped.itertuples():
-            tpl.level.update({"prediction": tpl.prediction})
-            tpl.level.update({"count": tpl.count})
-            tpl.level.update({"@timestamp": tpl.Index.strftime(format='%Y-%m-%dT%H:%M:%S.%f')})
-            result.append(tpl.level)
+            result_dict = defaultdict()
+            result_dict.update({"log_levels" : tpl.level})
+            result_dict.update({"prediction": tpl.prediction})
+            result_dict.update({"count": tpl.count})
+            result_dict.update({"@timestamp": tpl.Index.strftime(format='%Y-%m-%dT%H:%M:%S.%f')})
+            result.append(result_dict)
+
+        # for tpl in grouped.itertuples():
+        #     tpl.level.update({"prediction": tpl.prediction})
+        #     tpl.level.update({"count": tpl.count})
+        #     tpl.level.update({"@timestamp": tpl.Index.strftime(format='%Y-%m-%dT%H:%M:%S.%f')})
+        #     result.append(tpl.level)
 
         return result
