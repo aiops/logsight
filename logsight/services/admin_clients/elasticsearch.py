@@ -31,6 +31,9 @@ class ElasticSearchAdmin:
         self.client.indices.create(index="_".join([app_id, "log_ad"]), body=mapping, ignore=400)
         self.client.index(index="_".join([app_id, "log_ad"]), body=doc)
 
+        self.client.indices.create(index="_".join([app_id, "log_agg"]), body=mapping, ignore=400)
+        self.client.index(index="_".join([app_id, "log_agg"]), body=doc)
+
         mapping = {
             "mappings": {
                 "properties": {
