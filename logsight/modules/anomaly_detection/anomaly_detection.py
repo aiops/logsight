@@ -62,8 +62,9 @@ class AnomalyDetectionModule(StatefulModule):
     def _process_buffer(self):
         if len(self.buffer) == 0:
             return
-        result = self.ad.process_log(self.buffer)
-        self.buffer = []
+        buff_copy = self.buffer.copy()
+        result = self.ad.process_log(buff_copy)
+
         return result
 
     def _timeout_call(self):
@@ -76,7 +77,6 @@ class AnomalyDetectionModule(StatefulModule):
                 self.data_sink.send(result)
             except Exception as e:
                 logger.error(f'{e}')
-
     def _reset_timer(self):
         self.timer.cancel()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)

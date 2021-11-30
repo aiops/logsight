@@ -79,7 +79,7 @@
     },
     "configs": {
       "timeout_period": 20,
-      "buffer_size": 10
+      "buffer_size": 16384
     }
   },
   "count_ad": {
@@ -120,8 +120,8 @@
       }
     },
     "data_sink": {
-      "connection": "empty",
-      "classname": "EmptySink",
+      "connection": "queue",
+      "classname": "SinkQueue",
       "params": {
         "link": "anomaly_detection"
       }
@@ -134,7 +134,7 @@
       "timeout_period": 30,
       "state_configs": {
         "buffer_size": 4096,
-        "retrain_after": 20000
+        "retrain_after": 2000000
       }
     }
   },
@@ -154,17 +154,17 @@
   },
   "field_parser": {
     "data_source": {
-      "connection": "file",
-      "classname": "FileSource",
+      "connection": "kafka",
+      "classname": "KafkaSource",
       "params": {
-        "path": "/home/petar/work/logsight/log-monolith/logfile.txt"
+        "topic": "input"
       }
     },
     "data_sink": {
       "connection": "queue",
       "classname": "SinkQueue",
       "params": {
-        "topic": "log_parsing"
+        "link": "log_parsing"
       }
     },
     "internal_source": {},
@@ -172,8 +172,8 @@
     "configs": {
       "timeout_period": 30,
       "state_configs": {
-        "buffer_size": 50,
-        "provider_threshold": 0.5
+        "buffer_size": 10,
+        "provider_threshold": 0.9
       }
     }
   },

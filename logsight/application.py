@@ -18,7 +18,8 @@ module_classes = {"log_parsing": ParserModule, "model_training": ModelTrainModul
 
 
 class Application:
-    def __init__(self, application_id, private_key, user_name, application_name, modules, input_module, services=None,
+    def __init__(self, application_id, private_key, user_name, application_name, kafka_topic_list, modules,
+                 input_module, services=None,
                  **kwargs):
         self.application_id = application_id
         self.application_name = application_name
@@ -27,12 +28,14 @@ class Application:
         self.modules = modules
         self.services = services or []
         self.input_module = input_module
+        self.topic_list = kafka_topic_list
 
     def start(self):
         for module_name, module in self.modules.items():
             t = time()
             logger.debug(f"Initializing module {module_name}")
             module.connect()
+            logger.debug(f"Module connected")
             module.run()
             logger.debug(f"Module {module_name} initialized in {time() - t}s")
 
@@ -52,6 +55,7 @@ class AppBuilder:
     def __init__(self, kafka_admin=None, es_admin=None):
         self.kafka_admin = kafka_admin
         self.es_admin = es_admin
+        self.kafka_topic_list = []
         self.module_config = ModuleConfig()
 
     def build_app(self, app_settings):
@@ -64,7 +68,8 @@ class AppBuilder:
         module_objects = {m_name: self._build_module(m_name, obj, app_settings) for m_name, obj in module_objects}
 
         self._connect_queues(module_objects)
-
+        if self.kafka_admin:
+            app_settings['kafka_topic_list'] = self.kafka_topic_list
         return Application(**app_settings, modules=module_objects, input_module=module_objects[INPUT_MODULE])
 
     def _connect_queues(self, module_objects):
@@ -133,6 +138,7 @@ class AppBuilder:
                 self.kafka_admin.create_topics([
                     NewTopic(name=topic, num_partitions=1, replication_factor=1)])
                 logger.debug(f"Created topic {topic}")
+                self.kafka_topic_list.append(topic)
             except Exception:
                 logger.error(f"Topic already exists with topic name {topic}.")
         else:
