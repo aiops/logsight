@@ -41,7 +41,7 @@ class LogIncidentModule(StatefulModule):
                 self._reset_state()
         else:
             self.log_ad_buffer.append(input_data)
-            timestamp = "@timestmap"
+            timestamp = "@timestamp"
             try:
                 end_time = datetime.strptime(self.log_ad_buffer[-1][timestamp], '%Y-%m-%dT%H:%M:%S.%f')
             except Exception:

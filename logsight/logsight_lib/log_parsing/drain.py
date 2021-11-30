@@ -146,10 +146,10 @@ class DrainLogParser(Parser):
             parameter_list = get_parameter_list(log_tmp, ' '.join(log_message_preprocessed))
             log = add_parameters_to_log_json(log, log_message_preprocessed, parameter_list)
         else:
-            new_template = get_template(log_message_preprocessed, match_cluster.logTemplate)
+            new_template = get_template(log_message_preprocessed, match_cluster.log_template)
             new_template_str = ' '.join(new_template)
-            if ' '.join(new_template) != ' '.join(match_cluster.logTemplate):
-                match_cluster.logTemplate = new_template
+            if ' '.join(new_template) != ' '.join(match_cluster.log_template):
+                match_cluster.log_template = new_template
             parameter_list = get_parameter_list(log_tmp, new_template_str)
             log['template'] = ' '.join(new_template)
             log = add_parameters_to_log_json(log, new_template, parameter_list)

@@ -63,9 +63,7 @@ class AnomalyDetectionModule(StatefulModule):
         if len(self.buffer) == 0:
             return
         buff_copy = self.buffer.copy()
-        result = self.ad.process_log(buff_copy)
-
-        return result
+        return self.ad.process_log(buff_copy)
 
     def _timeout_call(self):
         logger.debug("Initiating timer LogAD")

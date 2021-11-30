@@ -35,7 +35,7 @@ class Application:
             t = time()
             logger.debug(f"Initializing module {module_name}")
             module.connect()
-            logger.debug(f"Module connected")
+            logger.debug('Module connected')
             module.run()
             logger.debug(f"Module {module_name} initialized in {time() - t}s")
 
@@ -59,7 +59,7 @@ class AppBuilder:
         self.module_config = ModuleConfig()
 
     def build_app(self, app_settings):
-        modules = ['field_parser', 'log_parsing']
+        modules = ['field_parser', 'log_parsing','anomaly_detection','log_aggregation','incidents']
         INPUT_MODULE = "field_parser"
         if self.es_admin:
             self.es_admin.create_indices(app_settings['private_key'], app_settings['application_name'])
