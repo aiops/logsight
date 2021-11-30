@@ -2,7 +2,7 @@ import json
 from collections import deque
 from .base import Source
 import multiprocessing
-
+from time import sleep
 
 class NoQueueException(Exception):
     pass
@@ -10,7 +10,7 @@ class NoQueueException(Exception):
 
 class SourceQueue(Source):
     def __init__(self, link, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__()
         self.link = link
         self.queue = None
 
@@ -19,8 +19,9 @@ class SourceQueue(Source):
             self.queue = queue
 
     def receive_message(self):
-        # if not isinstance(self.queue, deque):
-        #     raise NoQueueException("Please connect with sink")
+        if self.queue == None:
+            raise Exception("Please connect with sink")
         if self.queue.empty():
-            sleep(2)
-        return self.queue.pop()
+            print("Empty")
+            sleep(10)
+        return self.queue.get()

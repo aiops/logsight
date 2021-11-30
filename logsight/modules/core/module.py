@@ -3,7 +3,7 @@ from abc import ABC
 import logging
 import time
 
-from logsight.connectors.sources import Source, SourceQueue
+from connectors.sources import Source, SourceQueue
 from logsight.connectors.sinks import Sink
 from .job_manager import JobManager
 
@@ -102,7 +102,7 @@ class StatefulModule(Module):
                 t_send = time.perf_counter()
                 self.data_sink.send(result)
                 self.total_send += (time.perf_counter() - t_send)
-            if self.cnt % 1000 == 0:
+            if self.cnt % 100 == 0:
                 logger.debug(f"{self.module_name} processed {self.cnt} messages in {time.perf_counter() - self.t} ")
                 logger.debug(
                     f"Recv time:{round(self.total_recv, 2)}, process {round(self.total_process, 2)}, send:{round(self.total_send, 2)}")
