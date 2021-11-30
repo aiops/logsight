@@ -76,6 +76,7 @@ class AppBuilder:
         for module_name, module in module_objects.items():
             if module.has_internal_queue_src:
                 self._connect_internal_queue(module, module_objects[module.internal_source.link].internal_sink.queue)
+            print(module.module_name,module.has_data_queue_src)
             if module.has_data_queue_src:
                 self._connect_data_queue(module, module_objects[module.data_source.link].data_sink)
 
