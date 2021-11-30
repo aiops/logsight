@@ -1,6 +1,10 @@
+import logging
+import elasticsearch
 from elasticsearch import helpers, Elasticsearch
 
 from .base import Sink
+
+logger = logging.getLogger("logsight." + __name__)
 
 
 class ElasticsearchSink(Sink):
@@ -17,7 +21,10 @@ class ElasticsearchSink(Sink):
     def send(self, data):
         if not isinstance(data, list):
             data = [data]
-        helpers.bulk(self.es,
-                     data,
-                     index=self.index,
-                     request_timeout=200)
+        try:
+            helpers.bulk(self.es,
+                         data,
+                         index=self.index,
+                         request_timeout=200)
+        except elasticsearch.helpers.errors.BulkIndexError as e:
+            logger.error(e)

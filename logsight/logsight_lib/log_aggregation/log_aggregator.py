@@ -23,10 +23,10 @@ class LogAggregator:
         result = []
         for tpl in grouped.itertuples():
             result_dict = defaultdict()
-            result_dict.update({"log_levels": tpl.level})
-            result_dict.update({"prediction": tpl.prediction})
-            result_dict.update({"count": tpl.count})
-            result_dict.update({"@timestamp": tpl.Index.strftime(format='%Y-%m-%dT%H:%M:%S.%f')})
+            result_dict["log_levels"] = tpl.level
+            result_dict["prediction"] = tpl.prediction
+            result_dict["count"] = tpl.count
+            result_dict["@timestamp"] = tpl.Index.strftime(format='%Y-%m-%dT%H:%M:%S.%f')
             result.append(result_dict)
 
         # for tpl in grouped.itertuples():
