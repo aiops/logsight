@@ -26,10 +26,7 @@ class LogIncidentModule(StatefulModule):
         self.timer = None
 
     def run(self):
-        internal = threading.Thread(target=self.start_internal_listener)
-        internal.start()
-        stream = threading.Thread(target=self.start_data_stream)
-        stream.start()
+        super().run()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
         self.timer.start()
 

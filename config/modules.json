@@ -40,10 +40,17 @@
       "params": {
         "sinks": [
           {
-            "connection": "elasticsearch",
-            "classname": "ElasticsearchSink",
+            "connection": "queue",
+            "classname": "SinkQueue",
             "params": {
-              "index": "log_ad"
+              "link": "log_aggregation"
+            }
+          },
+          {
+            "connection": "queue",
+            "classname": "SinkQueue",
+            "params": {
+              "link": "incidents"
             }
           }
         ]
@@ -140,10 +147,10 @@
   },
   "field_parser": {
     "data_source": {
-      "connection": "file",
-      "classname": "FileSource",
+      "connection": "kafka",
+      "classname": "KafkaSource",
       "params": {
-        "path": "/home/alex/Downloads/aaa/syslog"
+        "topic": "input"
       }
     },
     "data_sink": {

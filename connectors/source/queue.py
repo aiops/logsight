@@ -21,7 +21,7 @@ class SourceQueue(Source):
             raise Exception("Please connect with sink")
         if self.queue.empty():
             print("Empty")
-            sleep(2)
+            sleep(10)
         return self.queue.get()
 
     def process_message(self):
