@@ -29,6 +29,7 @@ class AnomalyDetectionModule(StatefulModule):
         self.ad = LogAnomalyDetector()
         self.timeout_period = self.config.timeout_period
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.name = self.module_name + '_timer'
 
     def run(self):
         self._load_model(None, None)
@@ -75,7 +76,9 @@ class AnomalyDetectionModule(StatefulModule):
                 self.data_sink.send(result)
             except Exception as e:
                 logger.error(f'{e}')
+
     def _reset_timer(self):
         self.timer.cancel()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.name = self.module_name + '_timer'
         self.timer.start()

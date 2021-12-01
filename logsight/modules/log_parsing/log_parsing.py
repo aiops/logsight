@@ -3,8 +3,8 @@ import logging
 import threading
 from time import time
 
-from logsight.connectors.sinks import Sink
-from logsight.connectors.sources import Source
+from connectors.sinks import Sink
+from connectors.sources import Source
 from modules.core import StatefulModule, State
 from logsight_lib.log_parsing import DrainLogParser
 from .states import ParserTrainState, ParserPredictState, ParserTuneState, Status
@@ -29,6 +29,7 @@ class ParserModule(StatefulModule):
     def run(self):
         super().run()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.name = self.module_name + '_timer'
         self.timer.start()
 
     def process_input(self, input_data):
@@ -51,4 +52,5 @@ class ParserModule(StatefulModule):
     def _reset_timer(self):
         self.timer.cancel()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.name = self.module_name + '_timer'
         self.timer.start()

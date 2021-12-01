@@ -7,6 +7,9 @@ from modules.core.wrappers import synchronized
 from logsight_lib.count_ad import CountADPredictor
 
 
+logger = logging.getLogger("logsight." + __name__)
+
+
 class EnumState:
     IDLE = 0
     MODEL_LOADED = 1
@@ -21,7 +24,7 @@ class CountADModule(StatefulModule):
         self.ad = CountADPredictor()
 
     def run(self):
-        self.start_internal_listener()
+        super(StatefulModule, self).run()
 
     def process_internal_message(self, config):
         if config['type'] == "load":

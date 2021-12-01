@@ -9,6 +9,8 @@ from modules.core import StatefulModule
 from modules.core.wrappers import synchronized
 from logsight_lib.incidents import IncidentDetector
 
+logger = logging.getLogger("logsight." + __name__)
+
 
 class LogIncidentModule(StatefulModule):
     def __init__(self, data_source: Source, data_sink: Sink, internal_source: Source, internal_sink: Sink,
@@ -29,6 +31,7 @@ class LogIncidentModule(StatefulModule):
     def run(self):
         super().run()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.name = self.module_name+'_timer'
         self.timer.start()
 
     @synchronized
@@ -60,10 +63,14 @@ class LogIncidentModule(StatefulModule):
 
     @synchronized
     def _process_buffer(self):
-        return self.model.get_incident_properties(self.log_count_buffer, self.log_ad_buffer)
+        log_count_buffer_copy = self.log_count_buffer.copy()
+        log_ad_buffer_copy = self.log_ad_buffer.copy()
+        self.log_count_buffer = []
+        self.log_ad_buffer = []
+        return self.model.get_incident_properties(log_count_buffer_copy, log_ad_buffer_copy)
 
     def _timeout_call(self):
-        print("Initiating timer in incidents")
+        logger.debug("Initiating timer in incidents")
         result = self._process_buffer()
         if result is not None:
             self.data_sink.send(result)
@@ -77,4 +84,5 @@ class LogIncidentModule(StatefulModule):
     def _reset_timer(self):
         self.timer.cancel()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.name = self.module_name + '_timer'
         self.timer.start()

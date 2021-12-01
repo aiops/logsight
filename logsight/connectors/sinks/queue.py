@@ -1,7 +1,7 @@
 from collections import deque
 import multiprocessing
 from .base import Sink
-
+from time import sleep
 
 class SinkQueue(Sink):
     def __init__(self, link=None, **kwargs):
@@ -14,6 +14,6 @@ class SinkQueue(Sink):
             data = [data]
         if self.queue.full():
             print("Full")
-            sleep(10)
+            sleep(2)
         for d in data:
             self.queue.put(d)

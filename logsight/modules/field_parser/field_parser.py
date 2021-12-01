@@ -27,6 +27,7 @@ class FieldParserModule(StatefulModule):
     def run(self):
         super().run()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.name = self.module_name + '_timer'
         self.timer.start()
 
     def _timeout_call(self):

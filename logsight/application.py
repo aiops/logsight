@@ -18,12 +18,11 @@ module_classes = {"log_parsing": ParserModule, "model_training": ModelTrainModul
 
 
 class Application:
-    def __init__(self, application_id, private_key, user_name, application_name, kafka_topic_list, modules,
+    def __init__(self, application_id, private_key,  application_name, kafka_topic_list, modules,
                  input_module, services=None,
                  **kwargs):
-        self.application_id = application_id
+        self.application_id = str(application_id)
         self.application_name = application_name
-        self.user_name = user_name
         self.private_key = private_key
         self.modules = modules
         self.services = services or []
@@ -46,7 +45,6 @@ class Application:
         return {
             "application_id": self.application_id,
             "application_name": self.application_name,
-            "user_name": self.user_name,
             "input": self.input_module.to_json()
         }
 

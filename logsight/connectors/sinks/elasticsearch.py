@@ -22,10 +22,9 @@ class ElasticsearchSink(Sink):
         if not isinstance(data, list):
             data = [data]
         try:
-            print(data)
             helpers.bulk(self.es,
                          data,
                          index=self.index,
                          request_timeout=200)
         except Exception as e:
-            logger.error(f"{e}, {data}")
+            logger.error(f"{e}")

@@ -25,6 +25,7 @@ class LogAggregationModule(StatefulModule):
         self.buffer = []
         self.timeout_period = self.config.timeout_period
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.name = self.module_name + '_timer'
         self.aggregator = LogAggregator()
 
     def run(self):
@@ -37,8 +38,9 @@ class LogAggregationModule(StatefulModule):
         self.buffer.append(input_data)
 
     def _process_buffer(self):
-        result = self.aggregator.aggregate_logs(self.buffer)
+        copy_buffer = self.buffer.copy()
         self.buffer = []
+        result = self.aggregator.aggregate_logs(copy_buffer)
         self._reset_timer()
         return result
 
@@ -55,4 +57,5 @@ class LogAggregationModule(StatefulModule):
     def _reset_timer(self):
         self.timer.cancel()
         self.timer = threading.Timer(self.timeout_period, self._timeout_call)
+        self.timer.name = self.module_name + '_timer'
         self.timer.start()
