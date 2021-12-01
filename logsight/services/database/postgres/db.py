@@ -12,12 +12,12 @@ class PostgresDBConnection(AppDatabase):
     def read_apps(self):
         sql = LIST_APPS
         rows = self._execute_sql(sql)
-        apps = {}
+        apps = []
         if not isinstance(rows, list):
             rows = [rows]
         for row in rows:
             row = dict(zip(row.keys(), row))
-            apps[row['id']] = row
+            apps.append(row)
         return apps
 
     def read_app(self, app_id):

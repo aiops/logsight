@@ -1,6 +1,6 @@
 import logging
 import threading
-from logsight.logsight_lib.log_parsing import Parser
+from logsight_lib.log_parsing import Parser
 
 from modules.core import State
 from modules.core.wrappers import synchronized

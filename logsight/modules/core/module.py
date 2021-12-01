@@ -4,7 +4,7 @@ import logging
 import time
 
 from connectors.sources import Source, SourceQueue
-from logsight.connectors.sinks import Sink
+from connectors.sinks import Sink
 from .job_manager import JobManager
 
 logger = logging.getLogger("logsight." + __name__)
@@ -95,14 +95,14 @@ class StatefulModule(Module):
             if not line:
                 continue
             t_process = time.perf_counter()
+            result = self.process_input(line)
             self.total_process += (time.perf_counter() - t_process)
             self.cnt += 1
-            result = line
             if result:
                 t_send = time.perf_counter()
                 self.data_sink.send(result)
                 self.total_send += (time.perf_counter() - t_send)
-            if self.cnt % 100 == 0:
+            if self.cnt % 10000 == 0:
                 logger.debug(f"{self.module_name} processed {self.cnt} messages in {time.perf_counter() - self.t} ")
                 logger.debug(
                     f"Recv time:{round(self.total_recv, 2)}, process {round(self.total_process, 2)}, send:{round(self.total_send, 2)}")

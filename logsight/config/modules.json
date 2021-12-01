@@ -154,10 +154,10 @@
   },
   "field_parser": {
     "data_source": {
-      "connection": "kafka",
-      "classname": "KafkaSource",
+      "connection": "file",
+      "classname": "FileSource",
       "params": {
-        "topic": "input"
+        "link": "input"
       }
     },
     "data_sink": {

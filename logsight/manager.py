@@ -21,9 +21,11 @@ class Manager:
         self.producer = producer
         self.topic_list = topic_list or []
         self.db = services.get('database', None)
-        self.active_apps = self.db.read_apps()
         self.active_apps = {}
         self.active_process_apps = {}
+
+        for app in self.db.read_apps():
+            self.create_application(app)
 
     def create_topics_for_manager(self):
         for topic in self.topic_list:
@@ -73,9 +75,8 @@ class Manager:
             self.kafka_admin.delete_topics(application.topic_list)
         del self.active_apps[application.application_id]
         del self.active_process_apps[application.application_id]
-        logger.info(
-            f"Application successfully deleted with name: {application.application_name} and id: {application.application_id}")
-        return
+        logger.info(f"Application successfully deleted with name: {application.application_name} "
+                    f"and id: {application.application_id}")
 
     def run(self):
         self.start_listener()
