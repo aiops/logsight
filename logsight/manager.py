@@ -28,7 +28,7 @@ class Manager:
         self.pipeline_config = PipelineConfig(**load_json(PIPELINE_PATH))
 
         for app in self.db.read_apps():
-            self.create_application(app)
+            self.create_application(AppConfig(**app))
 
     def create_topics_for_manager(self):
         for topic in self.topic_list:
