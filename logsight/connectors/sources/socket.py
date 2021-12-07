@@ -1,6 +1,5 @@
 import json
 import socket
-from socketserver import BaseServer, BaseRequestHandler
 from .base import Source
 
 

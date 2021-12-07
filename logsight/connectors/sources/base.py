@@ -66,7 +66,7 @@ class BatchSource(Source):
 
     @abstractmethod
     def process_message(self):
-        """Process the receive message from the source."""
+        """Process the message from the source."""
         raise NotImplementedError
 
     def has_next(self):

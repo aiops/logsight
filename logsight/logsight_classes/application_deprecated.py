@@ -1,26 +1,27 @@
 import logging
-import sys
 from copy import deepcopy
 from time import time
 
 from kafka.admin import NewTopic
+from kafka.errors import TopicAlreadyExistsError
 
+from connectors.sinks import MultiSink
 from services.configurator import ModuleConfig
 from modules import *
-from connectors.sources import *
-from connectors.sinks import *
+from connectors import sources
+from connectors import sinks
 
 logger = logging.getLogger("logsight." + __name__)
 
-module_classes = {"log_parsing": LogParserModule, "model_training": ModelTrainModule,
+module_classes = {"log_parsing": LogParserModule,
                   "anomaly_detection": AnomalyDetectionModule, "incidents": LogIncidentModule,
                   "field_parser": FieldParsingModule, "log_aggregation": LogAggregationModule}
 
 
+# noinspection PyUnusedLocal
 class Application:
     def __init__(self, application_id, private_key, application_name, kafka_topic_list, modules,
-                 input_module, services=None,
-                 **kwargs):
+                 input_module, services=None, **_kwargs):
         self.application_id = str(application_id)
         self.application_name = application_name
         self.private_key = private_key
@@ -58,23 +59,21 @@ class AppBuilder:
 
     def build_app(self, app_settings):
         modules = ['field_parser', 'log_parsing', 'anomaly_detection', 'log_aggregation', 'incidents']
-        INPUT_MODULE = "field_parser"
+        input_module = "field_parser"
         if self.es_admin:
             self.es_admin.create_indices(app_settings['private_key'], app_settings['application_name'])
-        return None
-        # module_objects = [(m, self.module_config.get_module(m)) for m in modules]
-        # module_objects = {m_name: self._build_module(m_name, obj, app_settings) for m_name, obj in module_objects}
-        #
-        # self._connect_queues(module_objects)
-        # if self.kafka_admin:
-        #     app_settings['kafka_topic_list'] = self.kafka_topic_list
-        # return Application(**app_settings, modules=module_objects, input_module=module_objects[INPUT_MODULE])
+        module_objects = [(m, self.module_config.get_module(m)) for m in modules]
+        module_objects = {m_name: self._build_module(m_name, obj, app_settings) for m_name, obj in module_objects}
+
+        self._connect_queues(module_objects)
+        if self.kafka_admin:
+            app_settings['kafka_topic_list'] = self.kafka_topic_list
+        return Application(**app_settings, modules=module_objects, input_module=module_objects[input_module])
 
     def _connect_queues(self, module_objects):
         for module_name, module in module_objects.items():
             if module.has_internal_queue_src:
                 self._connect_internal_queue(module, module_objects[module.control_source.link].control_sink.queue)
-            print(module.module_name, module.has_data_queue_src)
             if module.has_data_queue_src:
                 self._connect_data_queue(module, module_objects[module.data_source.link].data_sink)
 
@@ -127,8 +126,11 @@ class AppBuilder:
 
         if conn_config['connection'] == "kafka":
             self._create_kafka_topic(conn_params['topic'], private_key, app_name)
-
-        return eval(conn_config['classname'])(**conn_params)
+        try:
+            c_name = getattr(sources, conn_config['classname'])
+        except AttributeError:
+            c_name = getattr(sinks, conn_config['classname'])
+        return c_name(**conn_params)
 
     def _create_kafka_topic(self, topic, private_key, app_name):
         topic = "_".join([private_key, app_name, topic])
@@ -138,7 +140,7 @@ class AppBuilder:
                     NewTopic(name=topic, num_partitions=1, replication_factor=1)])
                 logger.debug(f"Created topic {topic}")
                 self.kafka_topic_list.append(topic)
-            except Exception:
+            except TopicAlreadyExistsError:
                 logger.error(f"Topic already exists with topic name {topic}.")
         else:
             logger.error("Kafka admin not initialized.")

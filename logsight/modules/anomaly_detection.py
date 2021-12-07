@@ -5,6 +5,7 @@ from typing import Any, Optional
 from modules.core import AbstractHandler, Context, State, Module
 from modules.core.buffer import Buffer
 from modules.core.timer import NamedTimer
+from logsight_lib.anomaly_detection import log_anomaly_detection
 from logsight_lib.anomaly_detection.log_anomaly_detection import LogAnomalyDetector
 
 logger = logging.getLogger("logsight." + __name__)
@@ -49,7 +50,7 @@ class IdleState(State):
     def __init__(self, config):
         self.config = config
         self.detector = config.detector
-        self.ad = eval(self.detector)()
+        self.ad = getattr(log_anomaly_detection, self.detector)()
 
     def handle(self, request: Optional[Any] = None) -> Optional[Any]:
         try:

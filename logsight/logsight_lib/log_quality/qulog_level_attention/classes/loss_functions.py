@@ -21,7 +21,6 @@ class NuLogsyLossCompute:
         y_mask = y_mask.reshape(-1)
         loss_nu = self.criterion_nulog(x, y_mask) * norm
         loss = loss_l + (loss_nu / 5)
-        # loss = loss_l
         if not is_test:
             loss.backward()
             if self.opt is not None:
@@ -29,4 +28,3 @@ class NuLogsyLossCompute:
                 self.opt.zero_grad()
 
         return loss.item(), loss_nu ,loss_l
-        # return loss.item() * norm

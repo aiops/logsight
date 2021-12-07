@@ -3,8 +3,8 @@ import logging.config
 from manager import Manager
 from services.configurator import ManagerConfig
 from services import service_names
-from connectors.sources import *
-from connectors.sinks import *
+from connectors import sources
+from connectors import sinks
 
 logging.config.dictConfig(json.load(open("config/log.json", 'r')))
 logger = logging.getLogger('logsight')
@@ -14,7 +14,11 @@ def setup_connector(config, connector):
     conn_config = config.get_connector(connector)
     conn_params = config.get_connection(conn_config['connection'])
     conn_params.update(conn_config['params'])
-    return eval(conn_config['classname'])(**conn_params)
+    try:
+        c_name = getattr(sources, conn_config['classname'])
+    except AttributeError:
+        c_name = getattr(sinks, conn_config['classname'])
+    return c_name(**conn_params)
 
 
 def setup_services(config: ManagerConfig):

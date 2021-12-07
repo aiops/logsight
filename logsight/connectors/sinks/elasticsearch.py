@@ -1,5 +1,4 @@
 import logging
-import elasticsearch
 from elasticsearch import helpers, Elasticsearch
 
 from .base import Sink

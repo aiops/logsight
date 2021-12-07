@@ -1,10 +1,10 @@
-from collections import deque
 import multiprocessing
 from .base import Sink
 from time import sleep
 
+
 class SinkQueue(Sink):
-    def __init__(self, link=None, **kwargs):
+    def __init__(self, link=None, **_kwargs):
         super().__init__()
         self.link = link
         self.queue = multiprocessing.Manager().Queue(maxsize=100000)

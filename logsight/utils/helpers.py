@@ -1,6 +1,3 @@
-from collections import Iterable
-
-
 def unpack_singleton(x):
     """Gets the first element if the iterable has only one value.
 

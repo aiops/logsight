@@ -2,7 +2,7 @@ from kafka import KafkaAdminClient
 
 
 class KafkaAdmin:
-    def __init__(self, address, **kwargs):
+    def __init__(self, address, **_kwargs):
         self.client = KafkaAdminClient(bootstrap_servers=address)
 
     def create_topics(self, topic):
