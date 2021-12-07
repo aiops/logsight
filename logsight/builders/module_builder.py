@@ -1,7 +1,8 @@
 from builders.base import Builder
 from builders.connection_builder import ConnectionBuilder
-
-from modules import *
+from modules.core import Module
+import modules
+from logsight_classes.data_class import HandlerConfig, AppConfig
 
 
 class Struct:
@@ -11,12 +12,13 @@ class Struct:
 
 class ModuleBuilder(Builder):
     def __init__(self):
-        self.sink_builder = ConnectionBuilder()
+        self.conn_builder = ConnectionBuilder()
 
-    def build_object(self, object_config, app_settings):
-        args = object_config['args']
-        if "sink" in args.keys():
-            sink = self.sink_builder.build_object(args['sink'], app_settings)
-            return eval(object_config['classname'])(sink)
+    def build_object(self, object_config: HandlerConfig, app_settings: AppConfig) -> Module:
+        args = object_config.args
+        c_name = getattr(modules, object_config.classname)
+        if {"source", "sink"}.intersection(set(args.keys())):
+            conn = self.conn_builder.build_object(args.get('source', args.get('sink')), app_settings)
+            return c_name(conn)
         else:
-            return eval(object_config['classname'])(Struct(**args))
+            return c_name(Struct(**args))

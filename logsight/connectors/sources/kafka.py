@@ -11,14 +11,8 @@ class KafkaSource(StreamSource):
     """
 
     def connect(self):
-        self.kafka_source = KafkaConsumer(self.topic,
-                                          bootstrap_servers=[self.address],
-                                          auto_offset_reset=self.offset,
-                                          group_id=self.group_id,
-                                          api_version=(2, 0, 2),
-                                          enable_auto_commit=True,
-                                          value_deserializer=lambda x: loads(x.decode('utf-8'))
-                                          )
+        """No explicit connect method for kafka"""
+        pass
 
     def __init__(self, address: str, topic: str, group_id: int = None, offset: str = 'latest', private_key=None,
                  application_name=None, **kwargs):
@@ -42,21 +36,17 @@ class KafkaSource(StreamSource):
         self.offset = offset
         self.group_id = group_id
 
-        try:
-            self.kafka_source = KafkaConsumer(self.topic,
-                                              bootstrap_servers=[address],
-                                              auto_offset_reset=offset,
-                                              group_id=group_id,
-                                              api_version=(2, 0, 2),
-                                              enable_auto_commit=True,
-                                              value_deserializer=lambda x: loads(x.decode('utf-8'))
-                                              )
-        except Exception as e:
-            logger.error(e)
+        self.kafka_source = KafkaConsumer(self.topic,
+                                          bootstrap_servers=[self.address],
+                                          auto_offset_reset=self.offset,
+                                          group_id=self.group_id,
+                                          api_version=(2, 0, 2),
+                                          enable_auto_commit=True,
+                                          value_deserializer=lambda x: loads(x.decode('utf-8'))
+                                          )
 
     def to_json(self):
         return {"topic": self.topic}
 
     def receive_message(self):
         return next(self.kafka_source).value
-

@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from .field_parser import GrokParser, JSONParser, NoParser
 from .grok import Grok, read_grok_datetime_parsers
 
@@ -13,13 +15,14 @@ class FieldParserProvider:
         self.parsers + [GrokParser(k, v) for k, v in read_grok_datetime_parsers().items()]
 
     def get_parser(self, logs: list):
-        if not logs or len(logs) == 0:
+        if not logs:
             return NoParser()
+        _logs = deepcopy(logs)
         for parser in self.parsers:
             # Do parsing and keep only not-None entries. Parsing was successful if result is not None
-            results = [parser.parse_fields(log) for log in logs]
+            results = [parser.parse_fields(log) for log in _logs]
             results = list(filter(lambda x: x, results))
-            ratio = len(results) / len(logs)
+            ratio = len(results) / len(_logs)
             if ratio > self._threshold:
                 return parser
         return NoParser()

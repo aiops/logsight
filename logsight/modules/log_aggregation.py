@@ -19,19 +19,17 @@ class LogAggregationModule(Module, AbstractHandler):
         self.timer = NamedTimer(self.timeout_period, self.timeout_call, self.__class__.__name__)
         self.timer.name = self.module_name + '_timer'
         self.aggregator = LogAggregator()
-        logger.debug(self.buffer.size)
 
     def start(self):
+        super().start()
         self.timer.start()
 
     def _process_data(self, data: Any) -> Optional[Any]:
         if data:
-            logger.debug(self.buffer.size)
             if isinstance(data, list):
                 self.buffer.extend(data)
             else:
                 self.buffer.add(data)
-            logger.debug(self.buffer.size)
 
             if self.buffer.is_full:
                 return self._process_buffer()

@@ -1,15 +1,21 @@
 {
   "metadata": {
-    "start": "field_parsing",
-    "app_settings": {
-      "application_id": "app_id",
-      "private_key": "sample_key",
-      "user_name": "sample_user",
-      "application_name": "sample_app",
-      "status": "create"
-    }
+    "input": "input"
   },
   "handlers": {
+    "input": {
+      "classname": "InputModule",
+      "args": {
+        "source": {
+          "connection": "kafka",
+          "classname": "KafkaSource",
+          "params": {
+            "topic": "input"
+          }
+        }
+      },
+      "next_handler": "field_parsing"
+    },
     "field_parsing": {
       "classname": "FieldParsingModule",
       "args": {
@@ -23,18 +29,19 @@
       "classname": "LogParserModule",
       "args": {
         "timeout_period": 30,
-          "buffer_size": 4096,
-          "retrain_after": 200000
+        "buffer_size": 4096,
+        "retrain_after": 200000
       },
       "next_handler": "anomaly_detection"
     },
     "anomaly_detection": {
       "classname": "AnomalyDetectionModule",
       "args": {
+        "detector": "LogAnomalyDetector",
         "timeout_period": 20,
         "buffer_size": 16384
       },
-      "next_handler": "log_aggregation"
+      "next_handler": "ad_fork"
     },
     "ad_sink": {
       "classname": "DataStoreModule",
@@ -57,6 +64,14 @@
       },
       "next_handler": "agg_sink"
     },
+    "ad_fork": {
+      "classname": "ForkModule",
+      "args": {},
+      "next_handler": [
+        "log_aggregation",
+        "log_incidents"
+      ]
+    },
     "agg_sink": {
       "classname": "DataStoreModule",
       "args": {
@@ -65,6 +80,27 @@
           "classname": "ElasticsearchSink",
           "params": {
             "index": "log_agg"
+          }
+        }
+      },
+      "next_handler": ""
+    },
+    "log_incidents": {
+      "classname": "LogIncidentModule",
+      "args": {
+        "timeout_period": 30,
+        "buffer_size": 1000
+      },
+      "next_handler": "incidents_store"
+    },
+    "incidents_store": {
+      "classname": "DataStoreModule",
+      "args": {
+        "sink": {
+          "connection": "elasticsearch",
+          "classname": "ElasticsearchSink",
+          "params": {
+            "index": "incidents"
           }
         }
       },

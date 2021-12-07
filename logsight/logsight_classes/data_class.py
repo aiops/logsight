@@ -1,26 +1,25 @@
 from pydantic import BaseModel
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Dict
+
+
+class AppConfig(BaseModel):
+    application_id: str
+    private_key: str
+    user_name: str
+    application_name: str
+    status: str
 
 
 class MetadataConfig(BaseModel):
-    start: str
+    input: str
 
 
 class HandlerConfig(BaseModel):
     args: Optional[dict] = None
+    classname: str
     next_handler: Optional[Union[str, List[str]]] = None
-
-
-class HandlersConfig(BaseModel):
-    field_parsing: Optional[HandlerConfig] = None
-    log_parsing: Optional[HandlerConfig] = None
-    anomaly_detection: Optional[HandlerConfig] = None
-    ad_fork: Optional[HandlerConfig] = None
-    ad_sink: Optional[HandlerConfig] = None
-    log_aggregation: Optional[HandlerConfig] = None
-    agg_sink: Optional[HandlerConfig] = None
 
 
 class PipelineConfig(BaseModel):
     metadata: MetadataConfig
-    handlers: HandlersConfig
+    handlers: Dict[str, HandlerConfig]
