@@ -67,7 +67,7 @@ def train_count_ad_model(data):
             try:
                 all_data[c]
                 all_data[c] += [tmp[c]]
-            except Exception as e:
+            except Exception:
                 all_data[c] = [0] * offset
                 all_data[c].append(tmp[c])
         offset += 1
@@ -107,29 +107,32 @@ def train_count_ad_model(data):
 
 
 def save_model(model, le, templates, user_app, training_control, kafka_url):
+    folder = f"/models/{user_app}"
+    ext = ".pickle"
+
     if "baselineTagId" in training_control:
-        with open('/models/' + user_app + '_model_count_ad_' +
-                  training_control["status"] + "_" + training_control["baselineTagId"] + '.pickle', "wb") as file:
+        with open(folder + '_model_count_ad_' +
+                  training_control["status"] + "_" + training_control["baselineTagId"] + ext, "wb") as file:
             pickle.dump(model, file)
 
-        with open('/models/' + user_app + '_template_count_ad_' +
-                  training_control["status"] + "_" + training_control["baselineTagId"] + '.pickle', "wb") as file:
+        with open(folder + '_template_count_ad_' +
+                  training_control["status"] + "_" + training_control["baselineTagId"] + ext, "wb") as file:
             pickle.dump(templates, file)
 
-        with open('/models/' + user_app + '_le_count_ad_' +
-                  training_control["status"] + "_" + training_control["baselineTagId"] + '.pickle', "wb") as file:
+        with open(folder + '_le_count_ad_' +
+                  training_control["status"] + "_" + training_control["baselineTagId"] + ext, "wb") as file:
             pickle.dump(le, file)
             producer = initialize_kafka_producer(kafka_url)
-            message = {"name": "compare", "compareTagId": training_control["compareTagId"], "baselineTagId": training_control["baselineTagId"]}
+            message = {"name": "compare", "compareTagId": training_control["compareTagId"],
+                       "baselineTagId": training_control["baselineTagId"]}
             producer.send(user_app + '_update-models', json.dumps(message).encode('UTF-8'))
-            print("Saving the model for log compare")
 
     else:
-        with open('/models/' + user_app + '_model_count_ad_' + training_control["status"] + "_" +
-                  training_control["baselineTagId"] + '.pickle', "wb") as file:
+        with open(folder + '_model_count_ad_' + training_control["status"] + "_" +
+                  training_control["baselineTagId"] + ext, "wb") as file:
             pickle.dump(model, file)
-        with open('/models/' + user_app + '_le_count_ad_' + training_control["status"] + "_" +
-                  training_control["baselineTagId"] + '.pickle', "wb") as file:
+        with open(folder + '_le_count_ad_' + training_control["status"] + "_" +
+                  training_control["baselineTagId"] + ext, "wb") as file:
             pickle.dump(le, file)
             producer = initialize_kafka_producer(kafka_url)
             message = {"name": "count"}

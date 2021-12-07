@@ -27,8 +27,6 @@ class LogParserModule(Module, Context, AbstractHandler):
     def _process_data(self, data: Any) -> Optional[Any]:
         if data:
             return self.process_context(data)
-        else:
-            print("no data from field_parser")
 
     def handle(self, request: Any) -> Optional[str]:
         result = self._process_data(request)

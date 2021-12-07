@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 
 
+class InvalidStateException(Exception):
+    pass
+
+
 class Parser(ABC):
     TRAIN_STATE = 0
     TEST_STATE = 1
@@ -16,5 +20,5 @@ class Parser(ABC):
 
     def set_state(self, state):
         if state not in [self.TRAIN_STATE, self.TEST_STATE, self.TUNE_STATE]:
-            raise Exception(f"Invalid state {state}")
+            raise InvalidStateException(f"Invalid state {state}")
         self.state = state

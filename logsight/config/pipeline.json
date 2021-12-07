@@ -1,6 +1,9 @@
 {
   "metadata": {
-    "input": "input"
+    "input": "input",
+    "kafka_topics": [
+      "input"
+    ]
   },
   "handlers": {
     "input": {

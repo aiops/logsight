@@ -8,13 +8,10 @@ def send_status(function):
     def decorated(cls):
         try:
             msg = function(cls)
-            print(f'[SEND_STATUS] sending done {msg}')
             cls._send_done(msg)
             logging.info(f"[*] Finished {cls.__class__.__name__} job.")
 
         except Exception as e:
-            print(f"['SEND_STATUS' found exception {e}]")
-            print(cls, e.__class__.__name__)
             cls._send_error(f"<{e.__class__.__name__}> : {e}")
 
     return decorated
@@ -61,8 +58,5 @@ class Job(ABC):
             self._done_callback(message)
 
     def _send_error(self, message):
-        print("JOB send_error")
         if self._error_callback is not None:
-            print("JOB send_error error callback")
-
             self._error_callback(message)

@@ -41,5 +41,4 @@ class KafkaSink(Sink):
             for d in data:
                 self.kafka_sink.send(topic=topic, value=json.dumps(d).encode('utf-8'))
         except Exception as e:
-            print(f"COULDN'T SEND DATA TO SINK ON TOPIC {topic}")
-            print(e)
+            logger.error(e)
