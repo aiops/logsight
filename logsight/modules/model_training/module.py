@@ -3,14 +3,15 @@ import logging
 import threading
 from connectors.sinks import Sink
 from connectors.sources import Source
-from modules.core import JobDispatcherModule, JobManager
+from modules.core.mediator import JobDispatcherModule
+from modules.core import  JobManager
 from .jobs import TrainLogsyADModelJob, TrainCountADModelJob
 
 
 class ModelTrainModule(JobDispatcherModule):
-    def __init__(self, data_source: Source, data_sink: Sink, internal_source: Source, internal_sink: Sink,
+    def __init__(self, data_source: Source, data_sink: Sink, control_source: Source, control_sink: Sink,
                  config):
-        super().__init__(data_source, data_sink, internal_source, internal_sink)
+        super().__init__(data_source, data_sink, control_source, control_sink)
         self.configs = config  # must validate first
         self.job_manager = JobManager(max_workers=config.max_workers)
         self.module_name = "model_train"

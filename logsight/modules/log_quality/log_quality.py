@@ -8,9 +8,9 @@ from .jobs import LogQualityJob
 
 
 class LogQualityModule(JobDispatcherModule):
-    def __init__(self, data_source: Source, data_sink: Sink, internal_source: Source, internal_sink: Sink,
+    def __init__(self, data_source: Source, data_sink: Sink, control_source: Source, control_sink: Sink,
                  configs):
-        super().__init__(data_source, data_sink, internal_source, internal_sink)
+        super().__init__(data_source, data_sink, control_source, control_sink)
         self.configs = configs
         self.module_name = "log_quality"
 

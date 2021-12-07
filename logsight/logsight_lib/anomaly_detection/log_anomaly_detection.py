@@ -74,5 +74,4 @@ class LogAnomalyDetector:
             except Exception as e:
                 print(log_batch[i], prediction[i])
                 print("exception ad batch", e)
-
         return log_batch

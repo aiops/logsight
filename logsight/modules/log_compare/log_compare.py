@@ -4,7 +4,6 @@ from connectors.sink import Sink
 from connectors.source import Source
 from modules.core import StatefulModule
 from modules.core.wrappers import synchronized
-from modules.core.enum import EnumState
 from modules.count_ad.count_ad_predictor import CountADPredictor
 
 

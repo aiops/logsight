@@ -1,0 +1,36 @@
+{
+  "definitions": {
+    "config": {
+      "title": "Handler",
+      "type": "object",
+      "properties": {
+        "args": {
+          "type": "object",
+          "description": "Arguments for initializing the module"
+        },
+        "next_handler": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "name of next handler"
+            },
+            {
+              "type": "array",
+              "description": "name of next handler",
+              "prefixItems": [
+                {
+                  "type": "string"
+                }
+              ],
+              "items": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "handlers",
+        "metadata"
+      ]
+    }
+  }
+}

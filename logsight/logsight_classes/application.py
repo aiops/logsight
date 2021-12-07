@@ -12,13 +12,13 @@ from connectors.sinks import *
 
 logger = logging.getLogger("logsight." + __name__)
 
-module_classes = {"log_parsing": ParserModule, "model_training": ModelTrainModule,
+module_classes = {"log_parsing": LogParserModule, "model_training": ModelTrainModule,
                   "anomaly_detection": AnomalyDetectionModule, "incidents": LogIncidentModule,
-                  "field_parser": FieldParserModule, "log_aggregation": LogAggregationModule}
+                  "field_parser": FieldParsingModule, "log_aggregation": LogAggregationModule}
 
 
 class Application:
-    def __init__(self, application_id, private_key,  application_name, kafka_topic_list, modules,
+    def __init__(self, application_id, private_key, application_name, kafka_topic_list, modules,
                  input_module, services=None,
                  **kwargs):
         self.application_id = str(application_id)
@@ -57,30 +57,30 @@ class AppBuilder:
         self.module_config = ModuleConfig()
 
     def build_app(self, app_settings):
-        modules = ['field_parser', 'log_parsing','anomaly_detection','log_aggregation','incidents']
+        modules = ['field_parser', 'log_parsing', 'anomaly_detection', 'log_aggregation', 'incidents']
         INPUT_MODULE = "field_parser"
         if self.es_admin:
             self.es_admin.create_indices(app_settings['private_key'], app_settings['application_name'])
-
-        module_objects = [(m, self.module_config.get_module(m)) for m in modules]
-        module_objects = {m_name: self._build_module(m_name, obj, app_settings) for m_name, obj in module_objects}
-
-        self._connect_queues(module_objects)
-        if self.kafka_admin:
-            app_settings['kafka_topic_list'] = self.kafka_topic_list
-        return Application(**app_settings, modules=module_objects, input_module=module_objects[INPUT_MODULE])
+        return None
+        # module_objects = [(m, self.module_config.get_module(m)) for m in modules]
+        # module_objects = {m_name: self._build_module(m_name, obj, app_settings) for m_name, obj in module_objects}
+        #
+        # self._connect_queues(module_objects)
+        # if self.kafka_admin:
+        #     app_settings['kafka_topic_list'] = self.kafka_topic_list
+        # return Application(**app_settings, modules=module_objects, input_module=module_objects[INPUT_MODULE])
 
     def _connect_queues(self, module_objects):
         for module_name, module in module_objects.items():
             if module.has_internal_queue_src:
-                self._connect_internal_queue(module, module_objects[module.internal_source.link].internal_sink.queue)
-            print(module.module_name,module.has_data_queue_src)
+                self._connect_internal_queue(module, module_objects[module.control_source.link].control_sink.queue)
+            print(module.module_name, module.has_data_queue_src)
             if module.has_data_queue_src:
                 self._connect_data_queue(module, module_objects[module.data_source.link].data_sink)
 
     @staticmethod
     def _connect_internal_queue(module, tgt):
-        module.internal_source.connect(tgt)
+        module.control_source.connect(tgt)
 
     @staticmethod
     def _connect_data_queue(module, tgt_sink):
@@ -94,8 +94,8 @@ class AppBuilder:
     def _build_module(self, module_name, module, app_settings):
         data_source = self.setup_connector(module_name, 'data_source', self.module_config, app_settings)
         data_sink = self.setup_connector(module_name, 'data_sink', self.module_config, app_settings)
-        internal_source = self.setup_connector(module_name, 'internal_source', self.module_config, app_settings)
-        internal_sink = self.setup_connector(module_name, 'internal_sink', self.module_config, app_settings)
+        internal_source = self.setup_connector(module_name, 'control_source', self.module_config, app_settings)
+        internal_sink = self.setup_connector(module_name, 'control_sink', self.module_config, app_settings)
         config = module.get('configs', {})
         config.update(app_settings)
         config = Struct(**config)

@@ -23,8 +23,8 @@ class LogCluster:
 class DrainLogParser(Parser):
     def __init__(self, depth=3, st=0.35, max_child=100, rex=None, keep_para=True):
         super().__init__()
-        if rex is None:
-            rex = [r'<\d+\ssec', r'0x.*?\s', r'(\d+\.){3}\d+(:\d+)?', r'\S*\d+\S*']
+        # if rex is None:
+        #     rex = [r'<\d+\ssec', r'0x.*?\s', r'(\d+\.){3}\d+(:\d+)?', r'\S*\d+\S*']
         self.rootNode = Node()
         self.depth = depth - 2
         self.st = st
@@ -131,29 +131,32 @@ class DrainLogParser(Parser):
         return max_clusters if max_sim >= self.st else None
 
     def parse(self, log):
-        # filter message using regex
-        log_message_preprocessed, log_tmp = self.preprocess(log['message'])
-        log_message_preprocessed = log_message_preprocessed.strip().split()
+        # try:
+            # filter message using regex
+            log_message_preprocessed, log_tmp = self.preprocess(log['message'])
+            log_message_preprocessed = log_message_preprocessed.strip().split()
 
-        # trying to match existing cluster
-        match_cluster = self.tree_search(self.rootNode, log_message_preprocessed)
-        # Match no existing log cluster
-        if match_cluster is None:
-            if self.state in [Parser.TRAIN_STATE, Parser.TUNE_STATE]:
-                new_cluster = LogCluster(log_message_preprocessed)
-                self.add_seq_to_prefix_tree(self.rootNode, new_cluster)
-            log['template'] = ' '.join(log_message_preprocessed)
-            parameter_list = get_parameter_list(log_tmp, ' '.join(log_message_preprocessed))
-            log = add_parameters_to_log_json(log, log_message_preprocessed, parameter_list)
-        else:
-            new_template = get_template(log_message_preprocessed, match_cluster.log_template)
-            new_template_str = ' '.join(new_template)
-            if ' '.join(new_template) != ' '.join(match_cluster.log_template):
-                match_cluster.log_template = new_template
-            parameter_list = get_parameter_list(log_tmp, new_template_str)
-            log['template'] = ' '.join(new_template)
-            log = add_parameters_to_log_json(log, new_template, parameter_list)
-        return log
+            # trying to match existing cluster
+            match_cluster = self.tree_search(self.rootNode, log_message_preprocessed)
+            # Match no existing log cluster
+            if match_cluster is None:
+                if self.state in [Parser.TRAIN_STATE, Parser.TUNE_STATE]:
+                    new_cluster = LogCluster(log_message_preprocessed)
+                    self.add_seq_to_prefix_tree(self.rootNode, new_cluster)
+                log['template'] = ' '.join(log_message_preprocessed)
+                parameter_list = get_parameter_list(log_tmp, ' '.join(log_message_preprocessed))
+                log = add_parameters_to_log_json(log, log_message_preprocessed, parameter_list)
+            else:
+                new_template = get_template(log_message_preprocessed, match_cluster.log_template)
+                new_template_str = ' '.join(new_template)
+                if ' '.join(new_template) != ' '.join(match_cluster.log_template):
+                    match_cluster.log_template = new_template
+                parameter_list = get_parameter_list(log_tmp, new_template_str)
+                log['template'] = ' '.join(new_template)
+                log = add_parameters_to_log_json(log, new_template, parameter_list)
+            return log
+        # except Exception as e:
+        #     return
 
     def preprocess(self, line):
         line_tmp = re.sub("=", " = ", line)
