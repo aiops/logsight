@@ -1,5 +1,4 @@
 from .log_parsing import LogParserModule
-from .model_training import ModelTrainModule
 from .anomaly_detection import AnomalyDetectionModule
 from .incidents import LogIncidentModule
 from .field_parser import FieldParsingModule

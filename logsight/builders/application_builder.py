@@ -68,7 +68,7 @@ class ApplicationBuilder(Builder):
                     self.kafka_admin.create_topics([
                         NewTopic(name="_".join([topic_prefix, topic]), num_partitions=1, replication_factor=1)])
                     logger.debug(f"Created topic {topic}")
-                    created_topics.append(topic)
+                    created_topics.append("_".join([topic_prefix, topic]))
                 except TopicAlreadyExistsError:
                     logger.error(f"Topic already exists with topic name {topic}.")
             logger.error("Kafka admin not initialized.")
