@@ -5,9 +5,9 @@ from typing import Optional, List, Union, Dict
 class AppConfig(BaseModel):
     application_id: str
     private_key: str
-    user_name: str
+    user_name: Optional[str] = None
     application_name: str
-    status: str
+    status: Optional[str] = None
 
 
 class MetadataConfig(BaseModel):
