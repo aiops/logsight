@@ -152,8 +152,8 @@ class Database:
 
         Returns
         -------
-        list
-            list of all of the rows
+        list :
+            list of all the rows
         """
 
         execute = self.conn.execute(sql, args)

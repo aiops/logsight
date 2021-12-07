@@ -1,8 +1,12 @@
+import logging
+
 from elasticsearch import Elasticsearch
+
+logger = logging.getLogger(".logsight")
 
 
 class ElasticSearchAdmin:
-    def __init__(self, host, port, username, password, **kwargs):
+    def __init__(self, host, port, username, password, **_kwargs):
         self.client = Elasticsearch([{'host': host, 'port': port}],
                                     http_auth=(username, password))
 

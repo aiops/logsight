@@ -44,7 +44,7 @@ class EncoderDecoder(nn.Module):
         """Take in and process masked src and target sequences."""
         out = self.encode(src, src_mask)
         return self.generator(out)
-        # return out
+    #  out
 
     def encode(self, src, src_mask):
         return self.encoder(self.src_embed(src), src_mask)
@@ -64,8 +64,7 @@ class Generator(nn.Module):
 
     def forward(self, x):
         sliced_x = x[:, 0, :]
-        out = self.proj(sliced_x)
-        return out
+        return self.proj(sliced_x)
 
 
 class Encoder(nn.Module):

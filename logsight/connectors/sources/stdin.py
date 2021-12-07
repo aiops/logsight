@@ -1,6 +1,5 @@
-import json
 import os
-from time import sleep, time
+from time import time
 
 from .base import Source
 
