@@ -1,10 +1,10 @@
-from logsight_classes.pipeline import Pipeline
-from builders.pipeline_builder import PipelineBuilder
+from logsight_classes.application import Pipeline
+from builders.application_builder import ApplicationBuilder
 import json
 
-obj = json.load(open("config/new_pipeine_config.json", 'rb'))
+obj = json.load(open("config/pipeline.json", 'rb'))
 
-builder = PipelineBuilder()
+builder = ApplicationBuilder()
 
-pipeline = builder.build_object(pipeline_config=obj)
+pipeline = builder.build_object(app_config=obj)
 print(pipeline)

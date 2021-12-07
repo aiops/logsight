@@ -19,6 +19,7 @@ class FieldParsingModule(Module, Context, AbstractHandler):
         Context.__init__(self, CalibrationState(config))
 
     def start(self):
+        super().start()
         if isinstance(self._state, CalibrationState):
             self._state.timer.start()
 

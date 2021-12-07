@@ -25,6 +25,7 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
         Context.__init__(self, IdleState(config))
 
     def start(self):
+        super().start()
         self._state.handle(None)  # Moves from Init State to Loaded state automatically
 
     def _process_data(self, data: Any) -> Optional[Any]:
@@ -37,9 +38,7 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
         if request:
             try:
                 result = self._process_data(request)
-                if self._next_handler:
-                    if result:
-                        logger.debug(f"Sending {len(result)}")
+                if self._next_handler and result:
                     return self._next_handler.handle(result)
                 return result
             except ModelNotLoadedException as e:
@@ -49,7 +48,8 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
 class IdleState(State):
     def __init__(self, config):
         self.config = config
-        self.ad = LogAnomalyDetector()
+        self.detector = config.detector
+        self.ad = eval(self.detector)()
 
     def handle(self, request: Optional[Any] = None) -> Optional[Any]:
         try:

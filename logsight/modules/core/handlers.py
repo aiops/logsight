@@ -17,6 +17,9 @@ class Handler(ABC):
     def handle(self, request) -> Optional[str]:
         raise NotImplementedError
 
+    def start(self):
+        raise NotImplementedError
+
 
 class AbstractHandler(Handler):
     _next_handler: Optional[Handler] = None
@@ -38,8 +41,17 @@ class AbstractHandler(Handler):
     def next_handler(self):
         return self._next_handler
 
+    def start(self):
+        if self.next_handler:
+            self.next_handler.start()
+
 
 class ForkHandler(Handler):
+    def start(self):
+        if self._next_handlers:
+            for _handler in self._next_handlers:
+                _handler.start()
+
     _next_handlers: List[Handler] = []
 
     def set_next(self, handler: Handler) -> Handler:
@@ -48,10 +60,7 @@ class ForkHandler(Handler):
 
     def handle(self, request) -> Optional[List]:
         if self._next_handlers:
-            response = []
-            for _handler in self._next_handlers:
-                response.append(_handler.handle(request))
-            return response
+            return [_handler.handle(request) for _handler in self._next_handlers]
         return None
 
     @property

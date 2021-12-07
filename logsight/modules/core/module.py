@@ -12,8 +12,8 @@ class Module(ABC):
     def _process_data(self, data: Any) -> Optional[Any]:
         raise NotImplementedError
 
-    def start(self):
-        pass
+    def to_json(self):
+        return {"name": self.module_name}
 
 
 class ControlModule(Module):

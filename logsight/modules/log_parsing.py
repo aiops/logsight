@@ -20,6 +20,7 @@ class LogParserModule(Module, Context, AbstractHandler):
         Context.__init__(self, TrainState(DrainLogParser(), config))
 
     def start(self):
+        super().start()
         if isinstance(self._state, TrainState):
             self._state.timer.start()
 
