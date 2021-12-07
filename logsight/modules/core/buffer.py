@@ -38,8 +38,8 @@ class Buffer:
         return self._buffer
 
     def extend(self, items: List):
-        self.buffer.extend(items)
+        self._buffer.extend(items)
 
     @property
     def size(self):
-        return len(self.buffer)
+        return len(self._buffer)

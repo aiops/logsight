@@ -1,6 +1,6 @@
 class Application:
     def __init__(self, handlers, application_id, private_key, application_name, input_module, services=None,
-                 **kwargs):
+                 topic_list=None, **kwargs):
         self.application_id = str(application_id)
         self.application_name = application_name
         self.private_key = private_key
@@ -8,6 +8,7 @@ class Application:
         self.input_module = input_module
         self.handlers = handlers
         self.start_module = input_module
+        self.topic_list = topic_list or []
 
     def start(self):
         self.start_module.start()

@@ -5,6 +5,10 @@ import pandas as pd
 import numpy as np
 
 
+class ModelNotLoadedException(Exception):
+    pass
+
+
 class CountADPredictor:
     MINIMUM_CHANGE_PERCENTAGE = 0.2
 
@@ -22,7 +26,7 @@ class CountADPredictor:
 
     def predict(self, data):
         if not self.model_loaded:
-            raise Exception("Model is not loaded")
+            raise ModelNotLoadedException("Model is not loaded")
         new_data = data[~data['template'].isin(self.label_encoder.classes_)]
         data.template[~data['template'].isin(self.label_encoder.classes_)] = "NEW_TEMPLATE"
         data['template_labels'] = self.label_encoder.transform(data.template.values)
@@ -86,13 +90,11 @@ class CountADPredictor:
             except Exception as e:
                 print(e)
 
-        current_time = str(datetime.datetime.utcnow().isoformat())
         prediction = np.mean(predictions) if predictions else 0
         new_data = new_data.drop_duplicates(subset=['template'])
         new_data.index = new_data.index.astype(str)
         new_templates = [new_data.iloc[i:i + 1].dropna(axis='columns').to_dict('records') for i in range(len(new_data))]
 
-        # x = [i[0][0][0] for i in output]
         x0, idx = np.unique([j[0] for i in output for j in i[0]], return_index=True)
         # print("OUTPUT 0", x0, idx)
 

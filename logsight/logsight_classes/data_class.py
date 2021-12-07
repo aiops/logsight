@@ -12,6 +12,7 @@ class AppConfig(BaseModel):
 
 class MetadataConfig(BaseModel):
     input: str
+    kafka_topics: Optional[List[str]] = []
 
 
 class HandlerConfig(BaseModel):
