@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Optional, List
 
-from logsight_lib.field_parsing import Log, FieldParser
+from logsight_lib.field_parsing import FieldParser
 from logsight_lib.field_parsing.parser_provider import FieldParserProvider
 from modules.core import AbstractHandler, Context, State, Module
 from modules.core.buffer import Buffer

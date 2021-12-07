@@ -96,15 +96,15 @@ class Manager:
     def process_message(self, msg: dict) -> Optional[dict]:
         msg['application_id'] = str(msg['application_id'])
         app_settings = AppConfig(**msg)
-        # try:
-        if app_settings.status.upper() == "CREATE":
-            return self.create_application(app_settings)
-        elif app_settings.status.upper() == 'DELETE':
-            return self.delete_application(app_settings)
-        else:
-            return {"msg": "Invalid application status"}
-        # except Exception as e:
-        #     logger.error(e)
+        try:
+            if app_settings.status.upper() == "CREATE":
+                return self.create_application(app_settings)
+            elif app_settings.status.upper() == 'DELETE':
+                return self.delete_application(app_settings)
+            else:
+                return {"msg": "Invalid application status"}
+        except Exception as e:
+            logger.error(e)
 
     def setup(self):
         if self.kafka_admin:

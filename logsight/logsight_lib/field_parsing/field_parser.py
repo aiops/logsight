@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 import json
 from datetime import datetime
 from json import JSONDecodeError
-from time import sleep
 from typing import Optional, List, Dict
 
 from .grok import Grok

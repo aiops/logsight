@@ -1,10 +1,12 @@
 from datetime import datetime
 
 from modules.core import Job
-from connectors.source import Source
-from connectors.sink import Sink
-from modules.log_quality.qulog_level_attention import QulogLevelAttention
+from connectors.sources import Source
+from connectors.sinks import Sink
+from logsight_lib.log_quality.qulog_level_attention import QulogLevelAttention
 
+class NoDataException(Exception):
+    pass
 
 class LogIncidentJob(Job):
 
@@ -38,9 +40,12 @@ class LogIncidentJob(Job):
         # TODO: DEFINE LOAD DATA FROM KIBANA
         data = self.data_source.receive_message()
         if not data:
-            raise Exception("Failed to get data.")
+            raise NoDataException("Failed to get data.")
         return data
 
     def _store_results(self, results):
         self.data_sink.store_results(results)
 
+    def _get_unique_logs(self, logs):
+        """needs to be implemented"""
+        pass

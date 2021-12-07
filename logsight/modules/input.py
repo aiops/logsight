@@ -25,4 +25,6 @@ class InputModule(Module, AbstractHandler):
         pass
 
     def to_json(self):
-        return super().to_json().update({"source": self.source.to_json()})
+        d = super().to_json()
+        d.update({"source": self.source.to_json()})
+        return d
