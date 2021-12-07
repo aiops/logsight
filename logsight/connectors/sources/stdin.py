@@ -48,7 +48,6 @@ class FileSource(Source):
         return {"app_name": "sample_app", "message": txt, "private_key": "sample_key"}
 
     def _reopen_file(self):
-        print('REOPENING FILE!!!!')
         self.i += 1
         if self.i == len(self.files_list):
             self.eof = True

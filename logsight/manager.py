@@ -1,11 +1,7 @@
-import json
-import sys
-import threading
-from concurrent.futures import thread
 from time import sleep
 
 from kafka.admin import NewTopic
-from application import Application, AppBuilder
+from logsight_classes.application import AppBuilder
 from config.globals import USES_KAFKA, USES_ES
 from multiprocessing import Process
 import logging
@@ -55,14 +51,35 @@ class Manager:
             return {"msg": f"Application {app_settings['application_id']} already created"}
         logger.info("[MANAGER] Building App.")
         application = AppBuilder(self.kafka_admin, self.elasticsearch_admin).build_app(app_settings)
-        app_process = Process(target=start_process, args=(application,))
-        self.active_apps[app_settings['application_id']] = application
-        self.active_process_apps[app_settings['application_id']] = app_process
-        logger.info("Starting app process")
-        app_process.start()
-        app_json = application.to_json()
-        logger.info(app_json)
-        return app_json
+
+        from logsight_classes.pipeline import Pipeline
+        from builders.pipeline_builder import PipelineBuilder
+        import json
+
+        obj = json.load(open("config/new_pipeine_config.json", 'rb'))
+
+        builder = PipelineBuilder()
+
+        pipeline = builder.build_object(pipeline_config=obj)
+        pipeline.start()
+        from logsight.connectors.sources import FileSource
+        fs = FileSource()
+        result = []
+        while fs.has_next():
+            line = fs.receive_message()
+            res = pipeline.process(line)
+            if isinstance(res, list):
+                result.extend(res)
+            else:
+                result.append(res)
+        # app_process = Process(target=start_process, args=(application,))
+        # self.active_apps[app_settings['application_id']] = application
+        # self.active_process_apps[app_settings['application_id']] = app_process
+        # logger.info("Starting app process")
+        # app_process.start()
+        # app_json = application.to_json()
+        # logger.info(app_json)
+        # return app_json
 
     def delete_application(self, msg):
         logger.info(f"Deleting application {msg['application_id']}")
@@ -100,6 +117,7 @@ class Manager:
             else:
                 return {"msg": "Invalid application status"}
         except Exception as e:
+            print(e)
             logger.error(e)
 
     def setup(self):

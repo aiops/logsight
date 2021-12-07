@@ -8,14 +8,14 @@
       "params": {
       }
     },
-    "internal_source": {
+    "control_source": {
       "connection": "socket",
       "classname": "SocketSource",
       "params": {
         "port": 9980
       }
     },
-    "internal_sink": {
+    "control_sink": {
       "connection": "socket",
       "classname": "SocketSink",
       "params": {
@@ -63,14 +63,14 @@
         ]
       }
     },
-    "internal_source": {
+    "control_source": {
       "connection": "kafka",
       "classname": "KafkaSource",
       "params": {
         "topic": "anomaly_detection_internal"
       }
     },
-    "internal_sink": {
+    "control_sink": {
       "connection": "kafka",
       "classname": "KafkaSink",
       "params": {
@@ -85,8 +85,8 @@
   "count_ad": {
     "data_source": {},
     "data_sink": {},
-    "internal_source": {},
-    "internal_sink": {},
+    "control_source": {},
+    "control_sink": {},
     "configs": {}
   },
   "incidents": {
@@ -104,8 +104,8 @@
         "index": "incidents"
       }
     },
-    "internal_source": {},
-    "internal_sink": {},
+    "control_source": {},
+    "control_sink": {},
     "configs": {
       "timeout_period": 30,
       "buffer_size": 10
@@ -126,9 +126,9 @@
         "link": "anomaly_detection"
       }
     },
-    "internal_source": {
+    "control_source": {
     },
-    "internal_sink": {
+    "control_sink": {
     },
     "configs": {
       "timeout_period": 30,
@@ -141,15 +141,15 @@
   "log_compare": {
     "data_source": {},
     "data_sink": {},
-    "internal_source": {},
-    "internal_sink": {},
+    "control_source": {},
+    "control_sink": {},
     "configs": {}
   },
   "log_quality": {
     "data_source": {},
     "data_sink": {},
-    "internal_source": {},
-    "internal_sink": {},
+    "control_source": {},
+    "control_sink": {},
     "configs": {}
   },
   "field_parser": {
@@ -167,8 +167,8 @@
         "link": "log_parsing"
       }
     },
-    "internal_source": {},
-    "internal_sink": {},
+    "control_source": {},
+    "control_sink": {},
     "configs": {
       "timeout_period": 30,
       "state_configs": {
@@ -192,8 +192,8 @@
         "index": "log_agg"
       }
     },
-    "internal_source": {},
-    "internal_sink": {},
+    "control_source": {},
+    "control_sink": {},
     "configs": {
       "timeout_period": 20
     }
