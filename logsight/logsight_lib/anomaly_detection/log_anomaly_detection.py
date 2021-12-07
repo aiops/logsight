@@ -1,4 +1,3 @@
-import copy
 import logging
 import re
 import sys
@@ -7,8 +6,7 @@ import pickle
 import numpy as np
 import torch as torch
 from .core.log_level_config import ConfigLogLevelEstimation
-from .core.tokenizer import LogTokenizer
-from .core import tokenizer
+
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "core"))
 logger = logging.getLogger("logsight." + __name__)
@@ -30,9 +28,7 @@ class LogAnomalyDetector:
         with torch.no_grad():
             out = self.model.forward(log.long(), None)
 
-            # attention_scores = torch.mean(self.model.encoder.layers[0].self_attn.attn[0, :, 0, :], dim=0)
             out_numpy = torch.functional.F.softmax(out, dim=1).detach().cpu().numpy()
-            # prediction = np.argmax(out_numpy, axis=1)
             prediction = np.where(out_numpy[:, 0] > PREDICTION_THRESHOLD, 0, 1)
             log_level_prediction = prediction  # self.prediction2loglevel(prediction)
         return log_level_prediction, None

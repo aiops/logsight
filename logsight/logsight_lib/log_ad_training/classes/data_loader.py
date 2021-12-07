@@ -12,9 +12,7 @@ def create_data_loader(load_train, labels_train, batch_size):
         torch.tensor(labels_train.astype(np.int32), dtype=torch.int32))
 
     train_sampler = RandomSampler(train_data)
-    train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
-
-    return train_dataloader
+    return DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
 
 
 def create_test_loader(load_test, labels_test, batch_size):
@@ -23,6 +21,4 @@ def create_test_loader(load_test, labels_test, batch_size):
         torch.tensor(labels_test.astype(np.int32), dtype=torch.int32))
 
     test_sampler = SequentialSampler(test_data)
-    test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
-
-    return test_dataloader
+    return DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)

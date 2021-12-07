@@ -16,3 +16,7 @@ class Sink(ABC):
     def connect(self):
         # default behaviour
         pass
+
+    def store_results(self, results):
+        # needs to be implemented
+        pass
