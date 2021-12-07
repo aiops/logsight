@@ -64,12 +64,12 @@ class ApplicationBuilder(Builder):
         if self.kafka_admin:
             topic_prefix = "_".join([app_config.private_key, app_config.application_name])
             for topic in pipeline_config.metadata.kafka_topics:
+                topic_name = "_".join([topic_prefix, topic])
                 try:
                     self.kafka_admin.create_topics([
-                        NewTopic(name="_".join([topic_prefix, topic]), num_partitions=1, replication_factor=1)])
+                        NewTopic(name=topic_name, num_partitions=1, replication_factor=1)])
                     logger.debug(f"Created topic {topic}")
-                    created_topics.append("_".join([topic_prefix, topic]))
                 except TopicAlreadyExistsError:
-                    logger.error(f"Topic already exists with topic name {topic}.")
-            logger.error("Kafka admin not initialized.")
+                    logger.error(f"Topic already exists with topic name {topic_name}.")
+                created_topics.append(topic_name)
         return created_topics
