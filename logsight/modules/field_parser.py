@@ -53,6 +53,7 @@ class CalibrationState(State):
         parser = self.parser_provider.get_parser(buffer_copy)
         self.context.transition_to(FieldParserParseState(parser))
         self.timer.cancel()
+        parser.parse_prev_timestamp(buffer_copy)
         return [parser.parse_fields(log) for log in buffer_copy]
 
     def timeout_call(self):
