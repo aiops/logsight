@@ -21,7 +21,8 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
     """
     module_name = "ad"
 
-    def __init__(self, config):
+    def __init__(self, config,app_settings=None):
+        self.app_settings = app_settings
         self.timeout_period = config.timeout_period
         Context.__init__(self, IdleState(config))
 
@@ -84,7 +85,7 @@ class LoadedState(State):
         self._context = context
 
     def timeout_call(self):
-        logger.debug("Initiating timer")
+        logger.debug(f"Initiating timer for app {self.context.app_settings.application_name}")
         if not self.buffer.is_empty:
             result = self.ad.process_log(self.buffer.flush_buffer())
             if self.context.next_handler:

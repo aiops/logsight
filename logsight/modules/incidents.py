@@ -14,7 +14,7 @@ logger = logging.getLogger("logsight." + __name__)
 class LogIncidentModule(Module, AbstractHandler):
     module_name = "incidents"
 
-    def __init__(self, config):
+    def __init__(self, config,app_settings=None):
         self.config = config
         self.timeout_period = config.timeout_period
 
