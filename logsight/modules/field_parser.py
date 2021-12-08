@@ -15,7 +15,7 @@ logger = logging.getLogger("logsight." + __name__)
 class FieldParsingModule(Module, Context, AbstractHandler):
     module_name = "field_parsing"
 
-    def __init__(self, config):
+    def __init__(self, config,app_settings=None):
         Context.__init__(self, CalibrationState(config))
 
     def start(self):

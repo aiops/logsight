@@ -12,7 +12,8 @@ logger = logging.getLogger("logsight." + __name__)
 class LogAggregationModule(Module, AbstractHandler):
     module_name = "log_aggregation"
 
-    def __init__(self, config):
+    def __init__(self, config,app_settings=None):
+        self.app_settings = app_settings
         self.config = config
         self.buffer = Buffer(config.buffer_size)
         self.timeout_period = self.config.timeout_period
@@ -48,7 +49,7 @@ class LogAggregationModule(Module, AbstractHandler):
         return result
 
     def timeout_call(self):
-        logger.debug("Initiating timer.")
+        logger.debug(f"Initiating timer for app {self.app_settings.application_name}")
         result = self._process_buffer()
         if self.next_handler:
             self.next_handler.handle(result)

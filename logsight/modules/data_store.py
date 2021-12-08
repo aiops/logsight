@@ -7,7 +7,7 @@ from modules.core import AbstractHandler, Module
 class DataStoreModule(Module, AbstractHandler):
     module_name = "data_store"
 
-    def __init__(self, sink: Sink):
+    def __init__(self, sink: Sink,app_settings=None):
         self.sink = sink
 
     def _process_data(self, data: Any) -> Optional[Any]:

@@ -1,6 +1,9 @@
 from __future__ import annotations
+
+import logging
 from threading import Timer
 
+logger = logging.getLogger("logsight." + __name__)
 
 class NamedTimer:
     def __init__(self, timeout_period: int, callback: callable, name: str = ""):
@@ -11,6 +14,7 @@ class NamedTimer:
         self.timer.name = self.name
 
     def start(self) -> 'NamedTimer':
+        # logger.debug(f"Starting timer {self.name} {self}")
         self.timer.start()
         return self
 
@@ -19,6 +23,8 @@ class NamedTimer:
         return self.start()
 
     def cancel(self):
+        # logger.debug(f"Cancelling timer {self.name} {self.timer}")
         self.timer.cancel()
         self.timer = Timer(self.timeout_period, self.callback)
         self.timer.name = self.name
+        # logger.debug(f"New timer object {self.timer}")
