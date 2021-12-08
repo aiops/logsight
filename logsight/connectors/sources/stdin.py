@@ -22,10 +22,10 @@ class FileSource(Source):
         super().__init__(**kwargs)
         self.path = path or "/home/petar/work/logsight/log-monolith/tests/test_data/logfile.txt"
         files_list = [self.path]
-        for root, folders, files in os.walk("/home/petar/work/logsight/data/test_log_dir"):
-            for f in files:
-                if "syslog" in f:
-                    files_list.append("/".join([str(root), str(f)]))
+        # for root, folders, files in os.walk("/home/petar/work/logsight/data/test_log_dir"):
+        #     for f in files:
+        #         if "syslog" in f:
+        #             files_list.append("/".join([str(root), str(f)]))
         self.files_list = files_list
         self.i = 0
         self.file = open(self.files_list[self.i], 'r')

@@ -1,12 +1,17 @@
 import datetime
 import json
 import logging
+from functools import partial
+from operator import is_not
+from typing import Dict, List, Optional
 
 from dateutil import parser
 
+logger = logging.getLogger("logsight." + __name__)
+
 
 class Log:
-    def __init__(self, log: dict):
+    def __init__(self, log: Dict):
         # A log message needs to have at least these fields
         self.required_fields = [
             'private_key',
@@ -162,3 +167,17 @@ class Log:
 
     def to_json_string(self):
         return json.dumps(self.log)
+
+
+def dicts_to_logs(logs: List[Dict]) -> List[Log]:
+    log_objs = [Log(log) for log in logs]
+    return list(filter(partial(is_not, None), log_objs))
+
+
+def dict_to_log(log: Dict) -> Optional[Log]:
+    try:
+        log_obj = Log(log)
+    except Exception as e:
+        logging.debug(f"Failed to instantiate log object from dict {log}: {e}")
+        return None
+    return log_obj
