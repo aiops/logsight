@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional, List
+from typing import Any, Optional, List, Dict
 
 from logsight_lib.field_parsing import FieldParser
 from logsight_lib.field_parsing.parser_provider import FieldParserProvider
@@ -23,7 +23,7 @@ class FieldParsingModule(Module, Context, AbstractHandler):
         if isinstance(self._state, CalibrationState):
             self._state.timer.start()
 
-    def _process_data(self, data: Any) -> Optional[Any]:
+    def _process_data(self, data: Dict) -> Optional[Dict]:
         if data:
             return self.process_context(data)
 
@@ -43,11 +43,12 @@ class CalibrationState(State):
         self.parser_provider = FieldParserProvider(config.provider_threshold)
         self.timer = NamedTimer(self.timeout_period, self.timeout_call, self.__class__.__name__)
 
-    def handle(self, request: Optional[dict]) -> Optional[List[str]]:
+    def handle(self, request: Optional[Dict]) -> Optional[List[str]]:
         if request:
             self.buffer.add(request)
         if self.buffer.is_full:
             return self._process_buffer()
+        return None
 
     def _process_buffer(self):
         buffer_copy = self.buffer.flush_buffer()
@@ -55,7 +56,7 @@ class CalibrationState(State):
         self.context.transition_to(FieldParserParseState(parser))
         self.timer.cancel()
         parser.parse_prev_timestamp(buffer_copy)
-        return [parser.parse_fields(log) for log in buffer_copy]
+        return [parser.parse_fields(log)[0] for log in buffer_copy]
 
     def timeout_call(self):
         result = self._process_buffer()
@@ -67,6 +68,7 @@ class FieldParserParseState(State):
     def __init__(self, parser: FieldParser):
         self.parser = parser
 
-    def handle(self, request: dict) -> Optional[Any]:
+    def handle(self, request: Dict) -> Optional[Dict]:
         if request:
-            return self.parser.parse_fields(request)
+            r = self.parser.parse_fields(request)[0]
+            return self.parser.parse_fields(request)[0]
