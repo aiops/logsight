@@ -1,7 +1,12 @@
+import logging
 from copy import deepcopy
+from typing import List, Dict
 
 from .field_parser import GrokParser, JSONParser, NoParser
 from .grok import Grok, read_grok_datetime_parsers
+from .log import dicts_to_logs
+
+logger = logging.getLogger("logsight." + __name__)
 
 
 class FieldParserProvider:
@@ -14,15 +19,16 @@ class FieldParserProvider:
         ]
         self.parsers + [GrokParser(k, v) for k, v in read_grok_datetime_parsers().items()]
 
-    def get_parser(self, logs: list):
+    def get_parser(self, logs: List[Dict]):
         if not logs:
             return NoParser()
         _logs = deepcopy(logs)
         for parser in self.parsers:
             # Do parsing and keep only not-None entries. Parsing was successful if result is not None
-            results = [parser.parse_fields(log) for log in _logs]
+            results = [parser.parse_fields(log)[1] for log in _logs]
             results = list(filter(lambda x: x, results))
             ratio = len(results) / len(_logs)
             if ratio > self._threshold:
+                logging.info(f"Identified field parser: {parser.type}")
                 return parser
         return NoParser()
