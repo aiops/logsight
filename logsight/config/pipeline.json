@@ -23,8 +23,8 @@
       "classname": "FieldParsingModule",
       "args": {
         "timeout_period": 30,
-        "buffer_size": 20,
-        "provider_threshold": 0.9
+        "buffer_size": 50,
+        "provider_threshold": 0.7
       },
       "next_handler": "log_parsing"
     },
