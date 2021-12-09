@@ -10,10 +10,10 @@
       "classname": "InputModule",
       "args": {
         "source": {
-          "connection": "kafka",
-          "classname": "KafkaSource",
+          "connection": "file",
+          "classname": "FileSource",
           "params": {
-            "topic": "input"
+            "path": "/home/alex/ttt/exmpl.json"
           }
         }
       },
@@ -23,7 +23,7 @@
       "classname": "FieldParsingModule",
       "args": {
         "timeout_period": 30,
-        "buffer_size": 10,
+        "buffer_size": 20,
         "provider_threshold": 0.9
       },
       "next_handler": "log_parsing"
