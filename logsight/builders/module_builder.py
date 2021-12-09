@@ -11,8 +11,8 @@ class Struct:
 
 
 class ModuleBuilder(Builder):
-    def __init__(self):
-        self.conn_builder = ConnectionBuilder()
+    def __init__(self, connection_builder: ConnectionBuilder = None):
+        self.conn_builder = connection_builder if connection_builder else ConnectionBuilder()
 
     def build_object(self, object_config: HandlerConfig, app_settings: AppConfig) -> Module:
         args = object_config.args

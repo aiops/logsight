@@ -13,7 +13,7 @@ logger = logging.getLogger("logsight." + __name__)
 
 
 class Manager:
-    def __init__(self, source, services, producer, topic_list=None):
+    def __init__(self, source, services, producer, topic_list=None, app_builder: ApplicationBuilder = None):
         self.source = source
         self.kafka_admin = services.get('kafka_admin', None) if USES_KAFKA else None
         self.elasticsearch_admin = services.get('elasticsearch_admin', None) if USES_ES else None
@@ -23,7 +23,7 @@ class Manager:
 
         self.active_apps = {}
         self.active_process_apps = {}
-        self.app_builder = ApplicationBuilder(self.kafka_admin, self.elasticsearch_admin)
+        self.app_builder = app_builder if app_builder else ApplicationBuilder(services)
 
         self.pipeline_config = PipelineConfig(**load_json(PIPELINE_PATH))
 

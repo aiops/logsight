@@ -9,15 +9,16 @@ from builders.module_builder import ModuleBuilder
 from logsight_classes.application import Application
 from logsight_classes.data_class import AppConfig, PipelineConfig, HandlerConfig
 from modules.core import AbstractHandler
+from config.global_vars import USES_KAFKA, USES_ES
 
 logger = logging.getLogger("logsight." + __name__)
 
 
 class ApplicationBuilder(Builder):
-    def __init__(self, kafka_admin=None, es_admin=None):
-        self.kafka_admin = kafka_admin
-        self.es_admin = es_admin
-        self.module_builder = ModuleBuilder()
+    def __init__(self, services, module_builder: ModuleBuilder = None):
+        self.kafka_admin = services.get('kafka_admin', None) if USES_KAFKA else None
+        self.es_admin = services.get('elasticsearch_admin', None) if USES_ES else None
+        self.module_builder = module_builder if module_builder else ModuleBuilder()
 
     def build_object(self, pipeline_config: PipelineConfig, app_config: AppConfig) -> Application:
         if self.es_admin:

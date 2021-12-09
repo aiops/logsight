@@ -3,8 +3,6 @@ import sys
 
 from kafka import KafkaProducer
 
-from logsight.connectors.sinks import KafkaSink
-
 # sink = KafkaSink(address='localhost:9093', topic='manager_settings')
 kafka_broker_ip = 'localhost:9093'
 
