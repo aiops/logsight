@@ -10,10 +10,10 @@
       "classname": "InputModule",
       "args": {
         "source": {
-          "connection": "file",
-          "classname": "FileSource",
+          "connection": "kafka",
+          "classname": "KafkaSource",
           "params": {
-            "path": "/home/alex/ttt/exmpl.json"
+            "topic": "input"
           }
         }
       },
