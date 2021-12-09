@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from config.globals import DEBUG, CONFIG_PATH
+from config.global_vars import DEBUG, CONFIG_PATH
 
 
 class Config:

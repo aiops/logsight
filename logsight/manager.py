@@ -4,7 +4,7 @@ from utils.fs import load_json
 from kafka.admin import NewTopic
 from kafka.errors import TopicAlreadyExistsError
 from builders.application_builder import ApplicationBuilder
-from config.globals import USES_KAFKA, USES_ES, PIPELINE_PATH
+from config.global_vars import USES_KAFKA, USES_ES, PIPELINE_PATH
 from multiprocessing import Process
 import logging
 from logsight_classes.data_class import AppConfig, PipelineConfig

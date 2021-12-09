@@ -70,5 +70,4 @@ class FieldParserParseState(State):
 
     def handle(self, request: Dict) -> Optional[Dict]:
         if request:
-            r = self.parser.parse_fields(request)[0]
             return self.parser.parse_fields(request)[0]

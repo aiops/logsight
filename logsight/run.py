@@ -1,12 +1,15 @@
 import json
 import logging.config
+import os
+
 from manager import Manager
 from services.configurator import ManagerConfig
 from services import service_names
 from connectors import sources
 from connectors import sinks
+from config import global_vars
 
-logging.config.dictConfig(json.load(open("config/log.json", 'r')))
+logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "config/log.json"), 'r')))
 logger = logging.getLogger('logsight')
 
 
@@ -42,7 +45,7 @@ def create_manager():
 
 
 def run():
-    with open('config/banner.txt', 'r') as f:
+    with open(os.path.join(global_vars.CONFIG_PATH, 'banner.txt'), 'r') as f:
         logger.info(f.read())
     manager = create_manager()
     manager.setup()
