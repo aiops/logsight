@@ -6,7 +6,7 @@ from kafka.admin import NewTopic
 from kafka.errors import TopicAlreadyExistsError
 
 from connectors.sinks import MultiSink
-from services.configurator import ModuleConfig
+from services.configurator import ModulePipelineConfig
 from modules import *
 from connectors import sources
 from connectors import sinks
@@ -55,7 +55,7 @@ class AppBuilder:
         self.kafka_admin = kafka_admin
         self.es_admin = es_admin
         self.kafka_topic_list = []
-        self.module_config = ModuleConfig()
+        self.module_config = ModulePipelineConfig()
 
     def build_app(self, app_settings):
         modules = ['field_parser', 'log_parsing', 'anomaly_detection', 'log_aggregation', 'incidents']

@@ -2,15 +2,15 @@ from copy import deepcopy
 from typing import Union
 
 from builders.base import Builder
-from services import Config
+from services import ConnectionConfig
 
 import connectors.sinks as sinks
 import connectors.sources as sources
 
 
 class ConnectionBuilder(Builder):
-    def __init__(self):
-        self.conn_config = Config()
+    def __init__(self, config: ConnectionConfig = None):
+        self.conn_config = config if config else ConnectionConfig()
 
     def build_object(self, object_config, app_settings) -> Union[sources.Source, sinks.Sink]:
         conn_params = deepcopy(self.conn_config.get_connection(object_config['connection']))

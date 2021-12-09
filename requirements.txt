@@ -14,3 +14,4 @@ SQLAlchemy==1.4.27
 torch==1.10.0
 kafka-python==2.0.2
 elasticsearch==7.15.2
+psycopg2==2.7.7

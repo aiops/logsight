@@ -1,11 +1,11 @@
 import json
-from pathlib import Path
-from config.global_vars import DEBUG, CONFIG_PATH
+
+from config.global_vars import DEBUG
 
 
-class Config:
-    def __init__(self, path=Path(CONFIG_PATH) / "connections.json"):
-        self.conns = json.load(open(path, 'r'))
+class ConnectionConfig:
+    def __init__(self, connection_config_path: str):
+        self.conns = json.load(open(connection_config_path, 'r'))
 
         for conn in self.conns:
             for key in self.conns[conn].keys():
@@ -27,10 +27,10 @@ class Config:
         return self.conns.get(conn, {})
 
 
-class ManagerConfig(Config):
-    def __init__(self):
-        super().__init__()
-        self.manager_config = json.load(open(Path(CONFIG_PATH) / "manager.json", 'r'))
+class ManagerConfig(ConnectionConfig):
+    def __init__(self, connection_config_path: str, manager_config_path: str):
+        super().__init__(connection_config_path)
+        self.manager_config = json.load(open(manager_config_path, 'r'))
 
     def get_source(self):
         return self.manager_config['connectors']['source']
@@ -51,13 +51,13 @@ class ManagerConfig(Config):
         return self.manager_config['topic_list']
 
 
-class ModuleConfig(Config):
-    def __init__(self):
-        super().__init__()
-        self.module_config = json.load(open(Path(CONFIG_PATH) / "modules.json", 'r'))
+class ModulePipelineConfig(ConnectionConfig):
+    def __init__(self, connection_config_path: str, pipeline_config_path: str):
+        super().__init__(connection_config_path)
+        self.module_pipline_config = json.load(open(pipeline_config_path, 'r'))
 
     def get_module(self, module):
-        return self.module_config[module]
+        return self.module_pipline_config[module]
 
     def get_connector(self, module, connector):
-        return self.module_config[module][connector]
+        return self.module_pipline_config[module][connector]

@@ -10,3 +10,8 @@ def load_json(path, mode="r"):
 def save_json(_object, path, mode='wb'):
     with open(path, mode) as file:
         json.dump(_object, file)
+
+
+def verify_file_ext(filename: str, ext: str):
+    filename += ext if not filename.endswith(ext) else ""
+    return filename

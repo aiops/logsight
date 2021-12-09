@@ -1,1 +1,1 @@
-from .config_manager import Config, ManagerConfig, ModuleConfig
+from .config_manager import ConnectionConfig, ManagerConfig, ModulePipelineConfig
