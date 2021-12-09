@@ -31,7 +31,6 @@ class LogAggregationModule(Module, AbstractHandler):
                 self.buffer.extend(data)
             else:
                 self.buffer.add(data)
-
             if self.buffer.is_full:
                 return self._process_buffer()
 
@@ -45,7 +44,6 @@ class LogAggregationModule(Module, AbstractHandler):
     def _process_buffer(self):
         result = self.aggregator.aggregate_logs(self.buffer.flush_buffer())
         self.timer.reset_timer()
-
         return result
 
     def timeout_call(self):
