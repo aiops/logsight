@@ -16,7 +16,7 @@ class LogParserModule(Module, Context, AbstractHandler):
     """
     module_name = "log_parsing"
 
-    def __init__(self, config):
+    def __init__(self, config,app_settings=None):
         Context.__init__(self, TrainState(DrainLogParser(), config))
 
     def start(self):

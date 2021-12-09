@@ -4,7 +4,8 @@ from modules.core import Module, ForkHandler
 
 
 class ForkModule(Module, ForkHandler):
-    def __init__(self, config):
+    def __init__(self, config,app_settings=None):
+        super().__init__()
         """Only serves as an interface to be compatible with other modules, it is implemented in fork handler"""
         self.config = config
 

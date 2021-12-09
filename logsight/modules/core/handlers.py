@@ -47,20 +47,22 @@ class AbstractHandler(Handler):
 
 
 class ForkHandler(Handler):
+
+    def __init__(self):
+        self._next_handlers: List[Handler] = []
+
     def start(self):
-        if self._next_handlers:
-            for _handler in self._next_handlers:
+        if self.next_handlers:
+            for _handler in self.next_handlers:
                 _handler.start()
 
-    _next_handlers: List[Handler] = []
-
     def set_next(self, handler: Handler) -> Handler:
-        self._next_handlers.append(handler)
+        self.next_handlers.append(handler)
         return handler
 
     def handle(self, request) -> Optional[List]:
-        if self._next_handlers:
-            return [_handler.handle(request) for _handler in self._next_handlers]
+        if self.next_handlers:
+            return [_handler.handle(request) for _handler in self.next_handlers]
         return None
 
     @property

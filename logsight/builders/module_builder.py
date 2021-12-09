@@ -21,4 +21,4 @@ class ModuleBuilder(Builder):
             conn = self.conn_builder.build_object(args.get('source', args.get('sink')), app_settings)
             return c_name(conn)
         else:
-            return c_name(Struct(**args))
+            return c_name(Struct(**args),app_settings=app_settings)

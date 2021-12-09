@@ -130,16 +130,16 @@ class Log:
                 try:
                     timestamp = parser.parse(datetime_string)
                 except Exception as e:
-                    logging.info("Unable to parse datetime string %s. Reason: %s",
+                    logger.info("Unable to parse datetime string %s. Reason: %s",
                                  datetime_string, e)
                     continue
                 break
             if not timestamp:
-                logging.info("Unable to parse datetime strings. Will use current time.")
-                timestamp = datetime.datetime.now().replace(microsecond=0)
+                logger.info("Unable to parse datetime strings. Will use current time.")
+                timestamp = datetime.datetime.utcnow().replace(microsecond=0)
         else:
-            logging.info("No timestamp key found. Will use current time.")
-            timestamp = datetime.datetime.now().replace(microsecond=0)
+            logger.info("No timestamp key found. Will use current time.")
+            timestamp = datetime.datetime.utcnow().replace(microsecond=0)
 
         self.set_timestamp(timestamp.strftime('%Y-%m-%dT%H:%M:%S.%f'))
 
@@ -159,10 +159,10 @@ class Log:
         return levels
 
     def _infer_log_level_from_message(self, message):
-        logging.info("Trying to infer log level from log message...")
+        logger.info("Trying to infer log level from log message...")
         level = next((self.level_mappings.get(key) for key in self.level_mappings if key in message),
                      self.default_level)
-        logging.info("Inferred log level: %s", level)
+        logger.info("Inferred log level: %s", level)
         return level
 
     def to_json_string(self):
@@ -178,6 +178,6 @@ def dict_to_log(log: Dict) -> Optional[Log]:
     try:
         log_obj = Log(log)
     except Exception as e:
-        logging.debug(f"Failed to instantiate log object from dict {log}: {e}")
+        logger.debug(f"Failed to instantiate log object from dict {log}: {e}")
         return None
     return log_obj
