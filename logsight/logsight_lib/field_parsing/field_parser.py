@@ -54,7 +54,7 @@ class FieldParser(ABC):
         if self._prev_time:
             return self._prev_time
         else:
-            return datetime.now()
+            return datetime.utcnow()
 
     def __preprocess_message(self, log: Dict) -> Log:
         log = Log(log)

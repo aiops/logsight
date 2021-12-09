@@ -29,6 +29,6 @@ class FieldParserProvider:
             results = list(filter(lambda x: x, results))
             ratio = len(results) / len(_logs)
             if ratio > self._threshold:
-                logging.info(f"Identified field parser: {parser.type}")
+                logger.info(f"Identified field parser: {parser.type}")
                 return parser
         return NoParser()

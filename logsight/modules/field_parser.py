@@ -16,6 +16,7 @@ class FieldParsingModule(Module, Context, AbstractHandler):
     module_name = "field_parsing"
 
     def __init__(self, config,app_settings=None):
+        self.app_settings = app_settings
         Context.__init__(self, CalibrationState(config))
 
     def start(self):
@@ -52,7 +53,10 @@ class CalibrationState(State):
 
     def _process_buffer(self):
         buffer_copy = self.buffer.flush_buffer()
+        if not buffer_copy:
+            return
         parser = self.parser_provider.get_parser(buffer_copy)
+        logger.info(f"Field parser: {parser.type} {self.timer.name}")
         self.context.transition_to(FieldParserParseState(parser))
         self.timer.cancel()
         parser.parse_prev_timestamp(buffer_copy)
@@ -67,8 +71,7 @@ class CalibrationState(State):
 class FieldParserParseState(State):
     def __init__(self, parser: FieldParser):
         self.parser = parser
-
     def handle(self, request: Dict) -> Optional[Dict]:
         if request:
-            r = self.parser.parse_fields(request)[0]
             return self.parser.parse_fields(request)[0]
+
