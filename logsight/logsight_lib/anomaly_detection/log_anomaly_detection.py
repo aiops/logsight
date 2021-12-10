@@ -14,6 +14,14 @@ logger = logging.getLogger("logsight." + __name__)
 from .utils import get_padded_data, PREDICTION_THRESHOLD
 
 
+class NoneDetector:
+    def process_log(self, log_batch):
+        return log_batch
+    def load_model(self, version, user_app):
+        pass
+
+
+
 class LogAnomalyDetector:
     def __init__(self):
         self.tokenizer = None
@@ -27,10 +35,9 @@ class LogAnomalyDetector:
     def predict(self, log):
         with torch.no_grad():
             out = self.model.forward(log.long(), None)
-
             out_numpy = torch.functional.F.softmax(out, dim=1).detach().cpu().numpy()
-            prediction = np.where(out_numpy[:, 0] > PREDICTION_THRESHOLD, 0, 1)
-            log_level_prediction = prediction  # self.prediction2loglevel(prediction)
+            log_level_prediction = np.where(out_numpy[:, 0] > PREDICTION_THRESHOLD, 0, 1)
+            del out, out_numpy
         return log_level_prediction, None
 
     def load_model(self, version, user_app):
@@ -48,7 +55,7 @@ class LogAnomalyDetector:
         return torch.tensor(self.tokenizer.tokenize_test(x))
 
     def process_log(self, log_batch):
-
+        result = []
         log_messages = []
         for log in log_batch:
             tmp = ''
@@ -58,16 +65,17 @@ class LogAnomalyDetector:
                 logger.error(f"Exception: {e}")
             tokenized = self.tokenize(tmp)
             log_messages.append(tokenized[:self.config.get('max_len')])
-
-        log_messages[-1] = torch.cat((tokenized, torch.tensor([0] * self.config.get('max_len'))))[
+        log_messages[-1] = torch.cat((tokenized, torch.tensor([0] * self.config.get('pad_len'))))[
                            :self.config.get('pad_len')]
         padded = get_padded_data(log_messages)
-
+        del log_messages
         prediction, attention_scores = self.predict(padded)
-        for i in range(len(log_batch)):
+        del padded
+        for i, log_message in enumerate(log_batch):
             try:
-                log_batch[i]["prediction"] = 1 if prediction[i] == 0 else 0
+                log_message["prediction"] = 1 if prediction[i] == 0 else 0
+                result.append(log_message)
             except Exception as e:
-                print(log_batch[i], prediction[i])
                 print("exception ad batch", e)
-        return log_batch
+        del prediction
+        return result
