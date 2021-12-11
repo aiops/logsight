@@ -159,10 +159,10 @@ class Log:
         return levels
 
     def _infer_log_level_from_message(self, message):
-        logger.info("Trying to infer log level from log message...")
+        # logger.info("Trying to infer log level from log message...")
         level = next((self.level_mappings.get(key) for key in self.level_mappings if key in message),
                      self.default_level)
-        logger.info("Inferred log level: %s", level)
+        # logger.info("Inferred log level: %s", level)
         return level
 
     def to_json_string(self):

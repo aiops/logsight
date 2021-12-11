@@ -57,7 +57,7 @@ class IdleState(State):
         try:
             self.ad.load_model(None, None)
         except Exception as e:
-            logging.log(logging.ERROR, e)
+            logger.error(e)
         return self.context.transition_to(LoadedState(self.ad, self.config))
 
 

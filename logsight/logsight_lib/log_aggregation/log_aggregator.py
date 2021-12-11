@@ -17,6 +17,7 @@ class LogAggregator:
         if len(logs) == 0:
             return
         # t0 = perf_counter()
+        logger.info(f"Logs to be aggregated: {len(logs)}")
         df = pd.DataFrame(logs).set_index('@timestamp')
         # t1 = perf_counter()
         df.index = pd.to_datetime(df.index)
