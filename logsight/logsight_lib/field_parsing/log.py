@@ -64,7 +64,8 @@ class Log:
         self.set_message(message)
 
     def set_timestamp(self, timestamp):
-        self.log['@timestamp'] = self._format_timestamp(timestamp)
+        if timestamp:
+            self.log['@timestamp'] = self._format_timestamp(timestamp)
 
     def _format_timestamp(self, timestamp):
         if isinstance(timestamp, datetime.datetime):
@@ -123,6 +124,7 @@ class Log:
 
     def _unify_time_format(self):
         # Pop all datetime keys from log
+        timestamp = None
         datetime_strings = [self.log.pop(key) for key in self.timestamp_keys if key in self.log]
         if datetime_strings:
             timestamp = None
@@ -136,12 +138,14 @@ class Log:
                 break
             if not timestamp:
                 logger.info("Unable to parse datetime strings. Will use current time.")
-                timestamp = datetime.datetime.utcnow().replace(microsecond=0)
+                #timestamp = datetime.datetime.utcnow().replace(microsecond=0)
+                timestamp = None
         else:
             logger.info("No timestamp key found. Will use current time.")
-            timestamp = datetime.datetime.utcnow().replace(microsecond=0)
+            #timestamp = datetime.datetime.utcnow().replace(microsecond=0)
+            timestamp = None
 
-        self.set_timestamp(timestamp.strftime('%Y-%m-%dT%H:%M:%S.%f'))
+        self.set_timestamp(timestamp)
 
     def _unify_log_level(self):
         levels = self._get_possible_log_levels()
