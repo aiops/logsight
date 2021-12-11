@@ -18,7 +18,7 @@ class FieldParser(ABC):
         self.type = parser_type
         self._prev_time = None
 
-    def parse_fields(self, log: Dict) -> Tuple[Dict, bool]:
+    def parse_fields(self, log: Dict) -> Tuple[Optional[Dict], Optional[bool]]:
         # 1. preprocess log
         log_obj = self.__preprocess_message(log)
         log_obj.set_prev_timestamp(self._get_prev_time())
@@ -30,6 +30,8 @@ class FieldParser(ABC):
         else:
             log_obj.tag_failed_field_parsing(self.type)
         log_obj.unify_log_representation()
+        if not log_obj.get_timestamp():
+            return None, None
 
         if self._prev_time:  # Set only if it is not None. Otherwise
             self._prev_time = log_obj.get_timestamp()
