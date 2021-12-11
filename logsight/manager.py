@@ -1,3 +1,4 @@
+import gc
 from time import sleep
 from typing import Optional
 from utils.fs import load_json
