@@ -2,9 +2,8 @@ import logging
 from copy import deepcopy
 from typing import List, Dict
 
-from .field_parser import GrokParser, JSONParser, NoParser
-from .grok import Grok, read_grok_datetime_parsers
-from .log import dicts_to_logs
+from logsight_lib.field_parsing.field_parser import GrokParser, JSONParser, NoParser
+from logsight_lib.field_parsing.grok import Grok, read_grok_datetime_parsers
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -16,6 +15,7 @@ class FieldParserProvider:
         self.parsers = [
             JSONParser(),
             GrokParser("syslog", Grok('%{SYSLOGLINE}', full_match=True, required_fields=['timestamp'])),
+            GrokParser("hadoop", Grok('%{HADOOP}', full_match=True, required_fields=['timestamp'])),
         ]
         self.parsers + [GrokParser(k, v) for k, v in read_grok_datetime_parsers().items()]
 
