@@ -126,6 +126,7 @@ class Log:
         # Pop all datetime keys from log
         timestamp = None
         datetime_strings = [self.log.pop(key) for key in self.timestamp_keys if key in self.log]
+        datetime_strings = [dts for dts in datetime_strings if dts]  # Filter None values
         if datetime_strings:
             timestamp = None
             for datetime_string in datetime_strings:
