@@ -14,8 +14,8 @@ class FieldParserProvider:
 
         self.parsers = [
             JSONParser(),
-            GrokParser("syslog", Grok('%{SYSLOGLINE}', full_match=True, required_fields=['timestamp'])),
             GrokParser("hadoop", Grok('%{HADOOP}', full_match=True, required_fields=['timestamp'])),
+            GrokParser("syslog", Grok('%{SYSLOGLINE}', full_match=True, required_fields=['timestamp'])),
         ]
         self.parsers + [GrokParser(k, v) for k, v in read_grok_datetime_parsers().items()]
 
