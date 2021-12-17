@@ -1,0 +1,22 @@
+{
+  "definitions": {
+    "config": {
+      "title": "pipeline",
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "description": "Metadata for the pipeline"
+        },
+        "handlers": {
+          "type": "object",
+          "description": "Module objects"
+        }
+      },
+      "required": [
+        "handlers",
+        "metadata"
+      ]
+    }
+  }
+}
