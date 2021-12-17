@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "disable_existing_loggers": true,
+  "formatters": {
+    "info": {
+      "format": "%(asctime)s |%(module)15s|%(levelname)7s| %(message)s",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    },
+    "debug": {
+      "format": "%(asctime)s|%(threadName)15s|%(module)15s|%(funcName)25s|%(levelname)7s| %(message)s",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    }
+  },
+  "handlers": {
+    "default": {
+      "level": "INFO",
+      "formatter": "info",
+      "class": "logging.StreamHandler"
+    },
+    "info": {
+      "level": "INFO",
+      "formatter": "info",
+      "class": "logging.StreamHandler"
+    },
+    "debug": {
+      "level": "DEBUG",
+      "formatter": "debug",
+      "class": "logging.StreamHandler"
+    }
+  },
+  "loggers": {
+    "logsight": {
+      "handlers": [
+        "debug"
+      ],
+      "level": "DEBUG",
+      "propagate": false
+    }
+  }
+}

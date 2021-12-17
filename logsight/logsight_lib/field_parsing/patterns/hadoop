@@ -1,0 +1,2 @@
+
+HADOOP %{HADOOP_DATESTAMP:timestamp} %{LOGLEVEL:Level} (?:\[%{GREEDYDATA:namespace}\] )?%{JAVACLASS:service}?: %{GREEDYDATA:message}
