@@ -12,5 +12,5 @@ SQLAlchemy==1.4.27
 kafka-python==2.0.2
 elasticsearch==7.15.2
 psycopg2==2.7.7
-guppy3
+guppy3==3.1.2
 onnxruntime==1.10.0
