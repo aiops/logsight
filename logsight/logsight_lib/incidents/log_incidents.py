@@ -66,10 +66,12 @@ class IncidentDetector:
             timestamp_start = log_count_df.iloc[0]["timestamp_start"]
             timestamp_end = log_count_df.iloc[-1]["timestamp_end"]
 
+        logs = [log_ad_df.iloc[i:i + 1].dropna(axis='columns').to_dict('records') for i in
+                              range(len(log_ad_df))]
         properties = {"@timestamp": timestamp_end, "total_score": total_score, "timestamp_start": timestamp_start,
                       "timestamp_end": timestamp_end, "count_ads": tmp_count_anomalies,
                       "new_templates": new_templates, "semantic_ad": semantic_anomalies,
-                      "semantic_count_ads": semantic_count_anomalies}
+                      "semantic_count_ads": semantic_count_anomalies, "logs": logs}
         if (
                 not new_templates
                 and not semantic_anomalies
