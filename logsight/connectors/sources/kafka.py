@@ -1,9 +1,10 @@
-from json import loads
-
-from .base import StreamSource
 import logging
+from json import loads
+from time import sleep
 
 from kafka import KafkaConsumer
+
+from .base import StreamSource
 
 
 class KafkaSource(StreamSource):
@@ -36,14 +37,22 @@ class KafkaSource(StreamSource):
         self.offset = offset
         self.group_id = group_id
 
-        self.kafka_source = KafkaConsumer(self.topic,
-                                          bootstrap_servers=[self.address],
-                                          auto_offset_reset=self.offset,
-                                          group_id=self.group_id,
-                                          api_version=(2, 0, 2),
-                                          enable_auto_commit=True,
-                                          value_deserializer=lambda x: loads(x.decode('utf-8'))
-                                          )
+        while True:
+            try:
+                self.kafka_source = KafkaConsumer(
+                    self.topic,
+                    bootstrap_servers=[self.address],
+                    auto_offset_reset=self.offset,
+                    group_id=self.group_id,
+                    api_version=(2, 0, 2),
+                    enable_auto_commit=True,
+                    value_deserializer=lambda x: loads(x.decode('utf-8'))
+                )
+            except Exception as e:
+                logger.info(f"Failed to connect to kafka consumer client on {address}. Reason: {e}. Retrying...")
+                sleep(5)
+                continue
+            break
 
     def to_json(self):
         return {"topic": self.topic}
