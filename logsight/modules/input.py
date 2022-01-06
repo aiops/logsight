@@ -7,7 +7,7 @@ from modules.core import AbstractHandler, Module
 class InputModule(Module, AbstractHandler):
     module_name = "input_module"
 
-    def __init__(self, source: Source,app_settings=None):
+    def __init__(self, source: Source, app_settings=None):
         self.source = source
 
     def handle(self, **kwargs) -> Optional[str]:
