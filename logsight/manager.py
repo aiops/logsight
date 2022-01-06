@@ -64,7 +64,10 @@ class Manager:
         self.active_process_apps[app_settings.application_id] = app_process
         logger.info("Starting app process")
         app_process.start()
-        return app.to_json()
+        return {
+            "ack": "ACTIVE",
+            "app": app.to_json()
+        }
 
     def delete_application(self, app_settings: AppConfig) -> Optional[dict]:
         logger.info(f"Deleting application {app_settings.application_id}")
@@ -81,7 +84,10 @@ class Manager:
         del self.active_process_apps[application.application_id]
         logger.info(f"Application successfully deleted with name: {application.application_name} "
                     f"and id: {application.application_id}")
-        return {"msg": f"Application {app_settings.application_id} successfully deleted"}
+        return {
+            "ack": "DELETED",
+            "app_id": str(app_settings.application_id)
+        }
 
     def run(self):
         self.start_listener()
