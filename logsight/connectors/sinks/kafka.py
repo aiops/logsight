@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 from kafka import KafkaProducer
 
@@ -23,14 +24,20 @@ class KafkaSink(Sink):
             self.application_id = None
         self.topic = "_".join([self.application_id, topic]) if self.application_id else topic
         self.address = address
-        logger.debug("Creating Kafka producer")
-        try:
-            self.kafka_sink = KafkaProducer(bootstrap_servers=address)
-        except Exception as e:
-            logger.error(e)
+
+        self.kafka_sink = None
+        self.connect()
 
     def connect(self):
-        self.kafka_sink = KafkaProducer(bootstrap_servers=self.address)
+        logger.debug("Creating Kafka producer")
+        while True:
+            try:
+                self.kafka_sink = KafkaProducer(bootstrap_servers=self.address)
+            except Exception as e:
+                logger.info(f"Failed to connect to kafka consumer client on {address}. Reason: {e}. Retrying...")
+                time.sleep(5)
+                continue
+            break
 
     def send(self, data, topic=None):
         topic = topic or self.topic
