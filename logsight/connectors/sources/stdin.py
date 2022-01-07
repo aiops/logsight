@@ -52,7 +52,6 @@ class FileSource(Source):
             self.eof = True
             return
         self.file.close()
-        print(self.files_list[self.i])
         self.file = open(self.files_list[self.i], 'r')
         return self.receive_message()
 

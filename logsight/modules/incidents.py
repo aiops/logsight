@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from datetime import datetime
 from typing import Any, Optional
 
@@ -14,7 +15,10 @@ logger = logging.getLogger("logsight." + __name__)
 class LogIncidentModule(Module, AbstractHandler):
     module_name = "incidents"
 
-    def __init__(self, config,app_settings=None):
+    def __init__(self, config, app_settings=None):
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
+
         self.config = config
         self.timeout_period = config.timeout_period
 
@@ -24,8 +28,9 @@ class LogIncidentModule(Module, AbstractHandler):
 
         self.model = IncidentDetector()
 
-    def start(self):
-        super().start()
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         self.timer.start()
 
     def _process_data(self, data: Optional[dict]) -> Optional[Any]:
@@ -55,9 +60,7 @@ class LogIncidentModule(Module, AbstractHandler):
 
     def handle(self, request: Any) -> Optional[str]:
         result = self._process_data(request)
-        if self.next_handler:
-            return self._next_handler.handle(result)
-        return result
+        return super().handle(result)
 
     def _timeout_call(self):
         logger.debug("Initiating timer.")
