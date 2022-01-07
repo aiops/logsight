@@ -1,6 +1,6 @@
-import json
-import re
 import logging
+import re
+
 import dateutil.parser as date_parser
 
 

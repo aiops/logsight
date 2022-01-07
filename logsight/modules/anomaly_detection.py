@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from typing import Any, Optional
 from modules.core import AbstractHandler, Context, State, Module
 from modules.core.buffer import Buffer
@@ -19,15 +20,19 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
     """
     Performs Anomaly detection on log data
     """
-    module_name = "ad"
+    module_name = "anomaly_detection"
 
-    def __init__(self, config,app_settings=None):
+    def __init__(self, config, app_settings=None):
+        Context.__init__(self, IdleState(config))
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
+
         self.app_settings = app_settings
         self.timeout_period = config.timeout_period
-        Context.__init__(self, IdleState(config))
 
-    def start(self):
-        super().start()
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         self._state.handle(None)  # Moves from Init State to Loaded state automatically
 
     def _process_data(self, data: Any) -> Optional[Any]:
@@ -37,14 +42,12 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
             return self.process_context(data)
 
     def handle(self, request: Any) -> Optional[str]:
-        if request:
-            try:
-                result = self._process_data(request)
-                if self._next_handler and result:
-                    return self._next_handler.handle(result)
-                return result
-            except ModelNotLoadedException as e:
-                logger.error(e)
+        result = None
+        try:
+            result = self._process_data(request)
+        except ModelNotLoadedException as e:
+            logger.error(e)
+        return super().handle(result)
 
 
 class IdleState(State):

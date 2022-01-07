@@ -1,6 +1,9 @@
 import gc
+import multiprocessing
 from time import sleep
 from typing import Optional
+
+from logsight_classes.application import Application
 from utils.fs import load_json
 from kafka.admin import NewTopic
 from kafka.errors import TopicAlreadyExistsError
@@ -59,11 +62,12 @@ class Manager:
         logger.info(f"Building App {app_settings.application_name}.")
         app = self.app_builder.build_object(self.pipeline_config, app_settings)
 
-        app_process = Process(target=start_process, args=(app,))
+        app_process = Process(target=start_process, args=(app, ))
         self.active_apps[app_settings.application_id] = app
         self.active_process_apps[app_settings.application_id] = app_process
         logger.info("Starting app process")
         app_process.start()
+        #e.wait()
         return {
             "ack": "ACTIVE",
             "app": app.to_json()
@@ -117,13 +121,10 @@ class Manager:
         if self.kafka_admin:
             self.delete_topics_for_manager()
             self.create_topics_for_manager()
-
         self.source.connect()
 
 
-def start_process(app):
+def start_process(app: Application):
     logger.debug(f'Starting application {app}.')
     app.start()
     logger.debug(f"Application {app} Started.")
-    while True:
-        sleep(100)
