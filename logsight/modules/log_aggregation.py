@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from typing import Any, Optional
 
 from modules.core import AbstractHandler, Module
@@ -12,7 +13,10 @@ logger = logging.getLogger("logsight." + __name__)
 class LogAggregationModule(Module, AbstractHandler):
     module_name = "log_aggregation"
 
-    def __init__(self, config,app_settings=None):
+    def __init__(self, config, app_settings=None):
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
+
         self.app_settings = app_settings
         self.config = config
         self.buffer = Buffer(config.buffer_size)
@@ -21,8 +25,9 @@ class LogAggregationModule(Module, AbstractHandler):
         self.timer.name = self.module_name + '_timer'
         self.aggregator = LogAggregator()
 
-    def start(self):
-        super().start()
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         self.timer.start()
 
     def _process_data(self, data: Any) -> Optional[Any]:
@@ -35,11 +40,8 @@ class LogAggregationModule(Module, AbstractHandler):
                 return self._process_buffer()
 
     def handle(self, request: Any) -> Optional[str]:
-        if request:
-            result = self._process_data(request)
-            if self.next_handler:
-                return self._next_handler.handle(result)
-            return result
+        result = self._process_data(request)
+        return super().handle(result)
 
     def _process_buffer(self):
         result = self.aggregator.aggregate_logs(self.buffer.flush_buffer())

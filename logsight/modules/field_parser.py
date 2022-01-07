@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from typing import Any, Optional, List, Dict
 
 from logsight_lib.field_parsing import FieldParser
@@ -16,11 +17,15 @@ class FieldParsingModule(Module, Context, AbstractHandler):
     module_name = "field_parsing"
 
     def __init__(self, config, app_settings=None):
-        self.app_settings = app_settings
         Context.__init__(self, CalibrationState(config))
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
 
-    def start(self):
-        super().start()
+        self.app_settings = app_settings
+
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         if isinstance(self._state, CalibrationState):
             self._state.timer.start()
 
@@ -30,9 +35,7 @@ class FieldParsingModule(Module, Context, AbstractHandler):
 
     def handle(self, request: Any) -> Optional[str]:
         result = self._process_data(request)
-        if self.next_handler:
-            return self._next_handler.handle(result)
-        return result
+        return super().handle(result)
 
 
 class CalibrationState(State):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from typing import Any, Optional, List
 from modules.core import AbstractHandler, Context, State, Module
 from modules.core.buffer import Buffer
@@ -16,11 +17,14 @@ class LogParserModule(Module, Context, AbstractHandler):
     """
     module_name = "log_parsing"
 
-    def __init__(self, config,app_settings=None):
+    def __init__(self, config, app_settings=None):
         Context.__init__(self, TrainState(DrainLogParser(), config))
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
 
-    def start(self):
-        super().start()
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         if isinstance(self._state, TrainState):
             self._state.timer.start()
 
@@ -30,9 +34,7 @@ class LogParserModule(Module, Context, AbstractHandler):
 
     def handle(self, request: Any) -> Optional[str]:
         result = self._process_data(request)
-        if self.next_handler:
-            return self._next_handler.handle(result)
-        return result
+        return super().handle(result)
 
 
 class TrainState(State):

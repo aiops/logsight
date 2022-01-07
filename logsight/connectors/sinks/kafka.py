@@ -34,7 +34,7 @@ class KafkaSink(Sink):
             try:
                 self.kafka_sink = KafkaProducer(bootstrap_servers=self.address)
             except Exception as e:
-                logger.info(f"Failed to connect to kafka consumer client on {address}. Reason: {e}. Retrying...")
+                logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")
                 time.sleep(5)
                 continue
             break

@@ -2,7 +2,7 @@ import logging
 from json import loads
 from time import sleep
 
-from kafka import KafkaConsumer
+from kafka import KafkaConsumer as Consumer, TopicPartition
 
 from .base import StreamSource
 
@@ -11,11 +11,7 @@ class KafkaSource(StreamSource):
     """Data source - Kafka consumer.
     """
 
-    def connect(self):
-        """No explicit connect method for kafka"""
-        pass
-
-    def __init__(self, address: str, topic: str, group_id: int = None, offset: str = 'latest', private_key=None,
+    def __init__(self, address: str, topic: str, group_id: int = None, offset: str = 'earliest', private_key=None,
                  application_name=None, **kwargs):
         """
         Args:
@@ -26,8 +22,8 @@ class KafkaSource(StreamSource):
             **kwargs:
         """
         super().__init__()
-        logger = kwargs.get('logger', logging.getLogger('default'))
-        logger.debug("Creating Kafka consumer")
+        self.logger = kwargs.get('logger', logging.getLogger('default'))
+        self.logger.debug("Creating Kafka consumer")
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
@@ -37,19 +33,24 @@ class KafkaSource(StreamSource):
         self.offset = offset
         self.group_id = group_id
 
+        self.kafka_source = None
+
+    def connect(self):
+        """No explicit connect method for kafka"""
         while True:
             try:
-                self.kafka_source = KafkaConsumer(
+                self.kafka_source = Consumer(
                     self.topic,
                     bootstrap_servers=[self.address],
                     auto_offset_reset=self.offset,
-                    group_id=self.group_id,
+                    group_id=self.topic,
                     api_version=(2, 0, 2),
                     enable_auto_commit=True,
-                    value_deserializer=lambda x: loads(x.decode('utf-8'))
+                    value_deserializer=lambda x: loads(x.decode('utf-8')),
+                    auto_commit_interval_ms=1000
                 )
             except Exception as e:
-                logger.info(f"Failed to connect to kafka consumer client on {address}. Reason: {e}. Retrying...")
+                self.logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")
                 sleep(5)
                 continue
             break
