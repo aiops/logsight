@@ -6,6 +6,8 @@ from kafka import KafkaConsumer as Consumer, TopicPartition
 
 from .base import StreamSource
 
+logger = logging.getLogger("logsight." + __name__)
+
 
 class KafkaSource(StreamSource):
     """Data source - Kafka consumer.
@@ -22,8 +24,6 @@ class KafkaSource(StreamSource):
             **kwargs:
         """
         super().__init__()
-        self.logger = kwargs.get('logger', logging.getLogger('default'))
-        self.logger.debug("Creating Kafka consumer")
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
@@ -32,11 +32,13 @@ class KafkaSource(StreamSource):
         self.address = address
         self.offset = offset
         self.group_id = group_id
-
         self.kafka_source = None
 
+        self._first_message = True
+
     def connect(self):
-        """No explicit connect method for kafka"""
+        logger.info(f"Creating kafka consumer via bootstarp server {self.address} for topic {self.topic} " +
+                    f"with offset policy '{self.offset}'.")
         while True:
             try:
                 self.kafka_source = Consumer(
@@ -50,13 +52,25 @@ class KafkaSource(StreamSource):
                     auto_commit_interval_ms=1000
                 )
             except Exception as e:
-                self.logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")
+                logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")
                 sleep(5)
                 continue
             break
+        self._log_current_offset()
+
+    def _log_current_offset(self):
+        partitions = []
+        for partition in self.kafka_source.partitions_for_topic(self.topic):
+            partitions.append(TopicPartition(self.topic, partition))
+
+        end_offsets = self.kafka_source.end_offsets(partitions)
+        logger.info(f"Current offset for topic {self.topic}: {end_offsets}.")
 
     def to_json(self):
         return {"topic": self.topic}
 
     def receive_message(self):
+        if self._first_message:
+            self._first_message = False
+            self._log_current_offset()
         return next(self.kafka_source).value
