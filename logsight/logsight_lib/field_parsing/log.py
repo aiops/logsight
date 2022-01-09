@@ -124,7 +124,6 @@ class Log:
 
     def _unify_time_format(self):
         # Pop all datetime keys from log
-        timestamp = None
         datetime_strings = [self.log.pop(key) for key in self.timestamp_keys if key in self.log]
         datetime_strings = [dts for dts in datetime_strings if dts]  # Filter None values
         if datetime_strings:
@@ -133,17 +132,14 @@ class Log:
                 try:
                     timestamp = parser.parse(datetime_string)
                 except Exception as e:
-                    logger.info("Unable to parse datetime string %s. Reason: %s",
-                                 datetime_string, e)
+                    logger.debug(f"Unable to parse datetime string {datetime_string}. Reason: {e}")
                     continue
                 break
             if not timestamp:
-                logger.info("Unable to parse datetime strings. Will use current time.")
-                #timestamp = datetime.datetime.utcnow().replace(microsecond=0)
+                logger.debug(f"Unable to parse candidate datetime strings {datetime_strings}.")
                 timestamp = None
         else:
-            logger.info("No timestamp key found. Will use current time.")
-            #timestamp = datetime.datetime.utcnow().replace(microsecond=0)
+            #logger.debug(f"No timestamp key found for log {self.log}")
             timestamp = None
 
         self.set_timestamp(timestamp)
