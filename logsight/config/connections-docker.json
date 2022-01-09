@@ -2,7 +2,7 @@
   "kafka": {
     "host": "kafka",
     "port": "9092",
-    "offset": "latest",
+    "offset": "earliest",
     "topic": "internal"
   },
   "elasticsearch": {
