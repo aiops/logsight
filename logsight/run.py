@@ -15,7 +15,7 @@ from connectors import sources
 from connectors import sinks
 from config import global_vars
 from utils.fs import verify_file_ext
-
+# hello world
 logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "log.json"), 'r')))
 logger = logging.getLogger('logsight')
 

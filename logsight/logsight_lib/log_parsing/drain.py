@@ -154,6 +154,7 @@ class DrainLogParser(Parser):
                 parameter_list = get_parameter_list(log_tmp, new_template_str)
                 log['template'] = ' '.join(new_template)
                 log = add_parameters_to_log_json(log, new_template, parameter_list)
+
             return log
         # except Exception as e:
         #     return

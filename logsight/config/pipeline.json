@@ -71,6 +71,7 @@
       "classname": "ForkModule",
       "args": {},
       "next_handler": [
+        "ad_sink",
         "log_aggregation",
         "log_incidents"
       ]
