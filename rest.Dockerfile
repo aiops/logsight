@@ -1,4 +1,4 @@
-# docker build -t logsightaiowner/logsight .
+# docker build -f rest.Dockerfile -t logsightaiowner/logsight-continuous-verification:test .
 
 # set base image (host OS)
 FROM python:3.7
@@ -16,5 +16,5 @@ RUN pip install -r requirements.txt
 # copy code
 COPY logsight/ logsight
 
-ENTRYPOINT [ "python3", "-u", "./logsight/run.py", "--cconf", "connections-docker" ]
+ENTRYPOINT [ "python3", "-u", "./logsight/manager_rest.py" ]
 #ENTRYPOINT [ "bash" ]
