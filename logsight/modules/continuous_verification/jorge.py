@@ -25,7 +25,7 @@ class ContinuousVerification:
         # if prediction == 1 --> predicted_level = "Fault", else --> "Report"
         dft['predicted_level'] = ["Fault" if p == 1 else "Report" for _, p in dft['prediction'].iteritems()]
 
-        dft['predicted_level'] = dft.level
+        # dft['predicted_level'] = dft.level
         ## TODO: TRANSFORM TO DATAFRAME
 
         # This is to remove the LogQuality dependancy and not break the code
@@ -122,7 +122,7 @@ def transform_html(df):
     def get_risk(baseline_count, candidate_count, change_perc, semantics):
 
         def risk_as_binary(text):
-            if any([True for i in ['WARNING', 'ERROR', 'EXCEPTION', 'CRITICAL'] if i in text]):
+            if any([True for i in ["Fault"] if i in text]):
                 return 1
             return 0
 
@@ -222,10 +222,10 @@ def transform_html(df):
 
     def get_semantic_color(level, semantics):
         alpha = .7
-        if level not in semantics.split(','):
+        if semantics == "Fault":
             return f'rgba(255, 0, 0, {alpha})'
         else:
-            return f'rgb(0, 0, 0)'
+            return f'rgb(0,128,0)'
 
     formatted_df = df.assign(dates=lambda x: [format_dates(s, e) for s, e in
                                               x[['start_date', 'end_date']].itertuples(index=False)],
@@ -293,34 +293,52 @@ def prepare_html(df):
     candidate_perc = trend_symbol(candidate_perc) + str(candidate_perc)
 
     added_states = len(df.loc[(df['count_baseline'] == 0) & (df['count_candidate'] > 0)])
-    added_states_info = int(100 * len(
-        df.loc[(df['count_baseline'] == 0) & (df['count_candidate'] > 0) & (
-                df['level'] == 'INFO')]) / added_states)
-    added_states_fault = int(100 * len(
-        df.loc[(df['count_baseline'] == 0) & (df['count_candidate'] > 0) & (
-                df['level'] != 'INFO')]) / added_states)
+    if added_states:
+        added_states_info = int(100 * len(
+            df.loc[(df['count_baseline'] == 0) & (df['count_candidate'] > 0) & (
+                    df['level'] == 'INFO')]) / added_states)
+        added_states_fault = int(100 * len(
+            df.loc[(df['count_baseline'] == 0) & (df['count_candidate'] > 0) & (
+                    df['level'] != 'INFO')]) / added_states)
+    else:
+        added_states_info = 0
+        added_states_fault = 0
+
     deleted_states = len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0)])
-    deleted_states = 1 if not deleted_states else deleted_states
-    deleted_states_info = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0) & (
-           df['level'] == 'INFO')]) / deleted_states)
-    deleted_states_fault = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0) & (
-            df['level'] != 'INFO')]) / deleted_states)
+    if deleted_states:
+        deleted_states_info = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0) & (
+               df['level'] == 'INFO')]) / deleted_states)
+        deleted_states_fault = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0) & (
+                df['level'] != 'INFO')]) / deleted_states)
+    else:
+        deleted_states_info = 0
+        deleted_states_fault = 0
+
     recurring_states_df = df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] > 0)].copy()
     recurring_states = len(recurring_states_df)
-    recurring_states_info = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] > 0) & (
-            df['level'] == 'INFO')]) / recurring_states)
-    recurring_states_fault = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] > 0) & (
-            df['level'] != 'INFO')]) / recurring_states)
+
+    if recurring_states:
+        recurring_states_info = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] > 0) & (
+                df['level'] == 'INFO')]) / recurring_states)
+        recurring_states_fault = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] > 0) & (
+                df['level'] != 'INFO')]) / recurring_states)
+    else:
+        recurring_states_info = 0
+        recurring_states_fault = 0
     frequency_change_threshold = .5
     frequency_change = len(
         recurring_states_df.loc[(recurring_states_df['change_perc'].abs() >= frequency_change_threshold)])
-    frequency_change_info = \
-        (int(100 * len(recurring_states_df.loc[
-                           (recurring_states_df['change_perc'] < -frequency_change_threshold) & (
-                                   df['level'] == 'INFO')]) / frequency_change),
-         int(100 * len(recurring_states_df.loc[
-                           (recurring_states_df['change_perc'] >= frequency_change_threshold) & (
-                                   df['level'] == 'INFO')])) / frequency_change)
+    if frequency_change:
+        frequency_change_info = \
+            (int(100 * len(recurring_states_df.loc[
+                               (recurring_states_df['change_perc'] < -frequency_change_threshold) & (
+                                       df['level'] == 'INFO')]) / frequency_change),
+             int(100 * len(recurring_states_df.loc[
+                               (recurring_states_df['change_perc'] >= frequency_change_threshold) & (
+                                       df['level'] == 'INFO')])) / frequency_change)
+    else:
+        frequency_change_info = 0
+
     frequency_change_fault = \
         (len(recurring_states_df.loc[
                  (recurring_states_df['change_perc'] < -frequency_change_threshold) & (df['level'] != 'INFO')]),
@@ -344,8 +362,8 @@ def prepare_html(df):
     frequency_baseline = list(sdf.count_baseline)[:frequency_topk]
     frequency_candidate = list(sdf.count_candidate)[:frequency_topk]
 
-    template_tbl_cols = ['risk', 'description', 'baseline', 'candidate', 'template', 'code',
-                         'count', 'change', 'coverage', 'level', 'semantics']
+    template_tbl_cols = ['Risk', 'Description', 'Baseline', 'Candidate', 'Template', 'Code',
+                         'Count', 'Change', 'Coverage', 'Level', 'Semantics']
     template_tbl_rows = df.to_dict(orient='records')
 
     return dict(
