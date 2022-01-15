@@ -16,5 +16,5 @@ RUN pip install -r requirements.txt
 # copy code
 COPY logsight/ logsight
 
-ENTRYPOINT [ "python3", "-u", "./logsight/manager_rest.py" ]
+ENTRYPOINT [ "python3", "-u", "./logsight/manager_rest.py", "--cconf", "connections-docker" ]
 #ENTRYPOINT [ "bash" ]

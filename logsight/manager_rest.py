@@ -5,12 +5,14 @@ from flask import Flask, jsonify, render_template
 from flask import request
 
 from config import global_vars
+from config.global_vars import CONFIG_PATH
 from run import parse_arguments, get_config, logger, create_manager
 from modules.continuous_verification.jorge import ContinuousVerification
+from utils.fs import verify_file_ext
+
 app = Flask(__name__,template_folder="./")
 
-example = json.load(open('testfile.json'))
-cv_module = ContinuousVerification()
+#example = json.load(open('testfile.json'))
 @app.route('/api/compute_log_compare', methods=['GET'])
 def get_tasks():
     args = request.args
@@ -45,6 +47,9 @@ if __name__ == '__main__':
     args = parse_arguments()
     config = get_config(args)
 
+    connection_conf_file = verify_file_ext(args['cconf'], ".json")
+    cv_module = ContinuousVerification(connection_conf_file)
+
     with open(os.path.join(global_vars.CONFIG_PATH, 'banner.txt'), 'r') as f:
         logger.info(f.read())
     # manager = create_manager(config)
@@ -53,4 +58,4 @@ if __name__ == '__main__':
     # p = Process(target=manager.run)
     # p.daemon = True
     # p.start()
-    app.run(debug=True, port=5554)
+    app.run(debug=True, host='0.0.0.0', port=5554)
