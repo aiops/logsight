@@ -6,7 +6,7 @@ import datetime
 class ElasticsearchDataSource:
 
     def __init__(self, host, port, username, password):
-
+        print(f"Connecting to {host}:{port} with {username}:{password}")
         self.es = Elasticsearch(
             [{'host': host, 'port': port}],
             http_auth=(username, password),

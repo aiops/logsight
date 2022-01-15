@@ -10,9 +10,8 @@ from .es_query import ElasticsearchDataSource
 
 
 class ContinuousVerification:
-    def __init__(self):
-        self.es = ElasticsearchDataSource(**ConnectionConfig(os.path.join(global_vars.CONFIG_PATH, "connections.json")).get_elasticsearch_params())
-
+    def __init__(self, connections_conf_file):
+        self.es = ElasticsearchDataSource(**ConnectionConfig(os.path.join(global_vars.CONFIG_PATH, connections_conf_file)).get_elasticsearch_params())
 
     def extract_data_for_tag(self, private_key, application_id, tag):
         # quality = self.es.get_log_ad_data(private_key=private_key, app=application_id, tag=tag)
