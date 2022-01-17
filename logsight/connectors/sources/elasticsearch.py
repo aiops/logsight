@@ -2,11 +2,11 @@ import threading
 
 from elasticsearch.client import Elasticsearch
 
-from .base import Source, StreamSource
+from .base import Source
 from modules.core.wrappers import synchronized
 
 
-class ElasticsearchStreamSource(StreamSource):
+class ElasticsearchListenerSource(Source):
 
     def __init__(self, host, port, username, password, query, pull_interval, **kwargs):
         super().__init__(**kwargs)
@@ -34,22 +34,3 @@ class ElasticsearchStreamSource(StreamSource):
         self.timer.cancel()
         self.timer = threading.Timer(self.pull_interval, self._timeout_call)
         self.timer.start()
-
-
-class ElasticsearchSource(Source):
-    def receive_message(self):
-        # to be implemented
-        pass
-
-    def __init__(self, host, port, username, password, **kwargs):
-        super().__init__(**kwargs)
-
-        self.es = Elasticsearch([{'host': host, 'port': port}],
-                                http_auth=(username, password))
-
-    def connect(self):
-        # To be implemented
-        pass
-
-    def get_data(self, query):
-        return self.es.scan(query)
