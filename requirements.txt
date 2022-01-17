@@ -14,3 +14,4 @@ elasticsearch==7.15.2
 psycopg2==2.7.7
 guppy3
 onnxruntime==1.10.0
+zmq

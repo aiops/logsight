@@ -19,33 +19,8 @@ class Source(ABC):
         """Receive the message from the source/"""
         raise NotImplementedError
 
-    def has_next(self):
-        """Whether the source has a next message."""
-        return True
-
     def to_json(self):
         return {}
-
-
-class StreamSource(Source):
-    """Abstract class depicting source of data. Every data source should implement a method for receiving
-        and processing messages."""
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    @abstractmethod
-    def connect(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def receive_message(self):
-        """Receive the message from the source/"""
-        raise NotImplementedError
-
-    def has_next(self):
-        """Whether the source has a next message."""
-        return True
 
 
 class BatchSource(Source):
