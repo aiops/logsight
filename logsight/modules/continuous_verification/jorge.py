@@ -116,7 +116,7 @@ def transform_html(df):
         return s + '-' + e
 
     def add_comma(i):
-        return '{:,}'.format(i)
+        return '{:}'.format(i)
 
     def get_risk(baseline_count, candidate_count, change_perc, semantics):
 
@@ -220,11 +220,16 @@ def transform_html(df):
             return f'rgba(192, 192, 192, {alpha})'
 
     def get_semantic_color(level, semantics):
+        level = str(level).upper()
         alpha = .7
-        if semantics == "Fault":
-            return f'rgba(255, 0, 0, {alpha})'
-        else:
-            return f'rgb(0,128,0)'
+        if semantics == "Fault" and (level == 'ERROR' or level == 'WARNING' or level == 'CRITICAL' or level == 'WARN' or level == 'ERR'):
+            return [f'rgba(255, 0, 0, {alpha})', f'rgba(255, 0, 0, {alpha})']
+        elif semantics == 'Fault' and (level == 'INFO' or level == 'DEBUG' or level == 'FINE' or level == 'REPORT'):
+            return [f'rgba(255, 0, 0, {alpha})', f'rgb(34,43,69)']
+        elif semantics == 'Report' and (level == 'ERROR' or level == 'WARNING' or level == 'CRITICAL' or level == 'WARN' or level == 'ERR'):
+            return [f'rgb(34,43,69)', f'rgba(255, 0, 0, {alpha})']
+        elif semantics == 'Report' and (level == 'INFO' or level == 'DEBUG' or level == 'FINE' or level == 'REPORT'):
+            return [f'rgb(34,43,69)', f'rgb(34,43,69)']
 
     formatted_df = df.assign(dates=lambda x: [format_dates(s, e) for s, e in
                                               x[['start_date', 'end_date']].itertuples(index=False)],
