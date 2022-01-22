@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 
 import numpy as np
@@ -20,7 +21,6 @@ class ContinuousVerification:
         dft = pd.DataFrame().from_dict(templates)
         dft = dft.rename(columns={"@timestamp": "timestamp"})
         dft = dft.rename(columns={"actual_level": "level"})
-
         # if prediction == 1 --> predicted_level = "Fault", else --> "Report"
         dft['predicted_level'] = ["Fault" if p == 1 else "Report" for _, p in dft['prediction'].iteritems()]
 
@@ -118,30 +118,51 @@ def transform_html(df):
     def add_comma(i):
         return '{:}'.format(i)
 
-    def get_risk(baseline_count, candidate_count, change_perc, semantics):
+    def get_risk(baseline_count, candidate_count, change_perc, level, semantics):
 
         def risk_as_binary(text):
             if any([True for i in ["Fault"] if i in text]):
                 return 1
             return 0
 
+        def level_as_binary(level):
+            if str(level).upper() in ["ERROR", "ERR", "CRITICAL", "FAULT"]:
+                return 1
+            else:
+                return 0
+
+        # baseline, candidate, level, semantics, description, risk as a percentage, id
+        #
+        # risk_tbl = [(0, 1, 0, "Added state", 0, "fa fa-plus-circle font-medium-1"),
+        #             (0, 1, 1, "Added state (Fault)", 100, "fa fa-exclamation-triangle font-medium-1"),
+        #             (1, 0, 0, "Deleted state", 75, "fa fa-minus-circle font-medium-1"),
+        #             (1, 0, 1, "Deleted state (F)", 0, "fa fa-minus-circle font-medium-1"),
+        #             (1, 1, 0, "Recurring state", 0, "fa fa-check-circle font-medium-1"),
+        #             (1, 1, 1, "Recurring state", 25, "fa fa-check-circle font-medium-1"),
+        #             ]
         # baseline, candidate, semantics, description, risk as a percentage, id
-        risk_tbl = [(0, 1, 0, "Added state", 0, "fa fa-plus-circle font-medium-1"),
-                    (0, 1, 1, "Added state (Fault)", 100, "fa fa-exclamation-triangle font-medium-1"),
-                    (1, 0, 0, "Deleted state", 75, "fa fa-minus-circle font-medium-1"),
-                    (1, 0, 1, "Deleted state (F)", 0, "fa fa-minus-circle font-medium-1"),
-                    (1, 1, 0, "Recurring state", 0, "fa fa-check-circle font-medium-1"),
-                    (1, 1, 1, "Recurring state", 25, "fa fa-check-circle font-medium-1"),
+        risk_tbl = [(0, 1, 0, 0, "Added state", 0, "fa fa-plus-circle font-medium-1"),
+                    (0, 1, 1, 0, "Added state (E)", 80, "fa fa-plus-circle font-medium-1"),
+                    (0, 1, 0, 1, "Added state (F)", 80, "fa fa-exclamation-triangle font-medium-1"),
+                    (0, 1, 1, 1, "Added state (E/F)", 100, "fa fa-exclamation-triangle font-medium-1"),
+                    (1, 0, 0, 0, "Deleted state", 0, "fa fa-minus-circle font-medium-1"),
+                    (1, 0, 1, 0, "Deleted state (E)", 0, "fa fa-minus-circle font-medium-1"),
+                    (1, 0, 0, 1, "Deleted state (F)", 0, "fa fa-minus-circle font-medium-1"),
+                    (1, 0, 1, 1, "Deleted state (E/F)", 0, "fa fa-minus-circle font-medium-1"),
+                    (1, 1, 0, 0, "Recurring state", 0, "fa fa-check-circle font-medium-1"),
+                    (1, 1, 1, 0, "Recurring state (E)", 25, "fa fa-check-circle font-medium-1"),
+                    (1, 1, 0, 1, "Recurring state (F)", 25, "fa fa-check-circle font-medium-1"),
+                    (1, 1, 1, 1, "Recurring state (E/F)", 50, "fa fa-check-circle font-medium-1")
                     ]
 
         r = ("Internal error", 100)
         for rule in risk_tbl:
             if rule[0] == min(baseline_count, 1) and rule[1] == min(candidate_count, 1) \
-                    and rule[2] == risk_as_binary(semantics):
-                r = (rule[3], rule[4], rule[5])
+                    and rule[2] == level_as_binary(level) and rule[3] == risk_as_binary(semantics):
+                r = (rule[4], rule[5], rule[6])
 
         if min(baseline_count, 1) == min(candidate_count, 1):
-            if abs(change_perc) >= .5:
+            if abs(change_perc) >= .2:
                 r = ("Frequency change", 60, "fa fa-align-center font-medium-1")
 
         return r
@@ -258,13 +279,13 @@ def transform_html(df):
                              coverage=lambda x: [np.round(100 * ((x + y) / z), 1) for x, y, z in
                                                  x[['count_baseline', 'count_candidate', 'count_gtotal']].itertuples(
                                                      index=False)],
-                             risk_score=lambda x: [get_risk(b, c, p, s)[1] for b, c, p, l, s in
+                             risk_score=lambda x: [get_risk(b, c, p, l, s)[1] for b, c, p, l, s in
                                                    x[['count_baseline', 'count_candidate', 'change_perc', 'level',
                                                       'semantics']].itertuples(index=False)],
-                             risk_description=lambda x: [get_risk(b, c, p, s)[0] for b, c, p, l, s in
+                             risk_description=lambda x: [get_risk(b, c, p, l, s)[0] for b, c, p, l, s in
                                                          x[['count_baseline', 'count_candidate', 'change_perc', 'level',
                                                             'semantics']].itertuples(index=False)],
-                             risk_symbol=lambda x: [get_risk(b, c, p, s)[2] for b, c, p, l, s in
+                             risk_symbol=lambda x: [get_risk(b, c, p, l, s)[2] for b, c, p, l, s in
                                                     x[['count_baseline', 'count_candidate', 'change_perc', 'level',
                                                        'semantics']].itertuples(index=False)],
                              risk_color=lambda x: x['risk_score'].map(
@@ -283,9 +304,10 @@ def prepare_html(df):
     def trend_symbol(v):
         return '+' if v >= 0 else '-'
 
-    top_5 = df.head(5)
-    risk = int(top_5['risk_score'].sum() / len(top_5['risk_score']))
-    risk_color = 'blue' if risk < 6 else 'red'
+    percentage = int(len(df)*0.3)
+    top_k = df.head(percentage)
+    risk = int(top_k['risk_score'].sum() / len(top_k['risk_score']))
+    risk_color = 'blue' if risk < 50 else 'red'
     count_baseline = df['count_baseline'].sum()
     count_candidate = df['count_candidate'].sum()
     total_n_log_messages = count_baseline + count_candidate
