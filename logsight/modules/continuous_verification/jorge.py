@@ -1,5 +1,6 @@
 import datetime
 import logging
+import math
 import os
 
 import numpy as np
@@ -320,10 +321,10 @@ def prepare_html(df):
 
     added_states = len(df.loc[(df['count_baseline'] == 0) & (df['count_candidate'] > 0)])
     if added_states:
-        added_states_info = int(100 * len(
+        added_states_info = math.floor(100 * len(
             df.loc[(df['count_baseline'] == 0) & (df['count_candidate'] > 0) & (
                     df['level'] == 'INFO')]) / added_states)
-        added_states_fault = int(100 * len(
+        added_states_fault = math.ceil(100 * len(
             df.loc[(df['count_baseline'] == 0) & (df['count_candidate'] > 0) & (
                     df['level'] != 'INFO')]) / added_states)
     else:
@@ -332,9 +333,9 @@ def prepare_html(df):
 
     deleted_states = len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0)])
     if deleted_states:
-        deleted_states_info = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0) & (
+        deleted_states_info = math.floor(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0) & (
                df['level'] == 'INFO')]) / deleted_states)
-        deleted_states_fault = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0) & (
+        deleted_states_fault = math.ceil(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] == 0) & (
                 df['level'] != 'INFO')]) / deleted_states)
     else:
         deleted_states_info = 0
@@ -344,9 +345,9 @@ def prepare_html(df):
     recurring_states = len(recurring_states_df)
 
     if recurring_states:
-        recurring_states_info = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] > 0) & (
+        recurring_states_info = math.floor(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] > 0) & (
                 df['level'] == 'INFO')]) / recurring_states)
-        recurring_states_fault = int(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] > 0) & (
+        recurring_states_fault = math.ceil(100 * len(df.loc[(df['count_baseline'] > 0) & (df['count_candidate'] > 0) & (
                 df['level'] != 'INFO')]) / recurring_states)
     else:
         recurring_states_info = 0
@@ -356,10 +357,10 @@ def prepare_html(df):
         recurring_states_df.loc[(recurring_states_df['change_perc'].abs() >= frequency_change_threshold)])
     if frequency_change:
         frequency_change_info = \
-            (int(100 * len(recurring_states_df.loc[
+            (math.floor(100 * len(recurring_states_df.loc[
                                (recurring_states_df['change_perc'] < -frequency_change_threshold) & (
                                        df['level'] == 'INFO')]) / frequency_change),
-             int(100 * len(recurring_states_df.loc[
+             math.ceil(100 * len(recurring_states_df.loc[
                                (recurring_states_df['change_perc'] >= frequency_change_threshold) & (
                                        df['level'] == 'INFO')])) / frequency_change)
     else:
