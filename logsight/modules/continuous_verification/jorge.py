@@ -307,7 +307,10 @@ def prepare_html(df):
 
     percentage = int(len(df)*0.3)
     top_k = df.head(percentage)
-    risk = int(top_k['risk_score'].sum() / len(top_k['risk_score']))
+    if len(top_k['risk_score']) > 0:
+        risk = int(top_k['risk_score'].sum() / len(top_k['risk_score']))
+    else:
+        risk = 0
     risk_color = 'blue' if risk < 50 else 'red'
     count_baseline = df['count_baseline'].sum()
     count_candidate = df['count_candidate'].sum()
