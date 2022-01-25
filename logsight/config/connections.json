@@ -1,7 +1,7 @@
 {
   "kafka": {
     "host": "localhost",
-    "port": "9093",
+    "port": 9093,
     "offset": "earliest",
     "topic": "internal"
   },
@@ -9,7 +9,7 @@
     "host": "localhost",
     "port": 9200,
     "username": "elastic",
-    "password": "elasticsearchpassword"
+    "password": "rU78MYiShH0iu2j7w76y9s87"
   },
   "socket": {
     "host": "localhost",
