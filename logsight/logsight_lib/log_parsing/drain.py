@@ -23,8 +23,8 @@ class LogCluster:
 class DrainLogParser(Parser):
     def __init__(self, depth=3, st=0.35, max_child=100, rex=None, keep_para=True):
         super().__init__()
-        # if rex is None:
-        #     rex = [r'<\d+\ssec', r'0x.*?\s', r'(\d+\.){3}\d+(:\d+)?', r'\S*\d+\S*']
+        if rex is None:
+            rex = [r'<\d+\ssec', r'0x.*?\s', r'(\d+\.){3}\d+(:\d+)?', r'\S*\d+\S*']
         self.rootNode = Node()
         self.depth = depth - 2
         self.st = st
