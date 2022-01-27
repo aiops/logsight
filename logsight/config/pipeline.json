@@ -33,7 +33,7 @@
       "args": {
         "timeout_period": 30,
         "buffer_size": 2048,
-        "retrain_after": 200000
+        "retrain_after": 1000
       },
       "next_handler": "anomaly_detection"
     },
@@ -72,8 +72,8 @@
       "args": {},
       "next_handler": [
         "ad_sink",
-        "log_aggregation",
-        "log_incidents"
+        "log_incidents",
+        "log_aggregation"
       ]
     },
     "agg_sink": {
