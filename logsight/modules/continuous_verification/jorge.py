@@ -143,7 +143,7 @@ def transform_html(df):
         #             ]
         # baseline, candidate, semantics, description, risk as a percentage, id
         risk_tbl = [(0, 1, 0, 0, "Added state", 0, "fa fa-plus-circle font-medium-1"),
-                    (0, 1, 1, 0, "Added state (E)", 80, "fa fa-plus-circle font-medium-1"),
+                    (0, 1, 1, 0, "Added state (E)", 80, "fa fa-exclamation-triangle font-medium-1"),
                     (0, 1, 0, 1, "Added state (F)", 80, "fa fa-exclamation-triangle font-medium-1"),
                     (0, 1, 1, 1, "Added state (E/F)", 100, "fa fa-exclamation-triangle font-medium-1"),
                     (1, 0, 0, 0, "Deleted state", 0, "fa fa-minus-circle font-medium-1"),
@@ -151,10 +151,12 @@ def transform_html(df):
                     (1, 0, 0, 1, "Deleted state (F)", 0, "fa fa-minus-circle font-medium-1"),
                     (1, 0, 1, 1, "Deleted state (E/F)", 0, "fa fa-minus-circle font-medium-1"),
                     (1, 1, 0, 0, "Recurring state", 0, "fa fa-check-circle font-medium-1"),
-                    (1, 1, 1, 0, "Recurring state (E)", 25, "fa fa-check-circle font-medium-1"),
-                    (1, 1, 0, 1, "Recurring state (F)", 25, "fa fa-check-circle font-medium-1"),
-                    (1, 1, 1, 1, "Recurring state (E/F)", 50, "fa fa-check-circle font-medium-1")
+                    (1, 1, 1, 0, "Recurring state (E)", 25, "fa fa-exclamation-circle font-medium-1"),
+                    (1, 1, 0, 1, "Recurring state (F)", 25, "fa fa-exclamation-circle font-medium-1"),
+                    (1, 1, 1, 1, "Recurring state (E/F)", 50, "fa fa-exclamation-circle font-medium-1")
                     ]
+
+        # REVISIT THIS
 
         r = ("Internal error", 100)
         for rule in risk_tbl:
