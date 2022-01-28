@@ -12,6 +12,7 @@ from utils.fs import verify_file_ext
 
 app = Flask(__name__,template_folder="./")
 
+
 #example = json.load(open('testfile.json'))
 @app.route('/api/compute_log_compare', methods=['GET'])
 def get_tasks():
@@ -27,6 +28,7 @@ def get_tasks():
 
     return jsonify(result)
 
+
 @app.route('/api/test', methods=['GET'])
 def get_tasks_html():
     args = request.args
@@ -39,6 +41,7 @@ def get_tasks_html():
     #                                     baseline_tag_id=baseline_tag_id,
     #                                     compare_tag_id=compare_tag_id)
     return render_template('html.jinja')
+
 
 @app.route('/api/applications/create')
 def create_app():
