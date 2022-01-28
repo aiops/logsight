@@ -43,7 +43,10 @@ def get_tasks_html():
 @app.route('/api/applications/create')
 def create_app():
     pass
+
+
 if __name__ == '__main__':
+    from waitress import serve
     args = parse_arguments()
     config = get_config(args)
 
@@ -58,4 +61,4 @@ if __name__ == '__main__':
     # p = Process(target=manager.run)
     # p.daemon = True
     # p.start()
-    app.run(debug=True, host='0.0.0.0', port=5554)
+    serve(app, host='0.0.0.0', port=5554)
