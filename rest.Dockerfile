@@ -1,4 +1,4 @@
-# docker build -f rest.Dockerfile -t logsightaiowner/logsight-continuous-verification:test .
+# docker build -f rest.Dockerfile -t logsightaiowner/logsight-quality-gate-api:test .
 
 # set base image (host OS)
 FROM python:3.7
