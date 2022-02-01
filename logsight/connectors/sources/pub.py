@@ -1,18 +1,15 @@
 import zmq
-import random
-import sys
 import time
 
 port = "5556"
-if len(sys.argv) > 1:
-    port =  sys.argv[1]
-    int(port)
-
 context = zmq.Context()
 socket = context.socket(zmq.PUB)
-socket.bind("tcp://127.0.0.1:%s" % port)
-count = 0
-topic = 0
+socket.bind("tcp://localhost:%s" % port)
+msg = "Hi, I'm here!"
+topic1 = "test_topic1"
+topic2 = "test_topic2"
 while True:
-    print("%d %d" % (topic, count))
-    socket.send_string("%d %d" % (topic, count))
+    print("Sending msg '%s' to topics [%s]" % (msg, ",".join([topic1, topic2])))
+    socket.send(b"%s %s" % (topic1.encode(), msg.encode()))
+    socket.send(b"%s %s" % (topic2.encode(), msg.encode()))
+    time.sleep(1)
