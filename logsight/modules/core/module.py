@@ -27,3 +27,7 @@ class ControlModule(Module):
     @abstractmethod
     def _process_data(self, data: Any) -> Optional[Any]:
         raise NotImplementedError
+
+    def connect(self):
+        self.control_source.connect()
+        self.control_sink.connect()

@@ -9,11 +9,27 @@
     "input": {
       "classname": "InputModule",
       "args": {
-        "source": {
-          "connection": "kafka",
-          "classname": "KafkaSource",
+        "data_source": {
+          "connection": "file",
+          "classname": "FileSource",
           "params": {
-            "topic": "input"
+            "topic": "/Users/pilijevski/work/logsight/logsight/tests/test_data/jboss_v11.json"
+          }
+        },
+        "control_source": {
+          "connection": "socket",
+          "classname": "SocketSource",
+          "params": {
+            "host": "localhost",
+            "port": 9996
+          }
+        },
+        "control_sink": {
+          "connection": "socket",
+          "classname": "SocketSink",
+          "params": {
+            "host": "localhost",
+            "port": 9997
           }
         }
       },

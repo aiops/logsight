@@ -20,7 +20,7 @@ class FileSource(Source):
 
     def __init__(self, path=None, **kwargs):
         super().__init__(**kwargs)
-        self.path = path or "/home/petar/work/logsight/log-monolith/tests/test_data/logfile.txt"
+        self.path = path or "/Users/pilijevski/work/logsight/logsight/tests/test_data/jboss_v10.json"
         files_list = [self.path]
         # for root, folders, files in os.walk("/home/petar/work/logsight/data/test_log_dir"):
         #     for f in files:

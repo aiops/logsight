@@ -1,8 +1,11 @@
+import logging
 from copy import deepcopy
 from typing import Any, Optional
 
 from connectors.sinks import Sink
 from modules.core import AbstractHandler, Module
+
+logger = logging.getLogger("logsight." + __name__)
 
 
 class DataStoreModule(Module, AbstractHandler):
@@ -26,3 +29,6 @@ class DataStoreModule(Module, AbstractHandler):
         result = self._process_data(request)
         return super().handle(result)
 
+    def flush(self, context=None) -> Optional[str]:
+        result = self._process_data(context)
+        return super().flush(result)

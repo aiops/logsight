@@ -1,6 +1,3 @@
-import gc
-import multiprocessing
-from time import sleep
 from typing import Optional
 
 from logsight_classes.application import Application
@@ -9,9 +6,11 @@ from kafka.admin import NewTopic
 from kafka.errors import TopicAlreadyExistsError
 from builders.application_builder import ApplicationBuilder
 from config.global_vars import USES_KAFKA, USES_ES, PIPELINE_PATH
-from multiprocessing import Process
 import logging
 from logsight_classes.data_class import AppConfig, PipelineConfig
+from multiprocessing import Pool, Process
+
+# set_start_method("fork")
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -24,7 +23,7 @@ class Manager:
         self.producer = producer
         self.topic_list = topic_list or []
         self.db = services.get('database', None)
-
+        self.app_pool = Pool(3)
         self.active_apps = {}
         self.active_process_apps = {}
         self.app_builder = app_builder if app_builder else ApplicationBuilder(services)
@@ -61,25 +60,30 @@ class Manager:
 
         logger.info(f"Building App {app_settings.application_name}.")
         app = self.app_builder.build_object(self.pipeline_config, app_settings)
-
-        app_process = Process(target=start_process, args=(app, ))
+        self.app_pool.map(start_process, (app,))
+        app_process = Process(target=start_process, args=(app,))
+        # try:
+        #     pickle.dump(app,open("test.pickle",'wb'))
+        # except Exception as e:
+        #     print(traceback.format_exc())
         self.active_apps[app_settings.application_id] = app
         self.active_process_apps[app_settings.application_id] = app_process
         logger.info("Starting app process")
         app_process.start()
-        #e.wait()
+        # app.start()
+        # e.wait()
         return {
             "ack": "ACTIVE",
             "app": app.to_json()
         }
 
-    def delete_application(self, app_settings: AppConfig) -> Optional[dict]:
-        logger.info(f"Deleting application {app_settings.application_id}")
+    def delete_application(self, application_id) -> Optional[dict]:
+        logger.info(f"Deleting application {application_id}")
 
-        app_process = self.active_process_apps[app_settings.application_id]
+        app_process = self.active_process_apps[application_id]
         app_process.terminate()
 
-        application = self.active_apps[app_settings.application_id]
+        application = self.active_apps[application_id]
         if self.elasticsearch_admin:
             self.elasticsearch_admin.delete_indices(application.private_key, application.application_name)
         if self.kafka_admin:
@@ -89,39 +93,44 @@ class Manager:
         logger.info(f"Application successfully deleted with name: {application.application_name} "
                     f"and id: {application.application_id}")
         return {
-            "ack": "DELETED",
-            "app_id": str(app_settings.application_id)
+            "ack"   : "DELETED",
+            "app_id": str(application_id)
         }
 
     def run(self):
-        self.start_listener()
+        pass
+        # self.create_application(AppConfig(**{'application_id': "app_id",
+        #                                      'private_key': 'sample_key', 'user_name': 'sample_user',
+        #                                      'application_name': 'sample_app',
+        #                                      'status': "create"}))
+        # self.start_listener()
 
-    def start_listener(self):
-        while self.source.has_next():
-            msg = self.source.receive_message()
-            logger.debug(f"Processing message {msg}")
-            result = self.process_message(msg)
-            if result:
-                self.producer.send(result)
+    # def start_listener(self):
+    #     while self.source.has_next():
+    #         msg = self.source.receive_message()
+    #         logger.debug(f"Processing message {msg}")
+    #         result = self.process_message(msg)
+    #         if result:
+    #             self.producer.send(result)
 
-    def process_message(self, msg: dict) -> Optional[dict]:
-        msg['application_id'] = str(msg['application_id'])
-        app_settings = AppConfig(**msg)
-        try:
-            if app_settings.status.upper() == "CREATE":
-                return self.create_application(app_settings)
-            elif app_settings.status.upper() == 'DELETE':
-                return self.delete_application(app_settings)
-            else:
-                return {"msg": "Invalid application status"}
-        except Exception as e:
-            logger.error(e)
+    # def process_message(self, msg: dict) -> Optional[dict]:
+    #     msg['application_id'] = str(msg['application_id'])
+    #     app_settings = AppConfig(**msg)
+    #     try:
+    #         if app_settings.status.upper() == "CREATE":
+    #             return self.create_application(app_settings)
+    #         elif app_settings.status.upper() == 'DELETE':
+    #             return self.delete_application(app_settings)
+    #         else:
+    #             return {"msg": "Invalid application status"}
+    #     except Exception as e:
+    #         logger.error(e)
 
     def setup(self):
         if self.kafka_admin:
             self.delete_topics_for_manager()
             self.create_topics_for_manager()
-        self.source.connect()
+        # self.source.connect()
 
 
 def start_process(app: Application):
