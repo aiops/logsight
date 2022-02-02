@@ -14,6 +14,9 @@ logger = logging.getLogger("logsight." + __name__)
 
 
 class FieldParsingModule(Module, Context, AbstractHandler):
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        return super().flush(self.flush_state(context))
+
     module_name = "field_parsing"
 
     def __init__(self, config, app_settings=None):
@@ -39,6 +42,11 @@ class FieldParsingModule(Module, Context, AbstractHandler):
 
 
 class CalibrationState(State):
+    def flush(self, context: Optional[Any]) -> Optional[Any]:
+        if context:
+            self.buffer.add(context)
+        return self._process_buffer()
+
     def __init__(self, config):
         self.config = config
         self.buffer = Buffer(config.buffer_size)
@@ -74,6 +82,12 @@ class CalibrationState(State):
 
 
 class FieldParserParseState(State):
+    def flush(self, context: Optional[Any]) -> Optional[Any]:
+        result = None
+        if context:
+            result = self.parser.parse_fields(context)[0]
+        return result
+
     def __init__(self, parser: FieldParser):
         self.parser = parser
 

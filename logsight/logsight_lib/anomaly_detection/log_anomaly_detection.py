@@ -9,11 +9,10 @@ import onnxruntime as ort
 
 from .core.log_level_config import ConfigLogLevelEstimation
 
-
 sys.path.append(os.path.join(os.path.dirname(__file__), "core"))
 logger = logging.getLogger("logsight." + __name__)
 
-from .utils import get_padded_data, PREDICTION_THRESHOLD,  softmax
+from .utils import get_padded_data, PREDICTION_THRESHOLD, softmax
 
 
 class NoneDetector:
@@ -21,9 +20,9 @@ class NoneDetector:
         for i in enumerate(log_batch):
             log_batch[i]['prediction'] = 0
         return log_batch
+
     def load_model(self, version, user_app):
         pass
-
 
 
 class LogAnomalyDetector:
@@ -41,21 +40,26 @@ class LogAnomalyDetector:
         return self.config.get('log_mapper')[prediction[0]]
 
     def predict(self, log):
-        out_numpy = softmax(self.ort_sess.run(None, {'input': log,
-                                       'src_mask': None})[0])
-
-        log_level_prediction = np.where(out_numpy[:, 0] > PREDICTION_THRESHOLD, 0, 1)
-        del out_numpy
+        # out_numpy = softmax(self.ort_sess.run(None, {'input': log,
+        #                                'src_mask': None})[0])
+        #
+        # log_level_prediction = np.where(out_numpy[:, 0] > PREDICTION_THRESHOLD, 0, 1)
+        logger.warn("tThis is only for testing!!!")
+        log_level_prediction = np.zeros(len(log))
+        # del out_numpy
         gc.collect()
         return log_level_prediction, None
 
     def load_model(self, version, user_app):
         cur_f = os.path.dirname(os.path.realpath(__file__))
+        print(os.path.join(cur_f, "models/github_tokenizer.pickle"))
         self.tokenizer = pickle.load(open(os.path.join(cur_f, "models/github_tokenizer.pickle"), 'rb'))
+        print("model loaded")
         session_option = ort.SessionOptions()
         session_option.enable_mem_pattern = False
         session_option.enable_cpu_mem_arena = False
-        self.ort_sess = ort.InferenceSession(os.path.join(cur_f, "models/model_github.onnx"), sess_options=session_option)
+        self.ort_sess = ort.InferenceSession(os.path.join(cur_f, "models/model_github.onnx"),
+                                             sess_options=session_option)
         self.model_loaded = True
 
     def tokenize(self, log):

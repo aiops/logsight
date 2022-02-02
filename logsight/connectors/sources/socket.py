@@ -24,5 +24,5 @@ class SocketSource(Source):
 
     def receive_message(self):
         request, client_address = self.socket.accept()
-        return json.loads(request.recv(2048).decode("utf-8").strip())
-
+        payload = request.recv(2048).decode("utf-8").strip()
+        return json.loads(payload)

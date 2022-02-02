@@ -22,7 +22,7 @@ class Application:
 
     def to_json(self):
         return {
-            "application_id": self.application_id,
+            "application_id"  : self.application_id,
             "application_name": self.application_name,
-            "input": self.input_module.to_json()
+            "input"           : self.input_module.to_json()
         }

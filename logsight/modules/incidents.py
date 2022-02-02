@@ -58,6 +58,23 @@ class LogIncidentModule(Module, AbstractHandler):
                 return self.model.get_incident_properties(self.log_count_buffer.flush_buffer(),
                                                           self.log_ad_buffer.flush_buffer())
 
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        result = None
+        if context:
+            if 'timestamp_start' in context:
+                if isinstance(context, list):
+                    self.log_count_buffer.extend(context)
+                else:
+                    self.log_count_buffer.add(context)
+            else:
+                if isinstance(context, list):
+                    self.log_ad_buffer.extend(context)
+                else:
+                    self.log_ad_buffer.add(context)
+            result = self.model.get_incident_properties(self.log_count_buffer.flush_buffer(),
+                                                        self.log_ad_buffer.flush_buffer())
+        return super().handle(result)
+
     def handle(self, request: Any) -> Optional[str]:
         result = self._process_data(request)
         return super().handle(result)

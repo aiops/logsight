@@ -15,10 +15,14 @@ from connectors import sources
 from connectors import sinks
 from config import global_vars
 from utils.fs import verify_file_ext
+
 # hello world
 logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "log.json"), 'r')))
 logger = logging.getLogger('logsight')
 
+
+# from multiprocessing import set_start_method
+# set_start_method("fork")
 
 def setup_connector(config: ManagerConfig, connector: str):
     conn_config = config.get_connector(connector)
@@ -42,16 +46,16 @@ def setup_services(config: ManagerConfig):
 
 
 def create_manager(config: ManagerConfig):
-    source = setup_connector(config, 'source')
+    # source = setup_connector(config, 'source')
     services = setup_services(config)
-    producer = setup_connector(config, 'producer')
+    # producer = setup_connector(config, 'producer')
     topic_list = config.get_topic_list()
 
     connection_builder = ConnectionBuilder(config=config)
     module_builder = ModuleBuilder(connection_builder=connection_builder)
     app_builder = ApplicationBuilder(services, module_builder=module_builder)
 
-    return Manager(source=source, services=services, producer=producer, topic_list=topic_list, app_builder=app_builder)
+    return Manager(source=None, services=services, producer=None, topic_list=topic_list, app_builder=app_builder)
 
 
 def parse_arguments() -> Dict:

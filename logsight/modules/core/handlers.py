@@ -30,6 +30,10 @@ class Handler(ABC):
     def start(self, ctx: dict):
         raise NotImplementedError
 
+    @abstractmethod
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        raise NotImplementedError
+
 
 class AbstractHandler(Handler):
 
@@ -63,8 +67,17 @@ class AbstractHandler(Handler):
         if self.next_handler:
             self.next_handler.start(ctx)
 
+    @abstractmethod
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        if self._next_handler:
+            return self._next_handler.flush(context)
+
 
 class ForkHandler(Handler):
+    def flush(self, context: Optional[Any]) -> Optional[List]:
+        self.stats.incr_stats()
+        if self.next_handlers:
+            return [_handler.flush(context) for _handler in self.next_handlers]
 
     def __init__(self):
         super().__init__()

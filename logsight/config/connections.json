@@ -9,7 +9,7 @@
     "host": "localhost",
     "port": 9200,
     "username": "elastic",
-    "password": "75aeG0uMW2lCmpv8RW68115J"
+    "password": "elasticsearchpassword"
   },
   "socket": {
     "host": "localhost",
