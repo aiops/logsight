@@ -1,9 +1,11 @@
+from uuid import UUID
+
 from pydantic import BaseModel
 from typing import Optional, List, Union, Dict
 
 
 class AppConfig(BaseModel):
-    application_id: str
+    application_id: UUID
     application_name: str
     private_key: str
 

@@ -1,4 +1,6 @@
 import os
+from uuid import UUID
+
 from flask import Flask, jsonify
 from flask import request
 
@@ -29,7 +31,7 @@ def get_tasks():
 @app.route('/api/v1/applications', methods=['POST'])
 def create_app():
     data = request.json
-    app_config = AppConfig(application_id=request.json.get("id"),
+    app_config = AppConfig(application_id=UUID(request.json.get("id")),
                            application_name=request.json.get("name"),
                            private_key=request.json.get("key"))
     return jsonify(manager.create_application(app_config))
