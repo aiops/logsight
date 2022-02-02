@@ -98,39 +98,39 @@ class Manager:
         }
 
     def run(self):
-        pass
+        # pass
         # self.create_application(AppConfig(**{'application_id': "app_id",
         #                                      'private_key': 'sample_key', 'user_name': 'sample_user',
         #                                      'application_name': 'sample_app',
         #                                      'status': "create"}))
-        # self.start_listener()
+        self.start_listener()
 
-    # def start_listener(self):
-    #     while self.source.has_next():
-    #         msg = self.source.receive_message()
-    #         logger.debug(f"Processing message {msg}")
-    #         result = self.process_message(msg)
-    #         if result:
-    #             self.producer.send(result)
+    def start_listener(self):
+        while self.source.has_next():
+            msg = self.source.receive_message()
+            logger.debug(f"Processing message {msg}")
+            result = self.process_message(msg)
+            if result:
+                self.source.socket.send(result)
 
-    # def process_message(self, msg: dict) -> Optional[dict]:
-    #     msg['application_id'] = str(msg['application_id'])
-    #     app_settings = AppConfig(**msg)
-    #     try:
-    #         if app_settings.status.upper() == "CREATE":
-    #             return self.create_application(app_settings)
-    #         elif app_settings.status.upper() == 'DELETE':
-    #             return self.delete_application(app_settings)
-    #         else:
-    #             return {"msg": "Invalid application status"}
-    #     except Exception as e:
-    #         logger.error(e)
+    def process_message(self, msg: dict) -> Optional[dict]:
+        msg['application_id'] = str(msg['application_id'])
+        app_settings = AppConfig(**msg)
+        try:
+            if app_settings.status.upper() == "CREATE":
+                return self.create_application(app_settings)
+            elif app_settings.status.upper() == 'DELETE':
+                return self.delete_application(app_settings)
+            else:
+                return {"msg": "Invalid application status"}
+        except Exception as e:
+            logger.error(e)
 
     def setup(self):
         if self.kafka_admin:
             self.delete_topics_for_manager()
             self.create_topics_for_manager()
-        # self.source.connect()
+        self.source.connect()
 
 
 def start_process(app: Application):
