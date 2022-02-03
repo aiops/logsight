@@ -142,3 +142,6 @@ dmypy.json
 .ipynb
 *.pickle
 
+test.pickle
+testfile.json
+
