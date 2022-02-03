@@ -11,9 +11,10 @@
       "args": {
         "data_source": {
           "connection": "file",
-          "classname": "FileSource",
+          "classname": "ZeroMQ",
           "params": {
-            "topic": "/Users/pilijevski/work/logsight/logsight/tests/test_data/jboss_v11.json"
+            "topic": "input",
+            "endpoint": "tcp://0.0.0.0:5555"
           }
         },
         "control_source": {

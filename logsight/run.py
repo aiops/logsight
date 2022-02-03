@@ -46,7 +46,7 @@ def setup_services(config: ManagerConfig):
 
 
 def create_manager(config: ManagerConfig):
-    # source = setup_connector(config, 'source')
+    source = setup_connector(config, 'source')
     services = setup_services(config)
     # producer = setup_connector(config, 'producer')
     topic_list = config.get_topic_list()
