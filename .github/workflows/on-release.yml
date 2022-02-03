@@ -21,13 +21,15 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
+          echo "Extracting branch name from $GITHUB_REF"
           branch_name=${GITHUB_REF#refs/heads/}
+          echo "Extracted branch name: $branch_name"
           if [ "$branch_name" = "main" ]; then
             branch_name=""
           else
             branch_name="-$branch_name"
           fi
-          echo "##[set-output name=branch;]$(echo $branch_name)"
+          echo ::set-output name=branch::${GITHUB_REF#refs/*/}
         id: extract_branch
       
       - name: Extract metadata (tags, labels) for Docker
