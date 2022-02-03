@@ -3,6 +3,7 @@ import logging
 import sys
 import time
 from abc import abstractmethod
+from enum import Enum
 from typing import Optional
 
 import zmq
@@ -13,15 +14,23 @@ from connectors.sources.base import Source
 logger = logging.getLogger("logsight." + __name__)
 
 
+class ConnectionTypes(Enum):
+    BIND = 1
+    CONNECT = 2
+
+
 class ZeroMQBase(Source):
-    def __init__(self, endpoint: str, socket_type: zmq.constants):
+    def __init__(self, endpoint: str, socket_type: zmq.constants,
+                 connection_type: ConnectionTypes = ConnectionTypes.BIND):
         super(ZeroMQBase, self).__init__()
         self.endpoint = endpoint
         self.socket_type = socket_type
         self.max_retries = 5
         self.socket: Optional[Socket] = None
+        self.connection_type = connection_type
 
     def connect(self):
+
         attempt = 0
         while attempt < self.max_retries:
             attempt += 1
@@ -29,7 +38,10 @@ class ZeroMQBase(Source):
             context = zmq.Context()
             self.socket = context.socket(self.socket_type)
             try:
-                self.socket.bind(self.endpoint)
+                if self.connection_type == ConnectionTypes.BIND:
+                    self.socket.bind(self.endpoint)
+                else:
+                    self.socket.connect(self.endpoint)
                 return
             except Exception as e:
                 logger.error(f"Failed to setup ZeroMQ socket. Reason: {e} Retrying...{attempt}/{self.max_retries} ")
@@ -46,7 +58,7 @@ class ZeroMQSubSource(ZeroMQBase):
     def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
                  **kwargs):
 
-        super().__init__(endpoint, socket_type=zmq.SUB)
+        super().__init__(endpoint, socket_type=zmq.SUB, connection_type=ConnectionTypes.CONNECT)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
@@ -79,7 +91,7 @@ class ZeroMQSubSource(ZeroMQBase):
 
 class ZeroMQRepSource(ZeroMQBase):
     def __init__(self, endpoint: str):
-        super(ZeroMQRepSource, self).__init__(endpoint, socket_type=zmq.REP)
+        super(ZeroMQRepSource, self).__init__(endpoint, socket_type=zmq.REP, connection_type=ConnectionTypes.BIND)
 
     def receive_message(self):
         msg = self.socket.recv().decode("utf-8")
