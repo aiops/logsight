@@ -18,18 +18,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_ID }}
           password: ${{ secrets.DOCKER_PW }}
 
+      - name: Get branch name
+        id: branch
+        uses: tj-actions/branch-names@v5.1
+
       - name: Extract branch name
         shell: bash
         run: |
-          echo "Extracting branch name from $GITHUB_REF"
-          branch_name=${GITHUB_REF#refs/heads/}
-          echo "Extracted branch name: $branch_name"
-          if [ "$branch_name" = "main" ]; then
-            branch_name=""
+          current_branch=${{ steps.branch.outputs.current_branch }}
+          echo "Current branch: $current_branch"
+          echo "Extracted branch name: $current_branch"
+          if [ "$current_branch" = "main" ]; then
+            current_branch=""
           else
-            branch_name="-$branch_name"
+            current_branch="-$current_branch"
           fi
-          echo ::set-output name=branch::${GITHUB_REF#refs/*/}
+          echo ::set-output name=branch::$current_branch
         id: extract_branch
       
       - name: Extract metadata (tags, labels) for Docker
