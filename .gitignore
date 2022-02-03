@@ -140,4 +140,5 @@ dmypy.json
 .gradle
 .bin
 .ipynb
+*.pickle
 
