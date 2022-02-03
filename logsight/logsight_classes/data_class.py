@@ -8,6 +8,7 @@ class AppConfig(BaseModel):
     application_id: UUID
     application_name: str
     private_key: str
+    action: str = ""
 
 
 class MetadataConfig(BaseModel):

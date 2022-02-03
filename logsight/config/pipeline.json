@@ -11,10 +11,10 @@
       "args": {
         "data_source": {
           "connection": "file",
-          "classname": "ZeroMQ",
+          "classname": "ZeroMQSubSource",
           "params": {
             "topic": "input",
-            "endpoint": "tcp://0.0.0.0:5555"
+            "endpoint": "tcp://0.0.0.0:5559"
           }
         },
         "control_source": {
