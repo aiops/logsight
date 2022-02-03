@@ -17,12 +17,24 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_ID }}
           password: ${{ secrets.DOCKER_PW }}
+
+      - name: Extract branch name
+        shell: bash
+        run: |
+          branch_name=${GITHUB_REF#refs/heads/}
+          if [ "$branch_name" = "main" ]; then
+            branch_name=""
+          else
+            branch_name="-$branch_name"
+          fi
+          echo "##[set-output name=branch;]$(echo $branch_name)"
+        id: extract_branch
       
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: logsightaiowner/logsight-monolith
+          images: logsight/logsight${{ steps.extract_branch.outputs.branch }}
       
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
