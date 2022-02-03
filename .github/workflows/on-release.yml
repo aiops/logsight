@@ -18,29 +18,25 @@ jobs:
           username: ${{ secrets.DOCKERHUB_ID }}
           password: ${{ secrets.DOCKER_PW }}
 
-      - name: Get branch name
-        id: branch
+      - name: Get tag ref
+        id: tag
         uses: tj-actions/branch-names@v5.1
 
       - name: Extract branch name
         shell: bash
         run: |
-          current_branch=${{ steps.branch.outputs.current_branch }}
-          echo "Current branch: $current_branch"
-          echo "Extracted branch name: $current_branch"
-          if [ "$current_branch" = "main" ]; then
-            current_branch=""
-          else
-            current_branch="-$current_branch"
-          fi
-          echo ::set-output name=branch::$current_branch
+          tag=${{ steps.branch.outputs.tag }}
+          echo "Release tag: $tag"
+          pre_release_tag=""
+          [[ $t1 =~ ([0-9]+)\.([0-9]+)\.([0-9]+)(-([0-9a-zA-Z]+))?(\.([0-9]+))? ]] && pre_release_tag=${BASH_REMATCH[4]}
+          echo ::set-output name=pre_release_tag::$pre_release_tag
         id: extract_branch
       
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: logsight/logsight${{ steps.extract_branch.outputs.branch }}
+          images: logsight/logsight${{ steps.extract_branch.outputs.pre_release_tag }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
