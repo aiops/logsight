@@ -2,53 +2,72 @@ import json
 import logging
 import sys
 import time
+from abc import abstractmethod
+from typing import Optional
 
 import zmq
+from zmq import Socket
 
-from connectors.sources.base import StreamSource
+from connectors.sources.base import Source
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class ZeroMQ(StreamSource):
-    """Data source - Kafka consumer.
-    """
+class ZeroMQBase(Source):
+    def __init__(self, endpoint: str, socket_type: zmq.constants):
+        super(ZeroMQBase, self).__init__()
+        self.endpoint = endpoint
+        self.socket_type = socket_type
+        self.max_retries = 5
+        self.socket: Optional[Socket] = None
 
-    def __init__(self, endpoint: str, topic: str, private_key=None, application_name=None, **kwargs):
-        """
-        Args:
-            address:
-            topic:
-            **kwargs:
-        """
-        super().__init__()
+    def connect(self):
+        attempt = 0
+        while attempt < self.max_retries:
+            attempt += 1
+            logger.info(f"Setting up ZeroMQ socket on {self.endpoint}.")
+            context = zmq.Context()
+            self.socket = context.socket(self.socket_type)
+            try:
+                self.socket.bind(self.endpoint)
+                return
+            except Exception as e:
+                logger.error(f"Failed to setup ZeroMQ socket. Reason: {e} Retrying...{attempt}/{self.max_retries} ")
+                time.sleep(5)
+
+        raise Exception(f"Failed connecting to ZeroMQ socket after {self.max_retries} attempts.")
+
+    @abstractmethod
+    def receive_message(self):
+        raise NotImplementedError
+
+
+class ZeroMQSubSource(ZeroMQBase):
+    def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
+                 **kwargs):
+
+        super().__init__(endpoint, socket_type=zmq.SUB)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
             self.application_id = None
         self.topic = "_".join([self.application_id, topic]) if self.application_id else topic
         self.endpoint = endpoint
-        self.socket = None
+        self.socket: Optional[Socket] = None
+        self.max_retires = 5
 
     def connect(self):
-        while True:
-            logger.info(f"Setting up ZeroMQ socket on {self.endpoint}.")
-            context = zmq.Context()
-            self.socket = context.socket(zmq.SUB)
-            try:
-                self.socket.connect(self.endpoint)
-            except Exception as e:
-                logger.error(f"Failed to setup ZeroMQ socket. Reason: {e} Retrying...")
-                time.sleep(5)
-            logger.info(f"Subscribing to topic {self.topic}")
-            topic_filter = self.topic.encode('utf8')
-            self.socket.subscribe(topic_filter)
-            break
+        super().connect()
+        logger.info(f"Subscribing to topic {self.topic}")
+        topic_filter = self.topic.encode('utf8')
+        self.socket.subscribe(topic_filter)
 
     def to_json(self):
         return {"endpoint": self.endpoint, "topic": self.topic}
 
     def receive_message(self):
+        if not self.socket:
+            raise Exception("Socket is not connected. Please call connect() first.")
         try:
             topic_log = self.socket.recv().decode("utf-8")
             log = json.loads(topic_log.split(" ", 1)[1])
@@ -56,3 +75,12 @@ class ZeroMQ(StreamSource):
         except Exception:
             return None
         return log
+
+
+class ZeroMQRepSource(ZeroMQBase):
+    def __init__(self, endpoint: str):
+        super(ZeroMQRepSource, self).__init__(endpoint, socket_type=zmq.REP)
+
+    def receive_message(self):
+        msg = self.socket.recv().decode("utf-8")
+        return json.loads(msg)

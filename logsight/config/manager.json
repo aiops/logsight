@@ -1,5 +1,12 @@
 {
   "connectors": {
+    "source": {
+      "connection": "zeromq",
+      "classname": "ZeroMQRepSource",
+      "params": {
+        "endpoint": "tcp://0.0.0.0:5555"
+      }
+    }
   },
   "services": {
     "database": {

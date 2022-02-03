@@ -55,7 +55,7 @@ def create_manager(config: ManagerConfig):
     module_builder = ModuleBuilder(connection_builder=connection_builder)
     app_builder = ApplicationBuilder(services, module_builder=module_builder)
 
-    return Manager(source=None, services=services, producer=None, topic_list=topic_list, app_builder=app_builder)
+    return Manager(source=source, services=services, producer=None, topic_list=topic_list, app_builder=app_builder)
 
 
 def parse_arguments() -> Dict:
