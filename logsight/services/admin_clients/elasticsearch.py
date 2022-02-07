@@ -80,11 +80,11 @@ class ElasticSearchAdmin:
         self.client.index(index="_".join([app_id, "incidents"]), body=doc)
 
     def delete_indices(self, private_key, app_name):
-        app_id = "_".join([private_key, app_name])
+        app_id = str(private_key) + "_" + str(app_name)
         modules = ["log_quality", "log_ad", "count_ad", "incidents", "log_agg"]
         for module in modules:
-
             try:
-                self.client.indices.delete("_".join([app_id, module]))
+                index_name = str(app_id) + "_" + str(module)
+                self.client.indices.delete(index_name)
             except Exception as e:
                 logger.error(e, f" Could not delete es index for module {module}")

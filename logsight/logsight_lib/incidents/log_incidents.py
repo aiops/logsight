@@ -17,6 +17,7 @@ class IncidentDetector:
         except KeyError:
             print(log_ad)
 
+        application_id = log_ad_df.drop_duplicates(subset=['template']).reset_index()['application_id'].values[0]
         log_tmp = log_ad_df.loc[log_ad_df.prediction == 1].drop_duplicates(subset=['template']).reset_index()
         semantic_anomalies = [log_tmp.iloc[i:i + 1].dropna(axis='columns').to_dict('records') for i in
                               range(len(log_tmp))]
@@ -69,7 +70,7 @@ class IncidentDetector:
         logs = [log_ad_df.iloc[i:i + 1].dropna(axis='columns').to_dict('records') for i in
                               range(len(log_ad_df))]
         properties = {"@timestamp": timestamp_end, "total_score": total_score, "timestamp_start": timestamp_start,
-                      "timestamp_end": timestamp_end, "count_ads": tmp_count_anomalies,
+                      "timestamp_end": timestamp_end, "count_ads": tmp_count_anomalies, "application_id": application_id,
                       "new_templates": new_templates, "semantic_ad": semantic_anomalies,
                       "semantic_count_ads": semantic_count_anomalies, "logs": logs}
         if (
@@ -79,7 +80,7 @@ class IncidentDetector:
                 and not tmp_count_anomalies
         ):
             properties = {"@timestamp": timestamp_end, "total_score": 0.0, "timestamp_start": timestamp_start,
-                          "timestamp_end": timestamp_end, "count_ads": [],
+                          "timestamp_end": timestamp_end, "count_ads": [], "application_id": application_id,
                           "new_templates": [], "semantic_ad": [],
                           "semantic_count_ads": []}
 

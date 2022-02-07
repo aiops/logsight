@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 from uuid import UUID
 
@@ -56,6 +57,7 @@ class Manager:
         logger.info("Deleted topics for manager.")
 
     def create_application(self, app_settings: AppConfig) -> Optional[dict]:
+        app_settings.action = ''
         if app_settings.application_id in self.active_apps.keys():
             return {"msg": f"Application {app_settings.application_id} already created"}
 
@@ -75,10 +77,8 @@ class Manager:
 
     def delete_application(self, application_id) -> Optional[dict]:
         logger.info(f"Deleting application {application_id}")
-
         app_process = self.active_process_apps[application_id]
         app_process.terminate()
-
         application = self.active_apps[application_id]
         if self.elasticsearch_admin:
             self.elasticsearch_admin.delete_indices(application.private_key, application.application_name)
@@ -86,6 +86,7 @@ class Manager:
             self.kafka_admin.delete_topics(application.topic_list)
         del self.active_apps[application.application_id]
         del self.active_process_apps[application.application_id]
+
         logger.info(f"Application successfully deleted with name: {application.application_name} "
                     f"and id: {application.application_id}")
         return {
@@ -102,19 +103,22 @@ class Manager:
             logger.debug(f"Processing message {msg}")
             result = self.process_message(msg)
             if result:
-                self.source.socket.send(result)
+                self.source.socket.send(json.dumps(result, indent=2).encode('utf-8'))
+            else:
+                self.source.socket.send(json.dumps({"result":""}, indent=2).encode('utf-8'))
+
 
     def process_message(self, msg: dict) -> Optional[dict]:
 
         app_settings = AppConfig(application_id=UUID(msg.get("id")),
                                  application_name=msg.get("name"),
-                                 private_key=msg.get("key"),
+                                 private_key=msg.get("userKey"),
                                  action=msg.get("action"))
         try:
             if app_settings.action.upper() == "CREATE":
                 return self.create_application(app_settings)
             elif app_settings.action.upper() == 'DELETE':
-                return self.delete_application(app_settings)
+                return self.delete_application(app_settings.application_id)
             else:
                 return {"msg": "Invalid application status"}
         except Exception as e:

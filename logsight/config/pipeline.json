@@ -10,27 +10,11 @@
       "classname": "InputModule",
       "args": {
         "data_source": {
-          "connection": "file",
+          "connection": "zeromq",
           "classname": "ZeroMQSubSource",
           "params": {
             "topic": "input",
             "endpoint": "tcp://0.0.0.0:5559"
-          }
-        },
-        "control_source": {
-          "connection": "socket",
-          "classname": "SocketSource",
-          "params": {
-            "host": "localhost",
-            "port": 9996
-          }
-        },
-        "control_sink": {
-          "connection": "socket",
-          "classname": "SocketSink",
-          "params": {
-            "host": "localhost",
-            "port": 9997
           }
         }
       },

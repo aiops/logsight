@@ -28,7 +28,7 @@ class InputModule(ControlModule, AbstractHandler):
 
         AbstractHandler.start(self, ctx)
         # Connect sources
-        ControlModule.connect(self)
+        # ControlModule.connect(self)
         self.data_source.connect()
 
         internal = threading.Thread(name=self.module_name + "IntSrc", target=self._start_control_listener,

@@ -83,7 +83,6 @@ class ZeroMQSubSource(ZeroMQBase):
         try:
             topic_log = self.socket.recv().decode("utf-8")
             log = json.loads(topic_log.split(" ", 1)[1])
-            print(log)
         except Exception:
             return None
         return log
