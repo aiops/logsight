@@ -9,14 +9,6 @@
     }
   },
   "services": {
-    "database": {
-      "classname": "PostgresDBConnection",
-      "connection": "postgres"
-    },
-    "elasticsearch_admin": {
-      "classname": "ElasticSearchAdmin",
-      "connection": "elasticsearch"
-    }
   },
   "topic_list": [
     "manager_settings",

@@ -124,7 +124,7 @@ class Manager:
         elif app_settings.action.upper() == 'DELETE':
             return self.delete_application(app_settings.application_id)
         else:
-            raise Exception('Invalid application status. Application status needs to be one of ["CREATE", "DELETE"])')
+            return ErrorResponse(message='Invalid application status. Application status needs to be one of ["CREATE", "DELETE"])', status=HTTPStatus.BAD_REQUEST)
 
 
     def setup(self):
