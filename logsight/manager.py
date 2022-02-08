@@ -125,9 +125,11 @@ class Manager:
             app_settings = self.get_app_config(msg)
             if app_settings:
                 result = self.process_message(app_settings)
-            if result:
-                self.source.socket.send(json.dumps(result, indent=2).encode('utf-8'))
             else:
+                self.source.socket.send(json.dumps({"result": ""}, indent=2).encode('utf-8'))
+            if app_settings and result:
+                self.source.socket.send(json.dumps(result, indent=2).encode('utf-8'))
+            if app_settings is not None and result is None:
                 self.source.socket.send(json.dumps({"result": ""}, indent=2).encode('utf-8'))
 
     def process_message(self, app_settings: AppConfig) -> Optional[dict]:

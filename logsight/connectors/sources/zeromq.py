@@ -57,7 +57,6 @@ class ZeroMQBase(Source):
 class ZeroMQSubSource(ZeroMQBase):
     def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
                  **kwargs):
-
         super().__init__(endpoint, socket_type=zmq.SUB, connection_type=ConnectionTypes.CONNECT)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
@@ -83,7 +82,8 @@ class ZeroMQSubSource(ZeroMQBase):
         try:
             topic_log = self.socket.recv().decode("utf-8")
             log = json.loads(topic_log.split(" ", 1)[1])
-        except Exception:
+        except Exception as e:
+            logger.error(e)
             return None
         return log
 

@@ -1,0 +1,35 @@
+{
+  "kafka": {
+    "host": "localhost",
+    "port": 9093,
+    "offset": "earliest",
+    "topic": "internal"
+  },
+  "elasticsearch": {
+    "host": "localhost",
+    "port": 9200,
+    "username": "elastic",
+    "password": "elasticsearchpassword"
+  },
+  "socket": {
+    "host": "localhost",
+    "port": 9999
+  },
+  "zeromq": {
+    "endpoint": "tcp://0.0.0.0:5559"
+  },
+  "file": {
+  },
+  "queue": {
+  },
+  "stdout": {
+  },
+  "postgres": {
+    "host": "localhost",
+    "port": 5432,
+    "username": "logsight",
+    "password": "logsight",
+    "db_name": "logsight",
+    "driver": "postgresql+psycopg2"
+  }
+}
