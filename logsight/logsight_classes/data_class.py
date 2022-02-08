@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import Optional, List, Union, Dict
 
 
@@ -9,6 +9,16 @@ class AppConfig(BaseModel):
     application_name: str
     private_key: str
     action: str = ""
+
+    @validator('application_name')
+    def application_name_not_empty(cls, v):
+        assert len(v) > 0, "Application name must not be an empty string."
+        return v
+
+    @validator('private_key')
+    def private_key_not_empty(cls, v):
+        assert len(v) > 0, "Private key must not be an empty string."
+        return v
 
 
 class MetadataConfig(BaseModel):

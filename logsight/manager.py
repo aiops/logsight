@@ -11,8 +11,9 @@ from builders.application_builder import ApplicationBuilder
 from config.global_vars import USES_KAFKA, USES_ES, PIPELINE_PATH
 from logsight_classes.application import Application
 from logsight_classes.data_class import AppConfig, PipelineConfig
+from logsight_classes.responses import ErrorResponse, SuccessResponse, Response
 from utils.fs import load_json
-
+from http import HTTPStatus
 # set_start_method("fork")
 
 logger = logging.getLogger("logsight." + __name__)
@@ -57,10 +58,10 @@ class Manager:
                 logger.error(e)
         logger.info("Deleted topics for manager.")
 
-    def create_application(self, app_settings: AppConfig) -> Optional[dict]:
+    def create_application(self, app_settings: AppConfig) -> Response:
         app_settings.action = ''
         if app_settings.application_id in self.active_apps.keys():
-            return {"msg": f"Application {app_settings.application_id} already created"}
+            return ErrorResponse(message = f"Application {app_settings.application_id} already created", status=HTTPStatus.CONFLICT)
 
         logger.info(f"Building App {app_settings.application_name}.")
         app = self.app_builder.build_object(self.pipeline_config, app_settings)
@@ -71,16 +72,15 @@ class Manager:
         app_process.start()
         # app.start()
         # e.wait()
-        return {
-            "ack": "ACTIVE",
-            "app": app.to_json()
-        }
+        return SuccessResponse(message = f"Application {app.application_id} CREATED")
 
-    def delete_application(self, application_id) -> Optional[dict]:
+    def delete_application(self, application_id) -> Response:
         logger.info(f"Deleting application {application_id}")
         if application_id not in self.active_apps.keys():
-            logger.info(f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!")
-            return None
+            logger.info(
+                f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!")
+            return ErrorResponse(message = f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!", status=HTTPStatus.CONFLICT)
+
         app_process = self.active_process_apps[application_id]
         app_process.terminate()
         application = self.active_apps[application_id]
@@ -95,54 +95,37 @@ class Manager:
         logger.info("Application object deleted from active_process_apps apps.")
         logger.info(f"Application successfully deleted with name: {application.application_name} "
                     f"and id: {application.application_id}")
-        return {
-            "ack": "DELETED",
-            "app_id": str(application_id)
-        }
+        return SuccessResponse(message=f"Application {application_id} DELETED")
 
     def run(self):
         self.start_listener()
 
-    def get_app_config(self, msg):
-        try:
-            app_settings = AppConfig(application_id=UUID(msg.get("id")),
-                                     application_name=msg.get("name"),
-                                     private_key=msg.get("userKey"),
-                                     action=msg.get("action"))
-            if len(app_settings.application_name) > 0 and len(app_settings.private_key) > 0:
-                return app_settings
-            else:
-                return None
-        except Exception as e:
-            logger.error(e)
-            return None
-
     def start_listener(self):
         while self.source.has_next():
-            result = None
             msg = self.source.receive_message()
             logger.debug(f"Processing message {msg}")
-            app_settings = self.get_app_config(msg)
-            if app_settings:
-                result = self.process_message(app_settings)
-            else:
-                self.source.socket.send(json.dumps({"result": ""}, indent=2).encode('utf-8'))
-            if app_settings and result:
-                self.source.socket.send(json.dumps(result, indent=2).encode('utf-8'))
-            if app_settings is not None and result is None:
-                self.source.socket.send(json.dumps({"result": ""}, indent=2).encode('utf-8'))
+            try:
+                result = self.process_message(msg)
+                self.source.socket.send(json.dumps(result.dict(), indent=2).encode('utf-8'))
+                logger.info(f"Result sent: {str(json.dumps(result.dict(), indent=2).encode('utf-8'))}")
+            except Exception as e:
+                self.source.socket.send(json.dumps(ErrorResponse(str(e)).dict(), indent=2).encode('utf-8'))
 
-    def process_message(self, app_settings: AppConfig) -> Optional[dict]:
+    def process_message(self, msg: dict) -> Response:
         try:
-            if app_settings.action.upper() == "CREATE":
-                return self.create_application(app_settings)
-            elif app_settings.action.upper() == 'DELETE':
-                return self.delete_application(app_settings.application_id)
-            else:
-                return {"msg": "Invalid application status"}
+            app_settings = AppConfig(application_id=UUID(msg.get("id")),
+                                 application_name=msg.get("name"),
+                                 private_key=msg.get("userKey"),
+                                 action=msg.get("action"))
         except Exception as e:
-            logger.error(e)
-            return None
+            return ErrorResponse(message = str(e), status = HTTPStatus.BAD_REQUEST)
+        if app_settings.action.upper() == "CREATE":
+            return self.create_application(app_settings)
+        elif app_settings.action.upper() == 'DELETE':
+            return self.delete_application(app_settings.application_id)
+        else:
+            raise Exception('Invalid application status. Application status needs to be one of ["CREATE", "DELETE"])')
+
 
     def setup(self):
         if self.kafka_admin:
