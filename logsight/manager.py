@@ -1,16 +1,17 @@
 import json
+import logging
+from multiprocessing import Process
 from typing import Optional
 from uuid import UUID
 
-from logsight_classes.application import Application
-from utils.fs import load_json
 from kafka.admin import NewTopic
 from kafka.errors import TopicAlreadyExistsError
+
 from builders.application_builder import ApplicationBuilder
 from config.global_vars import USES_KAFKA, USES_ES, PIPELINE_PATH
-import logging
+from logsight_classes.application import Application
 from logsight_classes.data_class import AppConfig, PipelineConfig
-from multiprocessing import Process
+from utils.fs import load_json
 
 # set_start_method("fork")
 
@@ -31,9 +32,9 @@ class Manager:
         self.app_builder = app_builder if app_builder else ApplicationBuilder(services)
 
         self.pipeline_config = PipelineConfig(**load_json(PIPELINE_PATH))
-
-        for app in self.db.read_apps():
-            self.create_application(AppConfig(**app))
+        if self.db:
+            for app in self.db.read_apps():
+                self.create_application(AppConfig(**app))
 
     def create_topics_for_manager(self):
         for topic in self.topic_list:
@@ -77,6 +78,9 @@ class Manager:
 
     def delete_application(self, application_id) -> Optional[dict]:
         logger.info(f"Deleting application {application_id}")
+        if application_id not in self.active_apps.keys():
+            logger.info(f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!")
+            return None
         app_process = self.active_process_apps[application_id]
         app_process.terminate()
         application = self.active_apps[application_id]
@@ -84,9 +88,11 @@ class Manager:
             self.elasticsearch_admin.delete_indices(application.private_key, application.application_name)
         if self.kafka_admin:
             self.kafka_admin.delete_topics(application.topic_list)
-        del self.active_apps[application.application_id]
-        del self.active_process_apps[application.application_id]
-
+        logger.info("Application object obtained from active apps.")
+        del self.active_apps[application_id]
+        logger.info("Application object deleted from active apps.")
+        del self.active_process_apps[application_id]
+        logger.info("Application object deleted from active_process_apps apps.")
         logger.info(f"Application successfully deleted with name: {application.application_name} "
                     f"and id: {application.application_id}")
         return {
@@ -97,23 +103,34 @@ class Manager:
     def run(self):
         self.start_listener()
 
+    def get_app_config(self, msg):
+        try:
+            app_settings = AppConfig(application_id=UUID(msg.get("id")),
+                                     application_name=msg.get("name"),
+                                     private_key=msg.get("userKey"),
+                                     action=msg.get("action"))
+            if len(app_settings.application_name) > 0 and len(app_settings.private_key) > 0:
+                return app_settings
+            else:
+                return None
+        except Exception as e:
+            logger.error(e)
+            return None
+
     def start_listener(self):
         while self.source.has_next():
+            result = None
             msg = self.source.receive_message()
             logger.debug(f"Processing message {msg}")
-            result = self.process_message(msg)
+            app_settings = self.get_app_config(msg)
+            if app_settings:
+                result = self.process_message(app_settings)
             if result:
                 self.source.socket.send(json.dumps(result, indent=2).encode('utf-8'))
             else:
-                self.source.socket.send(json.dumps({"result":""}, indent=2).encode('utf-8'))
+                self.source.socket.send(json.dumps({"result": ""}, indent=2).encode('utf-8'))
 
-
-    def process_message(self, msg: dict) -> Optional[dict]:
-
-        app_settings = AppConfig(application_id=UUID(msg.get("id")),
-                                 application_name=msg.get("name"),
-                                 private_key=msg.get("userKey"),
-                                 action=msg.get("action"))
+    def process_message(self, app_settings: AppConfig) -> Optional[dict]:
         try:
             if app_settings.action.upper() == "CREATE":
                 return self.create_application(app_settings)
@@ -123,6 +140,7 @@ class Manager:
                 return {"msg": "Invalid application status"}
         except Exception as e:
             logger.error(e)
+            return None
 
     def setup(self):
         if self.kafka_admin:
