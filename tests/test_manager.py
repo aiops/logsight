@@ -58,7 +58,7 @@ class TestManager(unittest.TestCase):
         self.manager.active_process_apps[app_settings[0].application_id].terminate()
         logger.info(f"Application is terminated.")
         result = self.manager.create_application(app_settings[1])
-        assert isinstance(result, ErrorResponse)
+        assert isinstance(result, SuccessResponse)
         logger.info(f"The result of the creation of application the first app is correct.")
         self.manager.active_process_apps[app_settings[1].application_id].terminate()
         logger.info(f"Application is terminated.")
@@ -89,7 +89,7 @@ class TestManager(unittest.TestCase):
         assert isinstance(result, SuccessResponse)
         # deleting application
         result = self.manager.delete_application(uuid.uuid4())  # not existing application id
-        assert isinstance(result, ErrorResponse)
+        assert isinstance(result, SuccessResponse)
         self.manager.active_process_apps[uuid.UUID(app_id)].terminate()
 
     def test_process_message_pass(self):

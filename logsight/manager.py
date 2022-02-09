@@ -61,7 +61,7 @@ class Manager:
     def create_application(self, app_settings: AppConfig) -> Response:
         app_settings.action = ''
         if app_settings.application_id in self.active_apps.keys():
-            return ErrorResponse(message = f"Application {app_settings.application_id} already created", status=HTTPStatus.CONFLICT)
+            return SuccessResponse(message = f"Application {app_settings.application_id} already created")
 
         logger.info(f"Building App {app_settings.application_name}.")
         app = self.app_builder.build_object(self.pipeline_config, app_settings)
@@ -79,7 +79,7 @@ class Manager:
         if application_id not in self.active_apps.keys():
             logger.info(
                 f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!")
-            return ErrorResponse(message = f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!", status=HTTPStatus.CONFLICT)
+            return SuccessResponse(message = f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!")
 
         app_process = self.active_process_apps[application_id]
         app_process.terminate()
