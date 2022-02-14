@@ -45,7 +45,7 @@ class InputModule(ControlModule, AbstractHandler):
         if self.control_source is None:
             return
         while self.control_source.has_next():
-            logger.debug("Waiting for message")
+            logger.debug("Waiting for control message")
             msg = self.control_source.receive_message()
             self.process_control_message(msg)
         logger.debug("Thread ended.")

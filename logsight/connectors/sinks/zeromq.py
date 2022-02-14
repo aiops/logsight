@@ -9,25 +9,28 @@ from typing import Optional
 import zmq
 from zmq import Socket
 
+from connectors.sinks import Sink
 from connectors.sources.base import Source
 from connectors.zeromq_base import ZeroMQBase, ConnectionTypes
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class ZeroMQSubSource(Source, ZeroMQBase):
+class ZeroMQSubSource(Sink, ZeroMQBase):
     def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
                  **kwargs):
-        Source.__init__(self)
-        ZeroMQBase.__init__(self, endpoint=endpoint, socket_type=zmq.SUB, connection_type=ConnectionTypes.CONNECT)
+        super(Source).__init__()
+        super(ZeroMQBase, self).__init__(endpoint, socket_type=zmq.SUB, connection_type=ConnectionTypes.CONNECT)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
             self.application_id = None
         self.topic = "_".join([self.application_id, topic]) if self.application_id else topic
+        self.endpoint = endpoint
+        self.socket: Optional[Socket] = None
 
     def connect(self):
-        super(ZeroMQBase).connect()
+        super().connect()
         logger.info(f"Subscribing to topic {self.topic}")
         topic_filter = self.topic.encode('utf8')
         self.socket.subscribe(topic_filter)
@@ -46,14 +49,3 @@ class ZeroMQSubSource(Source, ZeroMQBase):
             return None
         return log
 
-
-class ZeroMQRepSource(Source, ZeroMQBase):
-    def __init__(self, endpoint: str):
-        ZeroMQBase.__init__(self, endpoint=endpoint, socket_type=zmq.REP, connection_type=ConnectionTypes.BIND)
-
-    def receive_message(self):
-        msg = self.socket.recv().decode("utf-8")
-        return json.loads(msg)
-
-    def connect(self):
-        super(ZeroMQBase).connect()

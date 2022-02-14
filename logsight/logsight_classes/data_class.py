@@ -5,7 +5,7 @@ from typing import Optional, List, Union, Dict
 
 
 class AppConfig(BaseModel):
-    application_id: UUID
+    application_id: str
     application_name: str
     private_key: str
     action: str = ""

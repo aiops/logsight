@@ -22,11 +22,13 @@ class TestManager(unittest.TestCase):
 
     def test_create_application_pass(self):
         logger.info("Running test_create_application_pass")
-        app_id_1 = uuid.uuid4()
-        app_settings = AppConfig(application_id=app_id_1,
-                                  application_name="myapplication",
-                                  private_key="myuserkey",
-                                  action='')
+        app_id_1 = str(uuid.uuid4())
+        app_settings = AppConfig(
+            application_id=app_id_1,
+            application_name="myapplication",
+            private_key="myuserkey",
+            action=''
+        )
 
         result = self.manager.create_application(app_settings)
         assert isinstance(result, SuccessResponse)
@@ -39,14 +41,21 @@ class TestManager(unittest.TestCase):
 
     def test_create_application_already_exists_fail(self):
         logger.info("Running test_create_application_fail where application already exists.")
-        app_id = uuid.uuid4()
-        app_settings = [AppConfig(application_id=app_id,
-                                  application_name="myapplication",
-                                  private_key="myuserkey",
-                                  action=''), AppConfig(application_id=app_id,
-                                                        application_name="myapplication",
-                                                        private_key="myuserkey",
-                                                        action='')]
+        app_id = str(uuid.uuid4())
+        app_settings = [
+            AppConfig(
+                application_id=app_id,
+                application_name="myapplication",
+                private_key="myuserkey",
+                action=''
+            ),
+            AppConfig(
+                application_id=app_id,
+                application_name="myapplication",
+                private_key="myuserkey",
+                action=''
+            )
+        ]
         logger.info(f"Creating application configs for {len(app_settings)} applications: ")
         logger.info(f"Running the create_application method for the  {len(app_settings)} applications.")
         result = self.manager.create_application(app_settings[0])
@@ -66,10 +75,12 @@ class TestManager(unittest.TestCase):
     def test_delete_application_pass(self):
         # creating application given
         app_id = str(uuid.uuid4())
-        app_settings = AppConfig(application_id=app_id,
-                                 application_name="myapp",
-                                 private_key="myprivatekey",
-                                 action="CREATE")
+        app_settings = AppConfig(
+            application_id=app_id,
+            application_name="myapp",
+            private_key="myprivatekey",
+            action="CREATE"
+        )
         result = self.manager.create_application(app_settings)
         assert isinstance(result, SuccessResponse)
         # deleting application
@@ -81,16 +92,18 @@ class TestManager(unittest.TestCase):
     def test_delete_application_fail(self):
         # creating application given
         app_id = str(uuid.uuid4())
-        app_settings = AppConfig(application_id=app_id,
-                                 application_name="myapp",
-                                 private_key="myprivatekey",
-                                 action="CREATE")
+        app_settings = AppConfig(
+            application_id=app_id,
+            application_name="myapp",
+            private_key="myprivatekey",
+            action="CREATE"
+        )
         result = self.manager.create_application(app_settings)
         assert isinstance(result, SuccessResponse)
         # deleting application
         result = self.manager.delete_application(uuid.uuid4())  # not existing application id
         assert isinstance(result, SuccessResponse)
-        self.manager.active_process_apps[uuid.UUID(app_id)].terminate()
+        self.manager.active_process_apps[app_id].terminate()
 
     def test_process_message_pass(self):
         app_id = str(uuid.uuid4())
@@ -114,7 +127,7 @@ class TestManager(unittest.TestCase):
 
         msg = {"id": "myuuid", "name": "myapp", "userKey": "myprivatekey", "action": "CREATE"}
         result = self.manager.process_message(msg)
-        assert isinstance(result, ErrorResponse)
+        assert isinstance(result, SuccessResponse)
 
         msg = {"id": str(uuid.uuid4()), "name": None, "userKey": "myprivatekey", "action": "CREATE"}
         result = self.manager.process_message(msg)
