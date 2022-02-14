@@ -6,7 +6,7 @@ import datetime
 class ElasticsearchDataSource:
 
     def __init__(self, host, port, username, password):
-        print(f"Connecting to {host}:{port} with {username}:{password}")
+        print(f"Connecting to {host}:{port} with {username}")
         self.es = Elasticsearch(
             [{'host': host, 'port': port}],
             http_auth=(username, password),
@@ -17,18 +17,18 @@ class ElasticsearchDataSource:
 
     def get_log_ad_data(self, private_key: str, app: str, tag: str):
         index = f"{private_key}_{app}_log_ad"
-        res = scan(
-            self.es,
+        res = self.es.search(
             index=index,
             doc_type='_doc',
-            query={
+            body={
+                "size": 10000,
                 "query": {
                     "match": {"tag": tag}
                 }
             }
         )
 
-        return [r['_source'] for r in res]
+        return [r['_source'] for r in res['hits']['hits']]
 
 
 def create_dummy_data(es, index, app, tag, start_time, amount=2500, recreate_index=False):
