@@ -16,13 +16,12 @@ from connectors.zeromq_base import ZeroMQBase, ConnectionTypes
 logger = logging.getLogger("logsight." + __name__)
 
 
-class ZeroMQPubSink(Sink, ZeroMQBase):
+class ZeroMQPubSink(ZeroMQBase):
     name = "zeroMQ pub sink"
 
     def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
                  **kwargs):
-        super(Sink).__init__()
-        super(ZeroMQBase, self).__init__(endpoint, socket_type=zmq.PUB, connection_type=ConnectionTypes.BIND)
+        super().__init__(endpoint, socket_type=zmq.PUB, connection_type=ConnectionTypes.BIND)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:

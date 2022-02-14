@@ -1,25 +1,16 @@
 import json
 import logging
-import sys
-import time
-from abc import abstractmethod
-from enum import Enum
-from typing import Optional
-
 import zmq
-from zmq import Socket
 
-from connectors.sources.source import Source
 from connectors.zeromq_base import ZeroMQBase, ConnectionTypes
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class ZeroMQSubSource(Source, ZeroMQBase):
+class ZeroMQSubSource(ZeroMQBase):
     def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
                  **kwargs):
-        Source.__init__(self)
-        ZeroMQBase.__init__(self, endpoint=endpoint, socket_type=zmq.SUB, connection_type=ConnectionTypes.CONNECT)
+        super().__init__(endpoint=endpoint, socket_type=zmq.SUB, connection_type=ConnectionTypes.CONNECT)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
@@ -47,16 +38,16 @@ class ZeroMQSubSource(Source, ZeroMQBase):
         return log
 
 
-class ZeroMQRepSource(Source, ZeroMQBase):
+class ZeroMQRepSource(ZeroMQBase):
     def __init__(self, endpoint: str):
-        ZeroMQBase.__init__(self, endpoint=endpoint, socket_type=zmq.REP, connection_type=ConnectionTypes.BIND)
+        super().__init__(endpoint=endpoint, socket_type=zmq.REP, connection_type=ConnectionTypes.BIND)
 
     def receive_message(self):
         msg = self.socket.recv().decode("utf-8")
         return json.loads(msg)
 
     def connect(self):
-        super(ZeroMQBase).connect()
+        super().connect()
 
     def to_json(self):
         return {"source_type": "zeroMQRepSource", "endpoint": self.endpoint}

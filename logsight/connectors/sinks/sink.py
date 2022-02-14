@@ -6,7 +6,7 @@ class Sink(ABC):
         and processing messages."""
 
     def __init__(self, **kwargs):
-        # init
+        #init
         pass
 
     @abstractmethod

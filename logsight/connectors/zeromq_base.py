@@ -1,15 +1,13 @@
-import json
 import logging
-import sys
 import time
-from abc import abstractmethod
 from enum import Enum
 from typing import Optional
 
 import zmq
 from zmq import Socket
 
-from connectors.sources.source import Source
+from connectors.sinks import Sink
+from connectors.sources import Source
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -19,9 +17,12 @@ class ConnectionTypes(Enum):
     CONNECT = 2
 
 
-class ZeroMQBase:
-    def __init__(self, endpoint: str, socket_type: zmq.constants, num_connect_retry: int = 5,
-                 connection_type: ConnectionTypes = ConnectionTypes.BIND):
+class ZeroMQBase(Source, Sink):
+    name = "zeromq"
+
+    def __init__(self, endpoint: str, socket_type: zmq.constants,
+                 connection_type: ConnectionTypes = ConnectionTypes.BIND, num_connect_retry: int = 5):
+        super().__init__()
         self.endpoint = endpoint
         self.socket_type = socket_type
         self.num_connect_retry = num_connect_retry
@@ -43,7 +44,21 @@ class ZeroMQBase:
                 logger.info(f"Successfully connected ZeroMQ socket on {self.endpoint}.")
                 return
             except Exception as e:
-                logger.error(f"Failed to setup ZeroMQ socket. Reason: {e} Retrying...{attempt}/{self.num_connect_retry} ")
+                logger.error(
+                    f"Failed to setup ZeroMQ socket. Reason: {e} Retrying...{attempt}/{self.num_connect_retry}"
+                )
                 time.sleep(5)
 
-        raise Exception(f"Failed connecting to ZeroMQ socket after {self.num_connect_retry} attempts.")
+        raise ConnectionError(f"Failed connecting to ZeroMQ socket after {self.num_connect_retry} attempts.")
+
+    def close(self):
+        try:
+            self.socket.close()
+        except Exception as e:
+            logger.error(f"Failed to close socket {ZeroMQBase.name} at {self.endpoint}. Reason: {e}")
+
+    def receive_message(self):
+        pass
+
+    def send(self, data):
+        pass

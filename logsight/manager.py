@@ -8,6 +8,7 @@ from kafka.errors import TopicAlreadyExistsError
 
 from builders.application_builder import ApplicationBuilder
 from config.global_vars import USES_KAFKA, USES_ES, PIPELINE_PATH
+from connectors.sources import ZeroMQRepSource
 from logsight_classes.application import Application
 from logsight_classes.data_class import AppConfig, PipelineConfig
 from logsight_classes.responses import ErrorResponse, SuccessResponse, Response
