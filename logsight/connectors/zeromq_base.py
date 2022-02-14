@@ -49,7 +49,6 @@ class ZeroMQBase(Source, Sink):
                         f"[{ConnectionTypes.CONNECT.name}, {ConnectionTypes.BIND.name}]"
                     )
                 logger.info(f"Successfully connected ZeroMQ {self.connection_type.name} socket on {self.endpoint}.")
-                #time.sleep(0.2)  # Very ugly but zeromq needs a moment to set up it's internal state
                 return
             except Exception as e:
                 logger.error(
