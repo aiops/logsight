@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Optional
 
 import zmq
-from zmq import Socket
+from zmq import Socket, POLLIN, POLLOUT
 
 from connectors.sinks import Sink
 from connectors.sources import Source
@@ -21,13 +21,15 @@ class ZeroMQBase(Source, Sink):
     name = "zeromq"
 
     def __init__(self, endpoint: str, socket_type: zmq.constants,
-                 connection_type: ConnectionTypes = ConnectionTypes.BIND, num_connect_retry: int = 5):
+                 connection_type: ConnectionTypes = ConnectionTypes.BIND, retry_connect_num: int = 5,
+                 retry_timeout_sec: int = 5):
         super().__init__()
         self.endpoint = endpoint
         self.socket_type = socket_type
-        self.num_connect_retry = num_connect_retry
+        self.num_connect_retry = retry_connect_num
         self.socket: Optional[Socket] = None
         self.connection_type = connection_type
+        self.retry_timeout_sec = retry_timeout_sec
 
     def connect(self):
         attempt = 0
@@ -39,23 +41,30 @@ class ZeroMQBase(Source, Sink):
             try:
                 if self.connection_type == ConnectionTypes.BIND:
                     self.socket.bind(self.endpoint)
-                else:
+                elif self.connection_type == ConnectionTypes.CONNECT:
                     self.socket.connect(self.endpoint)
-                logger.info(f"Successfully connected ZeroMQ socket on {self.endpoint}.")
+                else:
+                    raise ConnectionError(
+                        f"Invalid connection type. Use on of "
+                        f"[{ConnectionTypes.CONNECT.name}, {ConnectionTypes.BIND.name}]"
+                    )
+                logger.info(f"Successfully connected ZeroMQ {self.connection_type.name} socket on {self.endpoint}.")
+                #time.sleep(0.2)  # Very ugly but zeromq needs a moment to set up it's internal state
                 return
             except Exception as e:
                 logger.error(
                     f"Failed to setup ZeroMQ socket. Reason: {e} Retrying...{attempt}/{self.num_connect_retry}"
                 )
-                time.sleep(5)
+                time.sleep(self.retry_timeout_sec)
 
         raise ConnectionError(f"Failed connecting to ZeroMQ socket after {self.num_connect_retry} attempts.")
 
     def close(self):
-        try:
-            self.socket.close()
-        except Exception as e:
-            logger.error(f"Failed to close socket {ZeroMQBase.name} at {self.endpoint}. Reason: {e}")
+        if self.socket:
+            try:
+                self.socket.close()
+            except Exception as e:
+                logger.error(f"Failed to close socket {ZeroMQBase.name} at {self.endpoint}. Reason: {e}")
 
     def receive_message(self):
         pass

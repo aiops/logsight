@@ -1,5 +1,7 @@
 import json
 import logging
+import time
+
 import zmq
 
 from connectors.zeromq_base import ZeroMQBase, ConnectionTypes
@@ -14,11 +16,11 @@ class ZeroMQSubSource(ZeroMQBase):
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
-            self.application_id = None
+            self.application_id = ""
         self.topic = "_".join([self.application_id, topic]) if self.application_id else topic
 
     def connect(self):
-        super(ZeroMQBase).connect()
+        super().connect()
         logger.info(f"Subscribing to topic {self.topic}")
         topic_filter = self.topic.encode('utf8')
         self.socket.subscribe(topic_filter)
@@ -28,7 +30,7 @@ class ZeroMQSubSource(ZeroMQBase):
 
     def receive_message(self):
         if not self.socket:
-            raise Exception("Socket is not connected. Please call connect() first.")
+            raise ConnectionError("Socket is not connected. Please call connect() first.")
         try:
             topic_log = self.socket.recv().decode("utf-8")
             log = json.loads(topic_log.split(" ", 1)[1])
