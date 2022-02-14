@@ -1,6 +1,6 @@
 import json
 import socket
-from .base import Source
+from .source import Source
 
 
 class SocketSource(Source):

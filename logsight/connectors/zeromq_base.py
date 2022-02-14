@@ -9,7 +9,7 @@ from typing import Optional
 import zmq
 from zmq import Socket
 
-from connectors.sources.base import Source
+from connectors.sources.source import Source
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -47,7 +47,3 @@ class ZeroMQBase:
                 time.sleep(5)
 
         raise Exception(f"Failed connecting to ZeroMQ socket after {self.num_connect_retry} attempts.")
-
-    @abstractmethod
-    def receive_message(self):
-        raise NotImplementedError

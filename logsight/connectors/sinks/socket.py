@@ -1,6 +1,6 @@
 import socket
 import json
-from .base import Sink
+from .sink import Sink
 
 
 class SocketSink(Sink):

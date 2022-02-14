@@ -1,7 +1,7 @@
 import logging
 from elasticsearch import helpers, Elasticsearch
 
-from .base import Sink
+from .sink import Sink
 
 logger = logging.getLogger("logsight." + __name__)
 

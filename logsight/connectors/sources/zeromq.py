@@ -9,7 +9,7 @@ from typing import Optional
 import zmq
 from zmq import Socket
 
-from connectors.sources.base import Source
+from connectors.sources.source import Source
 from connectors.zeromq_base import ZeroMQBase, ConnectionTypes
 
 logger = logging.getLogger("logsight." + __name__)
@@ -33,7 +33,7 @@ class ZeroMQSubSource(Source, ZeroMQBase):
         self.socket.subscribe(topic_filter)
 
     def to_json(self):
-        return {"source_type": "zeroMQ", "endpoint": self.endpoint, "topic": self.topic}
+        return {"source_type": "zeroMQSubSource", "endpoint": self.endpoint, "topic": self.topic}
 
     def receive_message(self):
         if not self.socket:
@@ -57,3 +57,6 @@ class ZeroMQRepSource(Source, ZeroMQBase):
 
     def connect(self):
         super(ZeroMQBase).connect()
+
+    def to_json(self):
+        return {"source_type": "zeroMQRepSource", "endpoint": self.endpoint}

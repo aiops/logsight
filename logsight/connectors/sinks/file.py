@@ -1,6 +1,6 @@
 import json
 
-from .base import Sink
+from .sink import Sink
 from config.global_vars import FILE_SINK_PATH
 from pathlib import Path
 import os

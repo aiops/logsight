@@ -4,7 +4,7 @@ import time
 
 from kafka import KafkaProducer
 
-from .base import Sink
+from .sink import Sink
 
 logger = logging.getLogger("logsight." + __name__)
 

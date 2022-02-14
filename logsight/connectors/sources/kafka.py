@@ -4,7 +4,7 @@ from time import sleep
 
 from kafka import KafkaConsumer as Consumer, TopicPartition
 
-from .base import StreamSource
+from .source import StreamSource
 
 logger = logging.getLogger("logsight." + __name__)
 

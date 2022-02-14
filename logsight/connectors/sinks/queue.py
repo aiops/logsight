@@ -1,5 +1,5 @@
 import multiprocessing
-from .base import Sink
+from .sink import Sink
 from time import sleep
 
 

@@ -1,4 +1,4 @@
-from .base import Sink
+from .sink import Sink
 from .stdout import PrintSink
 from .socket import SocketSink
 from .queue import SinkQueue

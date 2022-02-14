@@ -2,7 +2,7 @@ import threading
 
 from elasticsearch.client import Elasticsearch
 
-from .base import Source, StreamSource
+from .source import Source, StreamSource
 from modules.core.wrappers import synchronized
 
 

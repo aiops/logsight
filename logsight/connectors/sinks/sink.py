@@ -20,3 +20,6 @@ class Sink(ABC):
     def store_results(self, results):
         # needs to be implemented
         pass
+
+    def to_json(self):
+        return {}

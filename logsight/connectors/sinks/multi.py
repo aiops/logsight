@@ -1,6 +1,6 @@
 from typing import List
 
-from .base import Sink
+from .sink import Sink
 
 
 class MultiSink(Sink):
