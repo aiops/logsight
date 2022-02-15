@@ -11,7 +11,7 @@ class InputControlOperations(Enum):
 @dataclass
 class ControlRequest:
     id: str
-    orderCounter: int
+    orderNum: int
     logsCount: int
 
     @property

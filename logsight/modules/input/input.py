@@ -92,7 +92,7 @@ class InputModule(ControlModule, AbstractHandler):
             self.flush_controller = FlushController(
                 input_module=self,
                 receipt_id=input_control_message.id,
-                order_counter=input_control_message.orderCounter,
+                order_counter=input_control_message.orderNum,
                 logs_count=input_control_message.logsCount
             )
 
