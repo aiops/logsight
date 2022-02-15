@@ -55,12 +55,12 @@ class InputModule(ControlModule, AbstractHandler):
     def _start_control_listener(self):
         if self.control_source is None:
             return
+        logger.info("Input module is ready to receive control messages.")
         while self.control_source.has_next():
-            logger.info("Waiting for control messages...")
             msg = self.control_source.receive_message()
-            logger.info(f"Received message: {msg}")
+            logger.debug(f"Input module received control message: {msg}")
             self._process_control_message(msg)
-        logger.debug("Thread ended.")
+        logger.debug("Control message receiving thread terminated.")
 
     def flush(self, request: Any) -> Optional[str]:
         logger.debug("Flushing input module")

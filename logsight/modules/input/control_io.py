@@ -1,9 +1,7 @@
-import dataclasses
-import json
 from dataclasses import dataclass
 from enum import Enum
 from http import HTTPStatus
-from typing import TypeVar
+from typing import TypeVar, Optional
 
 
 class InputControlOperations(Enum):
@@ -15,7 +13,14 @@ class ControlRequest:
     id: str
     orderCounter: int
     logsCount: int
-    operation: InputControlOperations
+
+    @property
+    def operation(self) -> Optional[InputControlOperations]:
+        return None
+
+    @operation.setter
+    def operation(self, op: str) -> None:
+        self.operation = InputControlOperations(op)
 
 
 @dataclass
