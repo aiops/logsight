@@ -5,4 +5,4 @@ from .field_parser import FieldParsingModule
 from .log_aggregation import LogAggregationModule
 from .fork import ForkModule
 from .data_store import DataStoreModule
-from .input import InputModule
+from .input.input import InputModule

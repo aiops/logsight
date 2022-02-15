@@ -1,18 +1,19 @@
+from dataclasses import dataclass
 from http import HTTPStatus
-from pydantic import BaseModel
 
 
-class Response(BaseModel):
-    id: str
+@dataclass(frozen=True)
+class ApplicationOperationResponse:
+    app_id: str
     message: str
     status: int
 
 
-class ErrorResponse(Response):
-    def __init__(self, id: str, message: str, status=HTTPStatus.INTERNAL_SERVER_ERROR):
-        Response.__init__(self, id=id, message=message, status=status)
+@dataclass(frozen=True)
+class ErrorApplicationOperationResponse(ApplicationOperationResponse):
+    status: int = HTTPStatus.INTERNAL_SERVER_ERROR
 
 
-class SuccessResponse(Response):
-    def __init__(self, id: str, message: str):
-        Response.__init__(self, id=id, message=message, status=HTTPStatus.OK)
+@dataclass(frozen=True)
+class SuccessApplicationOperationResponse(ApplicationOperationResponse):
+    status: int = HTTPStatus.OK
