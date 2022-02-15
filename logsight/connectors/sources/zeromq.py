@@ -32,8 +32,8 @@ class ZeroMQSubSource(ZeroMQBase):
             raise ConnectionError("Socket is not connected. Please call connect() first.")
         try:
             topic_log = self.socket.recv().decode("utf-8")
-            # TODO this should not happen here!
-            log = json.loads(topic_log.split(" ", 1)[1])
+            message = topic_log.split(" ", 1)[1]
+            log = json.loads(message)
         except Exception as e:
             logger.error(e)
             return None
