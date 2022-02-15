@@ -18,7 +18,7 @@ class ZeroMQSubSource(ZeroMQBase):
         self.topic = "_".join([self.application_id, topic]) if self.application_id else topic
 
     def connect(self):
-        super(ZeroMQBase).connect()
+        super().connect()
         logger.info(f"Subscribing to topic {self.topic}")
         topic_filter = self.topic.encode('utf8')
         self.socket.subscribe(topic_filter)
@@ -31,7 +31,9 @@ class ZeroMQSubSource(ZeroMQBase):
             raise Exception("Socket is not connected. Please call connect() first.")
         try:
             topic_log = self.socket.recv().decode("utf-8")
-            log = json.loads(topic_log.split(" ", 1)[1])
+            message = topic_log.split(" ", 1)[1]
+            log = json.loads(message)
+            # print(log)
         except Exception as e:
             logger.error(e)
             return None

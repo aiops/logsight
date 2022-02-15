@@ -62,7 +62,7 @@ class Manager:
         app_settings.action = ''
         if app_settings.application_id in self.active_apps.keys():
             return SuccessResponse(
-                app_id=app_settings.application_id,
+                id=app_settings.application_id,
                 message=f"Application {app_settings.application_id} already created."
             )
 
@@ -75,7 +75,7 @@ class Manager:
         app_process.start()
         # app.start()
         # e.wait()
-        return SuccessResponse(app_id=str(app.application_id), message=f"Application {app.application_id} CREATED")
+        return SuccessResponse(id=str(app.application_id), message=f"Application {app.application_id} CREATED")
 
     def delete_application(self, application_id) -> Response:
         logger.info(f"Deleting application {application_id}")
@@ -83,7 +83,7 @@ class Manager:
             logger.info(
                 f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!")
             return SuccessResponse(
-                app_id=str(application_id),
+                id=str(application_id),
                 message=f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!",
             )
 
@@ -101,7 +101,7 @@ class Manager:
         logger.info("Application object deleted from active_process_apps apps.")
         logger.info(f"Application successfully deleted with name: {application.application_name} "
                     f"and id: {application.application_id}")
-        return SuccessResponse(app_id=str(application_id), message=f"Application {application_id} DELETED")
+        return SuccessResponse(id=str(application_id), message=f"Application {application_id} DELETED")
 
     def run(self):
         self.start_listener()
@@ -117,7 +117,7 @@ class Manager:
                 result = self.process_message(msg)
             except Exception as e:
                 self.source.socket.send(
-                    msg=json.dumps(ErrorResponse(app_id="", message=str(e)).dict(), indent=2).encode('utf-8')
+                    msg=json.dumps(ErrorResponse(id="", message=str(e)).dict(), indent=2).encode('utf-8')
                 )
 
             # Send reply
@@ -126,7 +126,7 @@ class Manager:
                 logger.info(f"Result sent: {str(json.dumps(result.dict(), indent=2).encode('utf-8'))}")
             except Exception as e:
                 self.source.socket.send(
-                    msg=json.dumps(ErrorResponse(result.app_id, str(e)).dict(), indent=2).encode('utf-8')
+                    msg=json.dumps(ErrorResponse(result.id, str(e)).dict(), indent=2).encode('utf-8')
                 )
 
     def process_message(self, msg: dict) -> Response:
@@ -136,14 +136,14 @@ class Manager:
                                      private_key=msg.get("userKey"),
                                      action=msg.get("action"))
         except Exception as e:
-            return ErrorResponse(app_id="", message=str(e), status=HTTPStatus.BAD_REQUEST)
+            return ErrorResponse(id="", message=str(e), status=HTTPStatus.BAD_REQUEST)
         if app_settings.action.upper() == "CREATE":
             return self.create_application(app_settings)
         elif app_settings.action.upper() == 'DELETE':
             return self.delete_application(app_settings.application_id)
         else:
             return ErrorResponse(
-                app_id=app_settings.application_id,
+                id=app_settings.application_id,
                 message='Invalid application status. Application status needs to be one of ["CREATE", "DELETE"])',
                 status=HTTPStatus.BAD_REQUEST
             )
