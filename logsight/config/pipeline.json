@@ -13,7 +13,7 @@
           "connection": "zeromq",
           "classname": "ZeroMQSubSource",
           "params": {
-            "topic": "ctrl",
+            "topic": "input_ctrl",
             "endpoint": "tcp://0.0.0.0:5557"
           }
         },
@@ -21,7 +21,7 @@
           "connection": "zeromq",
           "classname": "ZeroMQPubSink",
           "params": {
-            "topic": "input_ctrl_sink",
+            "topic": "result_init",
             "endpoint": "tcp://0.0.0.0:5558"
           }
         },

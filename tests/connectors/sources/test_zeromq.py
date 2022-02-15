@@ -2,14 +2,15 @@ import json
 import time
 import unittest
 
-from connectors import ZeroMQSubSource
 from connectors.sinks.zeromq import ZeroMQPubSink
+from connectors.sinks.zeromq_base import SinkConnectionTypes
+from connectors.sources import ZeroMQSubSource
 
 
 class TestZeroMQSubSource(unittest.TestCase):
     endpoint = "tcp://0.0.0.0:4444"
     topic = "test_topic_test"
-    test_pub = ZeroMQPubSink(endpoint, topic)
+    test_pub = ZeroMQPubSink(endpoint, topic, connection_type=SinkConnectionTypes.BIND)
     test_msg = {"message": "hello"}
     test_msg_str = json.dumps(test_msg)
 

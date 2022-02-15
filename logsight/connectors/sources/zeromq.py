@@ -1,17 +1,18 @@
 import json
 import logging
+import time
 
 import zmq
 
-from .zeromq_base import ZeroMQBase, ConnectionTypes
+from .zeromq_base import ZeroMQBase, SourceConnectionTypes
 
 logger = logging.getLogger("logsight." + __name__)
 
 
 class ZeroMQSubSource(ZeroMQBase):
     def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
-                 **kwargs):
-        super().__init__(endpoint=endpoint, socket_type=zmq.SUB, connection_type=ConnectionTypes.CONNECT)
+                 connection_type: SourceConnectionTypes = SourceConnectionTypes.CONNECT, **kwargs):
+        super().__init__(endpoint=endpoint, socket_type=zmq.SUB, connection_type=connection_type)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
@@ -42,7 +43,7 @@ class ZeroMQSubSource(ZeroMQBase):
 
 class ZeroMQRepSource(ZeroMQBase):
     def __init__(self, endpoint: str):
-        super().__init__(endpoint=endpoint, socket_type=zmq.REP, connection_type=ConnectionTypes.BIND)
+        super().__init__(endpoint=endpoint, socket_type=zmq.REP, connection_type=SourceConnectionTypes.BIND)
 
     def receive_message(self):
         msg = self.socket.recv().decode("utf-8")

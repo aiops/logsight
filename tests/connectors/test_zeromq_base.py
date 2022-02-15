@@ -2,13 +2,13 @@ import unittest
 
 import zmq
 
-from connectors.zeromq_base import ConnectionTypes, ZeroMQBase
+from connectors.sinks.zeromq_base import ZeroMQBase, SinkConnectionTypes
 
 
 class TestZeroMQBase(unittest.TestCase):
     endpoint = "tcp://0.0.0.0:4444"
-    connections_connect = {zmq.SUB: ConnectionTypes.CONNECT}
-    connections_bind = {zmq.PUB: ConnectionTypes.BIND, zmq.REP: ConnectionTypes.BIND}
+    connections_connect = {zmq.SUB: SinkConnectionTypes.CONNECT}
+    connections_bind = {zmq.PUB: SinkConnectionTypes.BIND, zmq.REP: SinkConnectionTypes.BIND}
     connections = {**connections_connect, **connections_bind}
 
     def test_socket_connect_success(self):
