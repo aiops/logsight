@@ -12,7 +12,7 @@ class ZeroMQPubSink(ZeroMQBase):
 
     def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
                  retry_connect_num: int = 5, retry_timeout_sec: int = 5, **kwargs):
-        super().__init__(endpoint, socket_type=zmq.PUB, connection_type=ConnectionTypes.BIND,
+        super().__init__(endpoint, socket_type=zmq.PUB, connection_type=ConnectionTypes.CONNECT,
                          retry_connect_num=retry_connect_num, retry_timeout_sec=retry_timeout_sec)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
