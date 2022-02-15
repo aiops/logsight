@@ -2,7 +2,7 @@ import logging
 
 import zmq
 
-from connectors.zeromq_base import ZeroMQBase, ConnectionTypes
+from .zeromq_base import ZeroMQBase, ConnectionTypes
 
 logger = logging.getLogger("logsight." + __name__)
 

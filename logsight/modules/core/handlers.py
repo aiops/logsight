@@ -123,7 +123,7 @@ class HandlerStats:
 
     def log_stats(self):
         freq = float(self.num_handled) / float(self.log_stats_interval_sec)
-        logger.info(f"Handler {self.ctx} handled {self.num_handled_total} messages in total. " +
-                    f"Handling frequency during last {self.log_stats_interval_sec} seconds: {freq}")
+        logger.debug(f"Handler {self.ctx} handled {self.num_handled_total} messages in total. " +
+                     f"Handling frequency during last {self.log_stats_interval_sec} seconds: {freq}")
         self.num_handled = 0
         self.timer.reset_timer()

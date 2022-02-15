@@ -7,3 +7,4 @@ from .multi import MultiSink
 from .kafka import KafkaSink
 from .elasticsearch import ElasticsearchSink
 from .empty import EmptySink
+from .zeromq import ZeroMQPubSink

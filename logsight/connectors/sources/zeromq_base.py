@@ -4,10 +4,9 @@ from enum import Enum
 from typing import Optional
 
 import zmq
-from zmq import Socket, POLLIN, POLLOUT
+from zmq import Socket
 
-from connectors.sinks import Sink
-from connectors.sources import Source
+from .source import Source
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -17,7 +16,7 @@ class ConnectionTypes(Enum):
     CONNECT = 2
 
 
-class ZeroMQBase(Source, Sink):
+class ZeroMQBase(Source):
     name = "zeromq"
 
     def __init__(self, endpoint: str, socket_type: zmq.constants,
@@ -66,7 +65,4 @@ class ZeroMQBase(Source, Sink):
                 logger.error(f"Failed to close socket {ZeroMQBase.name} at {self.endpoint}. Reason: {e}")
 
     def receive_message(self):
-        pass
-
-    def send(self, data):
         pass

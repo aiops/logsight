@@ -37,6 +37,8 @@ class InputModule(ControlModule, AbstractHandler):
         AbstractHandler.start(self, ctx)
         # Connect sources
         self.data_source.connect()
+        # connect controller
+        ControlModule.connect(self)
 
         internal = threading.Thread(
             name=self.module_name + "IntSrc", target=self._start_control_listener, daemon=True
@@ -54,8 +56,9 @@ class InputModule(ControlModule, AbstractHandler):
         if self.control_source is None:
             return
         while self.control_source.has_next():
-            logger.debug("Waiting for control message")
+            logger.info("Waiting for control messages...")
             msg = self.control_source.receive_message()
+            logger.info(f"Received message: {msg}")
             self._process_control_message(msg)
         logger.debug("Thread ended.")
 

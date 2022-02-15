@@ -9,6 +9,22 @@
     "input": {
       "classname": "InputModule",
       "args": {
+        "control_source": {
+          "connection": "zeromq",
+          "classname": "ZeroMQSubSource",
+          "params": {
+            "topic": "ctrl",
+            "endpoint": "tcp://0.0.0.0:5557"
+          }
+        },
+        "control_sink": {
+          "connection": "zeromq",
+          "classname": "ZeroMQPubSink",
+          "params": {
+            "topic": "input_ctrl_sink",
+            "endpoint": "tcp://0.0.0.0:5558"
+          }
+        },
         "data_source": {
           "connection": "zeromq",
           "classname": "ZeroMQSubSource",

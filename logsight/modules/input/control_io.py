@@ -24,8 +24,8 @@ class ControlReply:
     orderCounter: int
     logsCount: int
     currentLogsCount: int
-    status: int
     description: str
+    status: int
 
 
 # Register as type var to allow save instantiation through functions
@@ -53,4 +53,5 @@ class ControlReplyValidationFail(ControlReply):
     orderCounter: int = -1
     logsCount: int = -1
     currentLogsCount: int = -1
+    description: str = ""
     status: int = HTTPStatus.BAD_REQUEST
