@@ -3,7 +3,7 @@ import unittest
 import uuid
 
 from logsight_classes.data_class import AppConfig
-from logsight_classes.responses import SuccessResponse, ErrorResponse
+from logsight_classes.responses import SuccessApplicationOperationResponse, ErrorApplicationOperationResponse
 from run import create_manager
 from services.configurator import ManagerConfig
 
@@ -31,7 +31,7 @@ class TestManager(unittest.TestCase):
         )
 
         result = self.manager.create_application(app_settings)
-        assert isinstance(result, SuccessResponse)
+        assert isinstance(result, SuccessApplicationOperationResponse)
         logger.info(f"The result of the creation of application {app_settings} is correct.")
         assert app_settings.application_id in self.manager.active_apps
         assert app_settings.application_id in self.manager.active_process_apps
@@ -60,14 +60,14 @@ class TestManager(unittest.TestCase):
         logger.info(f"Running the create_application method for the  {len(app_settings)} applications.")
         result = self.manager.create_application(app_settings[0])
         logger.info(f"The result of the creation of application the first app is correct.")
-        assert isinstance(result, SuccessResponse)
+        assert isinstance(result, SuccessApplicationOperationResponse)
         assert app_settings[0].application_id in self.manager.active_apps
         assert app_settings[0].application_id in self.manager.active_process_apps
         logger.info(f"The side effects of creating the first application are correct.")
         self.manager.active_process_apps[app_settings[0].application_id].terminate()
         logger.info(f"Application is terminated.")
         result = self.manager.create_application(app_settings[1])
-        assert isinstance(result, SuccessResponse)
+        assert isinstance(result, SuccessApplicationOperationResponse)
         logger.info(f"The result of the creation of application the first app is correct.")
         self.manager.active_process_apps[app_settings[1].application_id].terminate()
         logger.info(f"Application is terminated.")
@@ -82,10 +82,10 @@ class TestManager(unittest.TestCase):
             action="CREATE"
         )
         result = self.manager.create_application(app_settings)
-        assert isinstance(result, SuccessResponse)
+        assert isinstance(result, SuccessApplicationOperationResponse)
         # deleting application
         result = self.manager.delete_application(app_settings.application_id)
-        assert isinstance(result, SuccessResponse)
+        assert isinstance(result, SuccessApplicationOperationResponse)
         assert app_settings.application_id not in self.manager.active_apps
         assert app_settings.application_id not in self.manager.active_process_apps
 
@@ -99,47 +99,25 @@ class TestManager(unittest.TestCase):
             action="CREATE"
         )
         result = self.manager.create_application(app_settings)
-        assert isinstance(result, SuccessResponse)
+        assert isinstance(result, SuccessApplicationOperationResponse)
         # deleting application
         result = self.manager.delete_application(uuid.uuid4())  # not existing application id
-        assert isinstance(result, SuccessResponse)
+        assert isinstance(result, SuccessApplicationOperationResponse)
         self.manager.active_process_apps[app_id].terminate()
 
     def test_process_message_pass(self):
         app_id = str(uuid.uuid4())
         msg = {"id": app_id, "name": "myapp", "userKey": "myprivatekey", "action": "CREATE"}
         result = self.manager.process_message(msg)
-        assert isinstance(result, SuccessResponse)
+        assert isinstance(result, SuccessApplicationOperationResponse)
 
         msg = {"id": app_id, "name": "myapp", "userKey": "myprivatekey", "action": "DELETE"}
         result = self.manager.process_message(msg)
-        assert isinstance(result, SuccessResponse)
+        assert isinstance(result, SuccessApplicationOperationResponse)
 
         msg = {"id": app_id, "name": "myapp", "userKey": "myprivatekey", "action": ""}
         result = self.manager.process_message(msg)
-        assert isinstance(result, ErrorResponse)
-
-    def test_process_message_fail(self):
-        app_id = str(uuid.uuid4())
-        msg = {"id": app_id, "name": "myapp", "userKey": "myprivatekey", "action": ""}
-        result = self.manager.process_message(msg)
-        assert Exception
-
-        msg = {"id": "myuuid", "name": "myapp", "userKey": "myprivatekey", "action": "CREATE"}
-        result = self.manager.process_message(msg)
-        assert isinstance(result, SuccessResponse)
-
-        msg = {"id": str(uuid.uuid4()), "name": None, "userKey": "myprivatekey", "action": "CREATE"}
-        result = self.manager.process_message(msg)
-        assert isinstance(result, ErrorResponse)
-
-        msg = {"id": str(uuid.uuid4()), "name": "myapp", "action": "CREATE"}
-        result = self.manager.process_message(msg)
-        assert isinstance(result, ErrorResponse)
-
-        msg = {"id": str(uuid.uuid4()), "name": "", "userKey": "", "action": ""}
-        result = self.manager.process_message(msg)
-        assert isinstance(result, ErrorResponse)
+        assert isinstance(result, ErrorApplicationOperationResponse)
 
 
 if __name__ == "__main__":

@@ -16,3 +16,4 @@ guppy3
 onnxruntime==1.10.0
 flask
 waitress
+dacite

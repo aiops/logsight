@@ -8,13 +8,12 @@ from kafka.errors import TopicAlreadyExistsError
 
 from builders.application_builder import ApplicationBuilder
 from config.global_vars import USES_KAFKA, USES_ES, PIPELINE_PATH
-from connectors.sources import ZeroMQRepSource
 from logsight_classes.application import Application
 from logsight_classes.data_class import AppConfig, PipelineConfig
-from logsight_classes.responses import ErrorResponse, SuccessResponse, Response
+from logsight_classes.responses import ErrorApplicationOperationResponse, SuccessApplicationOperationResponse, \
+    ApplicationOperationResponse
 from utils.fs import load_json
-
-# set_start_method("fork")
+from utils.helpers import DataClassJSONEncoder
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -27,7 +26,6 @@ class Manager:
         self.producer = producer
         self.topic_list = topic_list or []
         self.db = services.get('database', None)
-        # self.app_pool = Pool(3)
         self.active_apps = {}
         self.active_process_apps = {}
         self.app_builder = app_builder if app_builder else ApplicationBuilder(services)
@@ -58,10 +56,10 @@ class Manager:
                 logger.error(e)
         logger.info("Deleted topics for manager.")
 
-    def create_application(self, app_settings: AppConfig) -> Response:
+    def create_application(self, app_settings: AppConfig) -> ApplicationOperationResponse:
         app_settings.action = ''
         if app_settings.application_id in self.active_apps.keys():
-            return SuccessResponse(
+            return SuccessApplicationOperationResponse(
                 app_id=app_settings.application_id,
                 message=f"Application {app_settings.application_id} already created."
             )
@@ -75,14 +73,15 @@ class Manager:
         app_process.start()
         # app.start()
         # e.wait()
-        return SuccessResponse(app_id=str(app.application_id), message=f"Application {app.application_id} CREATED")
+        return SuccessApplicationOperationResponse(app_id=str(app.application_id),
+                                                   message=f"Application {app.application_id} CREATED")
 
-    def delete_application(self, application_id) -> Response:
+    def delete_application(self, application_id) -> ApplicationOperationResponse:
         logger.info(f"Deleting application {application_id}")
         if application_id not in self.active_apps.keys():
             logger.info(
                 f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!")
-            return SuccessResponse(
+            return SuccessApplicationOperationResponse(
                 app_id=str(application_id),
                 message=f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!",
             )
@@ -101,7 +100,8 @@ class Manager:
         logger.info("Application object deleted from active_process_apps apps.")
         logger.info(f"Application successfully deleted with name: {application.application_name} "
                     f"and id: {application.application_id}")
-        return SuccessResponse(app_id=str(application_id), message=f"Application {application_id} DELETED")
+        return SuccessApplicationOperationResponse(app_id=str(application_id),
+                                                   message=f"Application {application_id} DELETED")
 
     def run(self):
         self.start_listener()
@@ -117,32 +117,37 @@ class Manager:
                 result = self.process_message(msg)
             except Exception as e:
                 self.source.socket.send(
-                    msg=json.dumps(ErrorResponse(app_id="", message=str(e)).dict(), indent=2).encode('utf-8')
+                    msg=json.dumps(
+                        ErrorApplicationOperationResponse(app_id="", message=str(e)), cls=DataClassJSONEncoder
+                    ).encode('utf-8')
                 )
 
             # Send reply
             try:
-                self.source.socket.send(json.dumps(result.dict(), indent=2).encode('utf-8'))
-                logger.info(f"Result sent: {str(json.dumps(result.dict(), indent=2).encode('utf-8'))}")
+                self.source.socket.send(json.dumps(result, cls=DataClassJSONEncoder).encode('utf-8'))
             except Exception as e:
                 self.source.socket.send(
-                    msg=json.dumps(ErrorResponse(result.app_id, str(e)).dict(), indent=2).encode('utf-8')
+                    msg=json.dumps(
+                        ErrorApplicationOperationResponse(result.app_id, str(e)), cls=DataClassJSONEncoder
+                    ).encode('utf-8')
                 )
 
-    def process_message(self, msg: dict) -> Response:
+    def process_message(self, msg: dict) -> ApplicationOperationResponse:
         try:
-            app_settings = AppConfig(application_id=msg.get("id"),
-                                     application_name=msg.get("name"),
-                                     private_key=msg.get("userKey"),
-                                     action=msg.get("action"))
+            app_settings = AppConfig(
+                application_id=msg.get("id"),
+                application_name=msg.get("name"),
+                private_key=msg.get("userKey"),
+                action=msg.get("action")
+            )
         except Exception as e:
-            return ErrorResponse(app_id="", message=str(e), status=HTTPStatus.BAD_REQUEST)
+            return ErrorApplicationOperationResponse(app_id="", message=str(e), status=HTTPStatus.BAD_REQUEST)
         if app_settings.action.upper() == "CREATE":
             return self.create_application(app_settings)
         elif app_settings.action.upper() == 'DELETE':
             return self.delete_application(app_settings.application_id)
         else:
-            return ErrorResponse(
+            return ErrorApplicationOperationResponse(
                 app_id=app_settings.application_id,
                 message='Invalid application status. Application status needs to be one of ["CREATE", "DELETE"])',
                 status=HTTPStatus.BAD_REQUEST
