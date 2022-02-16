@@ -37,6 +37,7 @@ class ZeroMQBase(Sink):
             logger.info(f"Setting up ZeroMQ socket on {self.endpoint}.")
             context = zmq.Context()
             self.socket = context.socket(self.socket_type)
+            self.socket.set_hwm(0)
             try:
                 if self.connection_type == SinkConnectionTypes.BIND:
                     self.socket.bind(self.endpoint)
