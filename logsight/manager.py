@@ -32,7 +32,7 @@ class Manager:
         self.pipeline_config = PipelineConfig(**load_json(PIPELINE_PATH))
         self.sync_timer = None
         if self.db:
-            self.sync_timer = NamedTimer(timeout_period=10, callback=self._sync_apps, name="Sync app with db")
+            self.sync_timer = NamedTimer(timeout_period=600, callback=self._sync_apps, name="Sync app with db")
             self.sync_timer.start()
             for app in self.db.read_apps():
                 self.create_application(AppConfig(**app))

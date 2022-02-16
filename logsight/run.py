@@ -27,7 +27,7 @@ logger = logging.getLogger('logsight')
 if platform.system() != 'Linux':
     logger.info(f"Start method fork for system {platform.system()}.")
     set_start_method("fork", force=True)
-    
+
 
 def setup_connector(config: ManagerConfig, connector: str):
     conn_config = config.get_connector(connector)
