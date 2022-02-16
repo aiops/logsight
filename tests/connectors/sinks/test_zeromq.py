@@ -1,25 +1,31 @@
 import json
-import time
 import unittest
 
-from connectors import ZeroMQSubSource
+import zmq
+
 from connectors.sinks.zeromq import ZeroMQPubSink
+from connectors.sinks.zeromq_base import SinkConnectionTypes
+
+
+def get_test_sub_socket(endpoint, topic):
+    context = zmq.Context()
+    socket = context.socket(zmq.SUB)
+    socket.bind(endpoint)
+    socket.subscribe(topic)
+    return socket
 
 
 class TestZeroMQPubSink(unittest.TestCase):
     endpoint = "tcp://0.0.0.0:4444"
     topic = "test_topic_test"
-    test_sub = ZeroMQSubSource(endpoint, topic)
     test_msg = {"message": "hello"}
     test_msg_str = json.dumps(test_msg)
 
     def setUp(self) -> None:
         super().setUp()
-        TestZeroMQPubSink.test_sub.connect()
 
     def tearDown(self) -> None:
         super().tearDown()
-        TestZeroMQPubSink.test_sub.close()
 
     def test_socket_connect_and_close_success(self):
         zeromq = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic)
@@ -31,9 +37,10 @@ class TestZeroMQPubSink(unittest.TestCase):
         self.save_close(zeromq)
 
     def test_socket_connect_fail_address_in_use(self):
-        zeromq1 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic)
+        zeromq1 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic,
+                                connection_type=SinkConnectionTypes.BIND)
         zeromq2 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic,
-                                retry_connect_num=1, retry_timeout_sec=1)
+                                connection_type=SinkConnectionTypes.BIND, retry_connect_num=1, retry_timeout_sec=1)
         self.save_connect(zeromq1)
         self.assertRaises(ConnectionError, zeromq2.connect)
         self.save_close(zeromq1)
@@ -41,10 +48,7 @@ class TestZeroMQPubSink(unittest.TestCase):
     def test_message_send_success(self):
         zeromq = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, topic=TestZeroMQPubSink.topic)
         self.save_connect(zeromq)
-        time.sleep(1)
         zeromq.send(TestZeroMQPubSink.test_msg_str)
-        msg = TestZeroMQPubSink.test_sub.receive_message()
-        self.assertEqual(msg, TestZeroMQPubSink.test_msg)
         self.save_close(zeromq)
 
     def test_message_send_fail_not_connected(self):

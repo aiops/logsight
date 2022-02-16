@@ -2,7 +2,7 @@ import logging
 
 import zmq
 
-from .zeromq_base import ZeroMQBase, ConnectionTypes
+from .zeromq_base import ZeroMQBase, SinkConnectionTypes
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -10,15 +10,11 @@ logger = logging.getLogger("logsight." + __name__)
 class ZeroMQPubSink(ZeroMQBase):
     name = "zeroMQ pub sink"
 
-    def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
-                 retry_connect_num: int = 5, retry_timeout_sec: int = 5, **kwargs):
-        super().__init__(endpoint, socket_type=zmq.PUB, connection_type=ConnectionTypes.CONNECT,
+    def __init__(self, endpoint: str, topic: str = "", retry_connect_num: int = 5, retry_timeout_sec: int = 5,
+                 connection_type: SinkConnectionTypes = SinkConnectionTypes.CONNECT, **kwargs):
+        super().__init__(endpoint, socket_type=zmq.PUB, connection_type=connection_type,
                          retry_connect_num=retry_connect_num, retry_timeout_sec=retry_timeout_sec)
-        if application_name and private_key:
-            self.application_id = "_".join([private_key, application_name])
-        else:
-            self.application_id = ""
-        self.topic = "_".join([self.application_id, topic]) if self.application_id else topic
+        self.topic = topic
 
     def connect(self):
         super().connect()
