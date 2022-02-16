@@ -2,19 +2,19 @@ import unittest
 
 import zmq
 
-from connectors.sinks.zeromq_base import ZeroMQBase, SinkConnectionTypes
+from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
 
 
 class TestZeroMQBase(unittest.TestCase):
     endpoint = "tcp://0.0.0.0:4444"
-    connections_connect = {zmq.SUB: SinkConnectionTypes.CONNECT}
-    connections_bind = {zmq.PUB: SinkConnectionTypes.BIND, zmq.REP: SinkConnectionTypes.BIND}
+    connections_connect = {zmq.SUB: ConnectionTypes.CONNECT}
+    connections_bind = {zmq.PUB: ConnectionTypes.BIND, zmq.REP: ConnectionTypes.BIND}
     connections = {**connections_connect, **connections_bind}
 
     def test_socket_connect_success(self):
         for socket_type, connection_type in TestZeroMQBase.connections.items():
-            zeromq_base = ZeroMQBase(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
-                                     connection_type=connection_type)
+            zeromq_base = ZeroMQConnector(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
+                                          connection_type=connection_type)
             try:
                 zeromq_base.connect()
             except ConnectionError as e:
@@ -31,10 +31,10 @@ class TestZeroMQBase(unittest.TestCase):
 
     def test_socket_connect_fail_in_use(self):
         for socket_type, connection_type in TestZeroMQBase.connections_bind.items():
-            zeromq_base1 = ZeroMQBase(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
-                                      connection_type=connection_type)
-            zeromq_base2 = ZeroMQBase(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
-                                      connection_type=connection_type, retry_connect_num=1, retry_timeout_sec=1)
+            zeromq_base1 = ZeroMQConnector(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
+                                           connection_type=connection_type)
+            zeromq_base2 = ZeroMQConnector(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
+                                           connection_type=connection_type, retry_connect_num=1, retry_timeout_sec=1)
             try:
                 zeromq_base1.connect()
             except ConnectionError as e:

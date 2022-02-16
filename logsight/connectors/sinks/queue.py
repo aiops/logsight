@@ -1,6 +1,7 @@
 import multiprocessing
-from .sink import Sink
 from time import sleep
+
+from .sink import Sink
 
 
 class SinkQueue(Sink):
@@ -8,6 +9,12 @@ class SinkQueue(Sink):
         super().__init__()
         self.link = link
         self.queue = multiprocessing.Manager().Queue(maxsize=100000)
+
+    def close(self):
+        pass
+
+    def connect(self):
+        pass
 
     def send(self, data):
         if not isinstance(data, list):

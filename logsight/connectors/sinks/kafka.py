@@ -10,6 +10,7 @@ logger = logging.getLogger("logsight." + __name__)
 
 
 class KafkaSink(Sink):
+
     def __init__(self, address: str, topic: str, private_key=None, application_name=None, **kwargs):
         """
         Args:
@@ -27,6 +28,9 @@ class KafkaSink(Sink):
 
         self.kafka_sink = None
         self.connect()
+
+    def close(self):
+        pass
 
     def connect(self):
         logger.debug("Creating Kafka producer")

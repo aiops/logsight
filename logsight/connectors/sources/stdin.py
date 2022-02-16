@@ -1,10 +1,12 @@
-import os
 from time import time
 
 from .source import Source
 
 
 class PrintSource(Source):
+
+    def close(self):
+        pass
 
     def connect(self):
         return

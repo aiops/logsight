@@ -3,8 +3,8 @@ import unittest
 
 import zmq
 
+from connectors.base.zeromq import ConnectionTypes
 from connectors.sinks.zeromq import ZeroMQPubSink
-from connectors.sinks.zeromq_base import SinkConnectionTypes
 
 
 def get_test_sub_socket(endpoint, topic):
@@ -38,9 +38,9 @@ class TestZeroMQPubSink(unittest.TestCase):
 
     def test_socket_connect_fail_address_in_use(self):
         zeromq1 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic,
-                                connection_type=SinkConnectionTypes.BIND)
+                                connection_type=ConnectionTypes.BIND)
         zeromq2 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic,
-                                connection_type=SinkConnectionTypes.BIND, retry_connect_num=1, retry_timeout_sec=1)
+                                connection_type=ConnectionTypes.BIND, retry_connect_num=1, retry_timeout_sec=1)
         self.save_connect(zeromq1)
         self.assertRaises(ConnectionError, zeromq2.connect)
         self.save_close(zeromq1)

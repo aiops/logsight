@@ -1,18 +1,18 @@
 import json
 import logging
-import time
 
 import zmq
 
-from .zeromq_base import ZeroMQBase, SourceConnectionTypes
+from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
+from connectors.sources import Source
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class ZeroMQSubSource(ZeroMQBase):
+class ZeroMQSubSource(ZeroMQConnector, Source):
     def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
-                 connection_type: SourceConnectionTypes = SourceConnectionTypes.CONNECT, **kwargs):
-        super().__init__(endpoint=endpoint, socket_type=zmq.SUB, connection_type=connection_type)
+                 connection_type: ConnectionTypes = ConnectionTypes.CONNECT, **kwargs):
+        ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.SUB, connection_type=connection_type)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
@@ -20,7 +20,7 @@ class ZeroMQSubSource(ZeroMQBase):
         self.topic = "_".join([self.application_id, topic]) if self.application_id else topic
 
     def connect(self):
-        super().connect()
+        ZeroMQConnector.connect(self)
         logger.info(f"Subscribing to topic {self.topic}")
         topic_filter = self.topic.encode('utf8')
         self.socket.subscribe(topic_filter)
@@ -41,16 +41,17 @@ class ZeroMQSubSource(ZeroMQBase):
         return log
 
 
-class ZeroMQRepSource(ZeroMQBase):
+class ZeroMQRepSource(ZeroMQConnector, Source):
     def __init__(self, endpoint: str):
-        super().__init__(endpoint=endpoint, socket_type=zmq.REP, connection_type=SourceConnectionTypes.BIND)
+        ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.REP,
+                                 connection_type=ConnectionTypes.BIND)
 
     def receive_message(self):
         msg = self.socket.recv().decode("utf-8")
         return json.loads(msg)
 
     def connect(self):
-        super().connect()
+        ZeroMQConnector.connect(self)
 
     def to_json(self):
         return {"source_type": "zeroMQRepSource", "endpoint": self.endpoint}

@@ -1,5 +1,6 @@
-from .source import Source
 from time import sleep
+
+from .source import Source
 
 
 class NoQueueException(Exception):
@@ -7,6 +8,9 @@ class NoQueueException(Exception):
 
 
 class SourceQueue(Source):
+    def close(self):
+        self.queue = None
+
     def __init__(self, link, **_kwargs):
         super().__init__()
         self.link = link

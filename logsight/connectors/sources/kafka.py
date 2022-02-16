@@ -13,6 +13,9 @@ class KafkaSource(StreamSource):
     """Data source - Kafka consumer.
     """
 
+    def close(self):
+        self.kafka_source.close()
+
     def __init__(self, address: str, topic: str, group_id: int = None, offset: str = 'earliest', private_key=None,
                  application_name=None, **kwargs):
         """

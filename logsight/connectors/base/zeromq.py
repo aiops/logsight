@@ -6,23 +6,22 @@ from typing import Optional
 import zmq
 from zmq import Socket
 
-from connectors.sinks import Sink
+from connectors.base.connector import Connector
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class SinkConnectionTypes(Enum):
+class ConnectionTypes(Enum):
     BIND = 1
     CONNECT = 2
 
 
-class ZeroMQBase(Sink):
+class ZeroMQConnector(Connector):
     name = "zeromq"
 
     def __init__(self, endpoint: str, socket_type: zmq.constants,
-                 connection_type: SinkConnectionTypes, retry_connect_num: int = 5,
+                 connection_type: ConnectionTypes, retry_connect_num: int = 5,
                  retry_timeout_sec: int = 5):
-        super().__init__()
         self.endpoint = endpoint
         self.socket_type = socket_type
         self.num_connect_retry = retry_connect_num
@@ -39,14 +38,14 @@ class ZeroMQBase(Sink):
             self.socket = context.socket(self.socket_type)
             self.socket.set_hwm(0)
             try:
-                if self.connection_type == SinkConnectionTypes.BIND:
+                if self.connection_type == ConnectionTypes.BIND:
                     self.socket.bind(self.endpoint)
-                elif self.connection_type == SinkConnectionTypes.CONNECT:
+                elif self.connection_type == ConnectionTypes.CONNECT:
                     self.socket.connect(self.endpoint)
                 else:
                     raise ConnectionError(
                         f"Invalid connection type. Use one of "
-                        f"[{SinkConnectionTypes.CONNECT.name}, {SinkConnectionTypes.BIND.name}]"
+                        f"[{ConnectionTypes.CONNECT.name}, {ConnectionTypes.BIND.name}]"
                     )
                 logger.info(f"Successfully connected ZeroMQ {self.connection_type.name} socket on {self.endpoint}.")
                 return
@@ -63,10 +62,4 @@ class ZeroMQBase(Sink):
             try:
                 self.socket.close()
             except Exception as e:
-                logger.error(f"Failed to close socket {ZeroMQBase.name} at {self.endpoint}. Reason: {e}")
-
-    def receive_message(self):
-        pass
-
-    def send(self, data):
-        pass
+                logger.error(f"Failed to close socket {self.name} at {self.endpoint}. Reason: {e}")

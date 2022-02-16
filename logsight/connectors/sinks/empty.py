@@ -1,5 +1,6 @@
-from .sink import Sink
 from time import time
+
+from .sink import Sink
 
 
 class EmptySink(Sink):
@@ -8,6 +9,12 @@ class EmptySink(Sink):
         super().__init__(**kwargs)
         self.cnt = 0
         self.time = time()
+
+    def close(self):
+        pass
+
+    def connect(self):
+        pass
 
     def send(self, data):
         self.cnt += 1

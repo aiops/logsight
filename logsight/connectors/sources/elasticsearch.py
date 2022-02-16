@@ -2,11 +2,14 @@ import threading
 
 from elasticsearch.client import Elasticsearch
 
-from .source import Source, StreamSource
 from modules.core.wrappers import synchronized
+from .source import Source
 
 
-class ElasticsearchStreamSource(StreamSource):
+class ElasticsearchStreamSource(Source):
+
+    def close(self):
+        pass
 
     def __init__(self, host, port, username, password, query, pull_interval, **kwargs):
         super().__init__(**kwargs)
@@ -37,6 +40,9 @@ class ElasticsearchStreamSource(StreamSource):
 
 
 class ElasticsearchSource(Source):
+    def close(self):
+        self.es.close()
+
     def receive_message(self):
         # to be implemented
         pass

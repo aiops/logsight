@@ -1,9 +1,14 @@
 import json
 import socket
+
 from .source import Source
 
 
 class SocketSource(Source):
+    def close(self):
+        self.socket.close()
+        self.connected = False
+
     def __init__(self, host, port, **kwargs):
         super().__init__(**kwargs)
         self.server_address = None
