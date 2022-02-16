@@ -102,7 +102,6 @@ class InputModule(ControlModule, AbstractHandler):
         with self.rlock:
             if input_control_message.operation == InputControlOperations.FLUSH:
                 # Simply overwrite previous.
-                # TODO: Runtime conditions
                 self.flush_controller = FlushController(
                     input_module=self,
                     receipt_id=input_control_message.id,
