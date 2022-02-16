@@ -24,6 +24,9 @@ class InputModule(ControlModule, AbstractHandler):
 
         self.data_source = data_source
 
+        # Keep track of received log messages
+        self.request_counter = (0, 0)
+
         # Due to parallel processing of control messages, a lock is needed to synchronize access to the flush_controller
         self.rlock = threading.RLock()
         self.flush_controller: Optional[FlushController] = None
@@ -49,8 +52,18 @@ class InputModule(ControlModule, AbstractHandler):
         while self.data_source.has_next():
             request = self.data_source.receive_message()
             self.handle(request)
-            if self.flush_controller and "orderCounter" in request:
-                self.flush_controller.check_flush(request["orderCounter"])
+            if "orderCounter" in request:
+                order_counter = request["orderCounter"]
+                with self.rlock:
+                    self._update_request_counter(order_counter)
+                    if self.flush_controller:
+                        self.flush_controller.check_flush(order_counter)
+
+    def _update_request_counter(self, order_counter):
+        if order_counter > self.request_counter[0]:
+            self.request_counter = (order_counter, 0)
+        else:
+            self.request_counter = (order_counter, self.request_counter[1] + 1)
 
     def _start_control_listener(self):
         if self.control_source is None:
@@ -86,15 +99,18 @@ class InputModule(ControlModule, AbstractHandler):
             self._send_control_reply(ControlReplyValidationFail(description=str(e)))
             return
 
-        if input_control_message.operation == InputControlOperations.FLUSH:
-            # Simply overwrite previous.
-            # TODO: Runtime conditions
-            self.flush_controller = FlushController(
-                input_module=self,
-                receipt_id=input_control_message.id,
-                order_counter=input_control_message.orderNum,
-                logs_count=input_control_message.logsCount
-            )
+        with self.rlock:
+            if input_control_message.operation == InputControlOperations.FLUSH:
+                # Simply overwrite previous.
+                # TODO: Runtime conditions
+                self.flush_controller = FlushController(
+                    input_module=self,
+                    receipt_id=input_control_message.id,
+                    order_counter=input_control_message.orderNum,
+                    logs_count=input_control_message.logsCount,
+                    current_logs_counter=self.request_counter[1]
+                )
+                self.flush_controller.check_flush(self.request_counter[0])
 
     def _send_control_reply(self, reply: ControlReply):
         try:
@@ -110,12 +126,13 @@ class InputModule(ControlModule, AbstractHandler):
 
 class FlushController:
 
-    def __init__(self, input_module: InputModule, receipt_id: str, order_counter: int, logs_count: int):
+    def __init__(self, input_module: InputModule, receipt_id: str, order_counter: int, logs_count: int,
+                 current_logs_counter: int):
         self.input_module = input_module
         self.receipt_id = receipt_id
         self.order_counter = order_counter
         self.logs_count = logs_count
-        self.current_logs_counter = 0
+        self.current_logs_counter = current_logs_counter
 
     def check_flush(self, order_counter):
         self.current_logs_counter += 1

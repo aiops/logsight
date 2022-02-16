@@ -30,7 +30,7 @@ class ControlReply:
     logsCount: int
     currentLogsCount: int
     description: str
-    status: int
+    status: str
 
 
 # Register as type var to allow save instantiation through functions
@@ -39,17 +39,17 @@ TControlReply = TypeVar("TControlReply", bound=ControlReply)
 
 @dataclass
 class ControlReplySuccess(ControlReply):
-    status: int = HTTPStatus.OK
+    status: str = HTTPStatus(HTTPStatus.OK).phrase
 
 
 @dataclass
 class ControlReplyTimeout(ControlReply):
-    status: int = HTTPStatus.REQUEST_TIMEOUT
+    status: str = HTTPStatus(HTTPStatus.REQUEST_TIMEOUT).phrase
 
 
 @dataclass
 class ControlReplyFail(ControlReply):
-    status: int = HTTPStatus.INTERNAL_SERVER_ERROR
+    status: str = HTTPStatus(HTTPStatus.INTERNAL_SERVER_ERROR).phrase
 
 
 @dataclass
@@ -59,4 +59,4 @@ class ControlReplyValidationFail(ControlReply):
     logsCount: int = -1
     currentLogsCount: int = -1
     description: str = ""
-    status: int = HTTPStatus.BAD_REQUEST
+    status: str = HTTPStatus(HTTPStatus.BAD_REQUEST).phrase
