@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from http import HTTPStatus
 from multiprocessing import Process
 
@@ -51,7 +52,7 @@ class Manager:
         self.active_process_apps[app_settings.application_id] = app_process
         logger.info("Starting app process")
         app_process.start()
-
+        time.sleep(3)  # TODO this needs to be fixed.
         # app.start()
         # e.wait()
         return SuccessApplicationOperationResponse(app_id=str(app.application_id),

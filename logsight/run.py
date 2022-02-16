@@ -19,14 +19,15 @@ from utils.fs import verify_file_ext
 
 from multiprocessing import set_start_method
 
-# needed for running on Windows or macOS
-if platform.system() != 'Linux':
-    set_start_method("fork", force=True)
-
 # hello world
 logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "log.json"), 'r')))
 logger = logging.getLogger('logsight')
 
+# needed for running on Windows or macOS
+if platform.system() != 'Linux':
+    logger.info(f"Start method fork for system {platform.system()}.")
+    set_start_method("fork", force=True)
+    
 
 def setup_connector(config: ManagerConfig, connector: str):
     conn_config = config.get_connector(connector)
