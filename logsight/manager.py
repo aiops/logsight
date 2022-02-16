@@ -3,58 +3,38 @@ import logging
 from http import HTTPStatus
 from multiprocessing import Process
 
-from kafka.admin import NewTopic
-from kafka.errors import TopicAlreadyExistsError
-
 from builders.application_builder import ApplicationBuilder
 from config.global_vars import USES_KAFKA, USES_ES, PIPELINE_PATH
 from logsight_classes.application import Application
 from logsight_classes.data_class import AppConfig, PipelineConfig
 from logsight_classes.responses import ErrorApplicationOperationResponse, SuccessApplicationOperationResponse, \
     ApplicationOperationResponse
+from modules.core.timer import NamedTimer
 from utils.fs import load_json
 from utils.helpers import DataClassJSONEncoder
+from multiprocessing import Lock
 
 logger = logging.getLogger("logsight." + __name__)
 
 
 class Manager:
-    def __init__(self, source, services, producer, topic_list=None, app_builder: ApplicationBuilder = None):
+    def __init__(self, source, services, producer, app_builder: ApplicationBuilder = None):
         self.source = source
         self.kafka_admin = services.get('kafka_admin', None) if USES_KAFKA else None
         self.elasticsearch_admin = services.get('elasticsearch_admin', None) if USES_ES else None
         self.producer = producer
-        self.topic_list = topic_list or []
         self.db = services.get('database', None)
         self.active_apps = {}
         self.active_process_apps = {}
         self.app_builder = app_builder if app_builder else ApplicationBuilder(services)
 
         self.pipeline_config = PipelineConfig(**load_json(PIPELINE_PATH))
+        self.sync_timer = None
         if self.db:
+            self.sync_timer = NamedTimer(timeout_period=10, callback=self._sync_apps, name="Sync app with db")
+            self.sync_timer.start()
             for app in self.db.read_apps():
                 self.create_application(AppConfig(**app))
-
-    def create_topics_for_manager(self):
-        for topic in self.topic_list:
-            try:
-                self.kafka_admin.create_topics(
-                    [NewTopic(name=topic, num_partitions=1, replication_factor=1)])
-                if logger.isEnabledFor(logging.DEBUG):
-                    logger.debug(f"Created topic {topic}")
-            except TopicAlreadyExistsError:
-                logger.debug(f"Topic already exists with topic name: {topic}")
-        logger.info("Created topics for manager.")
-
-    def delete_topics_for_manager(self):
-        for topic in self.topic_list:
-            try:
-                self.kafka_admin.delete_topics([topic])
-                if logger.isEnabledFor(logging.DEBUG):
-                    logger.debug(f"Deleted topic {topic}")
-            except Exception as e:
-                logger.error(e)
-        logger.info("Deleted topics for manager.")
 
     def create_application(self, app_settings: AppConfig) -> ApplicationOperationResponse:
         app_settings.action = ''
@@ -71,6 +51,7 @@ class Manager:
         self.active_process_apps[app_settings.application_id] = app_process
         logger.info("Starting app process")
         app_process.start()
+
         # app.start()
         # e.wait()
         return SuccessApplicationOperationResponse(app_id=str(app.application_id),
@@ -83,7 +64,7 @@ class Manager:
                 f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!")
             return SuccessApplicationOperationResponse(
                 app_id=str(application_id),
-                message=f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!",
+                message=f"Application {application_id} does not exists in the active apps, therefore cannot be deleted.!x§  ",
             )
 
         app_process = self.active_process_apps[application_id]
@@ -116,8 +97,9 @@ class Manager:
             try:
                 result = self.process_message(msg)
             except Exception as e:
+                print(e)
                 self.source.socket.send(
-                    msg=json.dumps(
+                    json.dumps(
                         ErrorApplicationOperationResponse(app_id="", message=str(e)), cls=DataClassJSONEncoder
                     ).encode('utf-8')
                 )
@@ -154,10 +136,23 @@ class Manager:
             )
 
     def setup(self):
-        if self.kafka_admin:
-            self.delete_topics_for_manager()
-            self.create_topics_for_manager()
         self.source.connect()
+
+    def _sync_apps(self):
+        logger.debug("Syncing apps.")
+        running_apps = list(self.active_apps.keys())
+        db_apps = self.db.read_apps()
+        db_app_ids = [app['application_id'] for app in db_apps]
+        # check if all apps in db are ready
+        for app in db_apps:
+            if app['application_status'] == 'READY':
+                if app['application_id'] not in running_apps:
+                    self.create_application(AppConfig(**app))
+        # check if any local apps are running that do not exist in db
+        for app_id in running_apps:
+            if app_id not in db_app_ids:
+                self.delete_application(app_id)
+        self.sync_timer.reset_timer()
 
 
 def start_process(app: Application):

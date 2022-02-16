@@ -1,6 +1,7 @@
 import json
 import logging
 import threading
+from time import sleep
 from typing import Any, Optional, Type
 
 from dacite import from_dict
@@ -44,7 +45,6 @@ class InputModule(ControlModule, AbstractHandler):
             name=self.module_name + "IntSrc", target=self._start_control_listener, daemon=True
         )
         internal.start()
-
         # This is a multiprocessing.Event which notifies the parend process that the connection was established
         while self.data_source.has_next():
             request = self.data_source.receive_message()
@@ -126,14 +126,15 @@ class FlushController:
 
     def to_json(self):
         return {
-            "receipt_id": self.receipt_id,
-            "order_counter": self.order_counter,
-            "num_messages": self.logs_count,
+            "receipt_id"     : self.receipt_id,
+            "order_counter"  : self.order_counter,
+            "num_messages"   : self.logs_count,
             "message_counter": self.current_logs_counter
         }
 
 
-def to_control_reply(reply_class: Type[TControlReply], flush_controller: FlushController, description: str) -> TControlReply:
+def to_control_reply(reply_class: Type[TControlReply], flush_controller: FlushController,
+                     description: str) -> TControlReply:
     return reply_class(
         id=flush_controller.receipt_id,
         orderCounter=flush_controller.order_counter,
