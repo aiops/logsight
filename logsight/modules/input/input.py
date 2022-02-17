@@ -38,7 +38,7 @@ class InputModule(StatefulControlModule, AbstractHandler):
     module_name = "input_module"
 
     def __init__(self, control_source=None, control_sink=None, data_source: Source = None, app_settings=None):
-        ControlModule.__init__(self, control_source, control_sink)
+        StatefulControlModule.__init__(self, control_source, control_sink)
         AbstractHandler.__init__(self)
         self.data_source = data_source
 
@@ -87,7 +87,7 @@ class InputModule(StatefulControlModule, AbstractHandler):
         except Exception as e:
             logger.error(f"Failed to execute flush request {observer.flush_request}. Reason: {e}")
             self._send_flush_failed_reply(f"Failed to execute flush request {observer.flush_request}. Reason: {e}")
-        self._send_success_reply(state, "Flush success")
+        self._send_success_reply(state, observer, "Flush success")
 
     def _send_flush_failed_reply(self, state: InputModuleState, observer: InputModuleFlushStateObserver, msg: str):
         flush_reply = to_flush_reply(FlushReplyFail, observer.flush_request, state, msg)
