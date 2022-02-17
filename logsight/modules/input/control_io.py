@@ -11,7 +11,7 @@ class InputControlOperations(Enum):
 
 
 @dataclass
-class FlushRequest:
+class ControlRequest:
     id: str
     orderNum: int
     logsCount: int
