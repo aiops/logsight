@@ -28,7 +28,7 @@ class InputModuleState(ControlModuleState):
         if "orderCounter" not in request:
             return None
         order_counter = request["orderCounter"]
-        if order_counter > prev_state.order_num:
+        if not prev_state or order_counter > prev_state.order_num:
             return InputModuleState(order_counter, 1)
         else:
             return InputModuleState(order_counter, prev_state.logs_counter + 1)
