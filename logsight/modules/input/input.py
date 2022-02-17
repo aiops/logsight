@@ -92,7 +92,7 @@ class InputModule(StatefulControlModule, AbstractHandler):
     def _send_flush_failed_reply(self, state: InputModuleState, observer: InputModuleFlushStateObserver, msg: str):
         flush_reply = to_flush_reply(FlushReplyFail, observer.flush_request, state, msg)
         self._send_control_reply(flush_reply)
-        
+
     def _send_success_reply(self, state: InputModuleState, observer: InputModuleFlushStateObserver, msg: str):
         flush_reply = to_flush_reply(FlushReplySuccess, observer.flush_request, state, msg)
         self._send_control_reply(flush_reply)
