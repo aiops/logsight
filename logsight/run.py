@@ -32,7 +32,7 @@ if platform.system() != 'Linux':
 def setup_connector(config: ManagerConfig, connector: str):
     conn_config = config.get_connector(connector)
     conn_params = config.get_connection(conn_config['connection'])
-    conn_params.update(conn_config['params'])
+    conn_params.on_update(conn_config['params'])
     try:
         c_name = getattr(sources, conn_config['classname'])
     except AttributeError:

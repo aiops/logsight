@@ -1,43 +1,52 @@
+from __future__ import annotations
+
 import json
 import logging
 import threading
-from time import sleep
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Callable
 
 from dacite import from_dict
 
 from connectors.sources import Source
 from modules.core import AbstractHandler
-from modules.core.module import ControlModule
-from modules.input.control_io import ControlRequest, InputControlOperations, ControlReply, ControlReplyFail, \
-    ControlReplySuccess, TControlReply, ControlReplyValidationFail
+from modules.core.module import ControlModule, StatefulControlModule, ControlModuleState, ControlModuleStateObserver
+from modules.input.control_io import FlushRequest, InputControlOperations, FlushReply, FlushReplyFail, \
+    FlushReplySuccess, TFlushReply, FlushReplyValidationError
 from utils.helpers import DataClassJSONEncoder
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class InputModule(ControlModule, AbstractHandler):
+class InputModuleState(ControlModuleState):
+    def __init__(self, order_num: int, logs_counter: int):
+        super().__init__()
+        self.order_num = order_num
+        self.logs_counter = logs_counter
+
+    @staticmethod
+    def from_request_and_state(request, prev_state: InputModuleState) -> Optional[InputModuleState]:
+        if "orderCounter" not in request:
+            return None
+        order_counter = request["orderCounter"]
+        if order_counter > prev_state.order_num:
+            return InputModuleState(order_counter, 1)
+        else:
+            return InputModuleState(order_counter, prev_state.logs_counter + 1)
+
+
+class InputModule(StatefulControlModule, AbstractHandler):
     module_name = "input_module"
 
     def __init__(self, control_source=None, control_sink=None, data_source: Source = None, app_settings=None):
         ControlModule.__init__(self, control_source, control_sink)
         AbstractHandler.__init__(self)
-
         self.data_source = data_source
-
-        # Keep track of received log messages
-        self.request_counter = (0, 0)
-
-        # Due to parallel processing of control messages, a lock is needed to synchronize access to the flush_controller
-        self.rlock = threading.RLock()
-        self.flush_controller: Optional[FlushController] = None
 
     def handle(self, request: Any) -> Optional[str]:
         return super().handle(request)
 
     def start(self, ctx: dict):
         ctx["module"] = self.module_name
-
         AbstractHandler.start(self, ctx)
         # Connect sources
         self.data_source.connect()
@@ -48,22 +57,14 @@ class InputModule(ControlModule, AbstractHandler):
             name=self.module_name + "IntSrc", target=self._start_control_listener, daemon=True
         )
         internal.start()
-        # This is a multiprocessing.Event which notifies the parend process that the connection was established
         while self.data_source.has_next():
             request = self.data_source.receive_message()
             self.handle(request)
-            if "orderCounter" in request:
-                order_counter = request["orderCounter"]
-                with self.rlock:
-                    self._update_request_counter(order_counter)
-                    if self.flush_controller:
-                        self.flush_controller.check_flush(order_counter)
+            self._update_state(request)
 
-    def _update_request_counter(self, order_counter):
-        if order_counter > self.request_counter[0]:
-            self.request_counter = (order_counter, 0)
-        else:
-            self.request_counter = (order_counter, self.request_counter[1] + 1)
+    def _update_state(self, request):
+        state = InputModuleState.from_request_and_state(request, self.state)
+        self.state = state
 
     def _start_control_listener(self):
         if self.control_source is None:
@@ -77,15 +78,28 @@ class InputModule(ControlModule, AbstractHandler):
 
     def flush(self, request: Any) -> Optional[str]:
         logger.debug("Flushing input module")
+        return super().flush(request)
+
+    def on_flush_callback(self, state: InputModuleState, observer: InputModuleFlushStateObserver):
+        self.detach(observer)
         try:
-            super().flush(request)
+            self.flush(None)
         except Exception as e:
-            logger.error(f"Flushing {self.flush_controller.to_json()} failed. Reason: {e}")
-            self._send_control_reply(to_control_reply(ControlReplyFail, self.flush_controller, str(e)))
-            self.flush_controller = None
-            return
-        self._send_control_reply(to_control_reply(ControlReplySuccess, self.flush_controller, "Flush success"))
-        self.flush_controller = None
+            logger.error(f"Failed to execute flush request {observer.flush_request}. Reason: {e}")
+            self._send_flush_failed_reply(f"Failed to execute flush request {observer.flush_request}. Reason: {e}")
+        self._send_success_reply(state, "Flush success")
+
+    def _send_flush_failed_reply(self, state: InputModuleState, observer: InputModuleFlushStateObserver, msg: str):
+        flush_reply = to_flush_reply(FlushReplyFail, observer.flush_request, state, msg)
+        self._send_control_reply(flush_reply)
+        
+    def _send_success_reply(self, state: InputModuleState, observer: InputModuleFlushStateObserver, msg: str):
+        flush_reply = to_flush_reply(FlushReplySuccess, observer.flush_request, state, msg)
+        self._send_control_reply(flush_reply)
+
+    def _send_request_validation_error_reply(self, msg: str):
+        flush_reply = FlushReplyValidationError(description=msg)
+        self._send_control_reply(flush_reply)
 
     def _process_data(self, data: Any) -> Optional[Any]:
         """Not used for input"""
@@ -93,25 +107,18 @@ class InputModule(ControlModule, AbstractHandler):
 
     def _process_control_message(self, message):
         try:
-            input_control_message = from_dict(data_class=ControlRequest, data=message)
+            flush_request = from_dict(data_class=FlushRequest, data=message)
         except Exception as e:
-            logger.error(f"Failed to deserialize input control message {message}. Reason: {e}")
-            self._send_control_reply(ControlReplyValidationFail(description=str(e)))
+            logger.error(f"Failed to deserialize flush request {message}. Reason: {e}")
+            self._send_request_validation_error_reply(f"Failed to deserialize flush request {message}. Reason: {e}")
             return
 
-        with self.rlock:
-            if input_control_message.operation == InputControlOperations.FLUSH:
-                # Simply overwrite previous.
-                self.flush_controller = FlushController(
-                    input_module=self,
-                    receipt_id=input_control_message.id,
-                    order_counter=input_control_message.orderNum,
-                    logs_count=input_control_message.logsCount,
-                    current_logs_counter=self.request_counter[1]
-                )
-                self.flush_controller.check_flush(self.request_counter[0])
+        if flush_request.operation == InputControlOperations.FLUSH:
+            observer = InputModuleFlushStateObserver(flush_request, self.on_flush_callback)
+            self.attach(observer)
+            self.notify()
 
-    def _send_control_reply(self, reply: ControlReply):
+    def _send_control_reply(self, reply: FlushReply):
         try:
             self.control_sink.send(json.dumps(reply, cls=DataClassJSONEncoder))
         except Exception as e:
@@ -119,42 +126,33 @@ class InputModule(ControlModule, AbstractHandler):
 
     def to_json(self):
         d = super().to_json()
-        d.update({"source": self.data_source.to_json()})
+        d.on_update({"source": self.data_source.to_json()})
         return d
 
 
-class FlushController:
+# Observer to check condition
+class InputModuleFlushStateObserver(ControlModuleStateObserver):
 
-    def __init__(self, input_module: InputModule, receipt_id: str, order_counter: int, logs_count: int,
-                 current_logs_counter: int):
-        self.input_module = input_module
-        self.receipt_id = receipt_id
-        self.order_counter = order_counter
-        self.logs_count = logs_count
-        self.current_logs_counter = current_logs_counter
+    def __init__(
+            self, flush_request: FlushRequest,
+            callback: Callable[[InputModuleState, InputModuleFlushStateObserver], None]
+    ):
+        self.flush_request: FlushRequest = flush_request
+        self._callback = callback
 
-    def check_flush(self, order_counter):
-        self.current_logs_counter += 1
-        if order_counter > self.order_counter:
-            return self.input_module.flush(None)
-        elif order_counter == self.order_counter and self.current_logs_counter == self.logs_count:
-            return self.input_module.flush(None)
-
-    def to_json(self):
-        return {
-            "receipt_id"     : self.receipt_id,
-            "order_counter"  : self.order_counter,
-            "num_messages"   : self.logs_count,
-            "message_counter": self.current_logs_counter
-        }
+    def on_update(self, state: InputModuleState) -> None:
+        if state.order_num > self.flush_request.orderNum:
+            self._callback(state, self)
+        elif state.order_num == self.flush_request.orderNum and state.logs_counter >= self.flush_request.logsCount:
+            self._callback(state, self)
 
 
-def to_control_reply(reply_class: Type[TControlReply], flush_controller: FlushController,
-                     description: str) -> TControlReply:
-    return reply_class(
-        id=flush_controller.receipt_id,
-        orderCounter=flush_controller.order_counter,
-        logsCount=flush_controller.logs_count,
-        currentLogsCount=flush_controller.current_logs_counter,
+def to_flush_reply(flush_reply_class: Type[TFlushReply], flush_request: FlushRequest, state: InputModuleState,
+                   description: str) -> TFlushReply:
+    return flush_reply_class(
+        id=flush_request.id,
+        orderNum=flush_request.orderNum,
+        logsCount=flush_request.logsCount,
+        currentLogsCount=state.logs_counter,
         description=description
     )

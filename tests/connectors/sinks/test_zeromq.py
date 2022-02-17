@@ -1,18 +1,8 @@
 import json
 import unittest
 
-import zmq
-
 from connectors.base.zeromq import ConnectionTypes
 from connectors.sinks.zeromq import ZeroMQPubSink
-
-
-def get_test_sub_socket(endpoint, topic):
-    context = zmq.Context()
-    socket = context.socket(zmq.SUB)
-    socket.bind(endpoint)
-    socket.subscribe(topic)
-    return socket
 
 
 class TestZeroMQPubSink(unittest.TestCase):

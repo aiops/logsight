@@ -3,13 +3,15 @@ from enum import Enum
 from http import HTTPStatus
 from typing import TypeVar, Optional
 
+from connectors.sources import Source
+
 
 class InputControlOperations(Enum):
     FLUSH = "FLUSH"
 
 
 @dataclass
-class ControlRequest:
+class FlushRequest:
     id: str
     orderNum: int
     logsCount: int
@@ -24,9 +26,9 @@ class ControlRequest:
 
 
 @dataclass
-class ControlReply:
+class FlushReply:
     id: str
-    orderCounter: int
+    orderNum: int
     logsCount: int
     currentLogsCount: int
     description: str
@@ -34,28 +36,28 @@ class ControlReply:
 
 
 # Register as type var to allow save instantiation through functions
-TControlReply = TypeVar("TControlReply", bound=ControlReply)
+TFlushReply = TypeVar("TFlushReply", bound=FlushReply)
 
 
 @dataclass
-class ControlReplySuccess(ControlReply):
+class FlushReplySuccess(FlushReply):
     status: str = HTTPStatus(HTTPStatus.OK).phrase
 
 
 @dataclass
-class ControlReplyTimeout(ControlReply):
+class FlushReplyTimeout(FlushReply):
     status: str = HTTPStatus(HTTPStatus.REQUEST_TIMEOUT).phrase
 
 
 @dataclass
-class ControlReplyFail(ControlReply):
+class FlushReplyFail(FlushReply):
     status: str = HTTPStatus(HTTPStatus.INTERNAL_SERVER_ERROR).phrase
 
 
 @dataclass
-class ControlReplyValidationFail(ControlReply):
+class FlushReplyValidationError(FlushReply):
     id: str = ""
-    orderCounter: int = -1
+    orderNum: int = -1
     logsCount: int = -1
     currentLogsCount: int = -1
     description: str = ""
