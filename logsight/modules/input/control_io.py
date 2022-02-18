@@ -15,14 +15,7 @@ class ControlRequest:
     id: str
     orderNum: int
     logsCount: int
-
-    @property
-    def operation(self) -> Optional[InputControlOperations]:
-        return None
-
-    @operation.setter
-    def operation(self, op: str) -> None:
-        self.operation = InputControlOperations(op)
+    operation: InputControlOperations
 
 
 @dataclass

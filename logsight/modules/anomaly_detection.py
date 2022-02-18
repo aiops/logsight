@@ -83,7 +83,10 @@ class LoadedState(State):
 
     def flush(self, context) -> Optional[Any]:
         if context:
-            self.buffer.add(context)
+            if isinstance(context, list):
+                self.buffer.extend(context)
+            else:
+                self.buffer.add(context)
         if not self.buffer.is_empty:
             return self.ad.process_log(self.buffer.flush_buffer())
 

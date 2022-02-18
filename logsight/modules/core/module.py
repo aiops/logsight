@@ -1,8 +1,10 @@
-from abc import ABC, abstractmethod
-from typing import Optional, Any, Callable, List
+from __future__ import annotations
 
-from connectors.sources import Source
+from abc import ABC, abstractmethod
+from typing import Optional, Any, List
+
 from connectors.sinks import Sink
+from connectors.sources import Source
 from modules.core.wrappers import synchronized
 
 
@@ -34,45 +36,52 @@ class ControlModule(Module):
         self.control_sink.connect()
 
 
-class ControlModuleState(ABC):
-
+class Subject(ABC):
+    """
+        This is an implementation of the  observer pattern:
+        https://refactoring.guru/design-patterns/observer/python/example
+    """
     def __init__(self):
-        pass
-
-
-class ControlModuleStateObserver(ABC):
-    @abstractmethod
-    def on_update(self, state: ControlModuleState) -> None:
-        raise NotImplementedError
-
-
-class StatefulControlModule(ControlModule):
-    module_name = "stateful_control_module"
-
-    def __init__(self, control_source: Source, control_sink: Sink):
-        super().__init__(control_source, control_sink)
-        self._state: Optional[ControlModuleState] = None
-        self._observers: List[ControlModuleStateObserver] = []
+        self._state: Optional[Any] = None
+        self._observers: List[SubjectObserver] = []
 
     @property
     def state(self):
         return self._state
 
     @state.setter
-    def state(self, value: ControlModuleState):
+    def state(self, value: Subject):
         self._state = value
         self.notify()
 
-    def attach(self, observer: ControlModuleStateObserver) -> None:
+    def attach(self, observer: SubjectObserver) -> None:
         self._observers.append(observer)
 
-    def detach(self, observer: ControlModuleStateObserver) -> None:
+    def detach(self, observer: SubjectObserver) -> None:
         self._observers.remove(observer)
 
     @synchronized
     def notify(self) -> None:
         for observer in self._observers:
             observer.on_update(self._state)
+
+
+class SubjectObserver(ABC):
+    """
+        This is an implementation of the  observer pattern:
+        https://refactoring.guru/design-patterns/observer/python/example
+    """
+
+    @abstractmethod
+    def on_update(self, state: Subject) -> None:
+        raise NotImplementedError
+
+
+class StatefulControlModule(ControlModule, Subject):
+    module_name = "stateful_control_module"
+
+    def __init__(self, control_source: Source, control_sink: Sink):
+        super().__init__(control_source, control_sink)
 
     @abstractmethod
     def _process_data(self, data: Any) -> Optional[Any]:

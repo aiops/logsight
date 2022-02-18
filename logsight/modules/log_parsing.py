@@ -51,7 +51,8 @@ class TrainState(State):
             self.buffer.extend(context)
         else:
             self.buffer.add(context)
-        return self._process_buffer()
+        result = self._do_parsing()
+        return result
 
     def __init__(self, parser: Parser, config):
         self.parser = parser
@@ -68,6 +69,12 @@ class TrainState(State):
             return self._process_buffer()
 
     def _process_buffer(self) -> Optional[List[dict]]:
+        result = self._do_parsing()
+        self.context.transition_to(PredictState(self.parser, self.config))
+        self.timer.cancel()
+        return result
+
+    def _do_parsing(self):
         result = None
         if not self.buffer.is_empty:
             flushed_buffer = self.buffer.flush_buffer()
@@ -78,8 +85,6 @@ class TrainState(State):
                 res = self.parser.parse(item)
                 if res:
                     result.append(res)
-        self.context.transition_to(PredictState(self.parser, self.config))
-        self.timer.cancel()
         return result
 
     def timeout_call(self):

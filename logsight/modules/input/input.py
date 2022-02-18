@@ -5,11 +5,11 @@ import logging
 import threading
 from typing import Any, Optional, Type, Callable
 
-from dacite import from_dict
+from dacite import from_dict, Config
 
 from connectors.sources import Source
 from modules.core import AbstractHandler
-from modules.core.module import ControlModule, StatefulControlModule, ControlModuleState, ControlModuleStateObserver
+from modules.core.module import ControlModule, StatefulControlModule, Subject, SubjectObserver
 from modules.input.control_io import ControlRequest, InputControlOperations, FlushReply, FlushReplyFail, \
     FlushReplySuccess, TFlushReply, FlushReplyValidationError
 from utils.helpers import DataClassJSONEncoder
@@ -17,7 +17,7 @@ from utils.helpers import DataClassJSONEncoder
 logger = logging.getLogger("logsight." + __name__)
 
 
-class InputModuleState(ControlModuleState):
+class InputModuleState(Subject):
     def __init__(self, order_num: int, logs_counter: int):
         super().__init__()
         self.order_num = order_num
@@ -64,6 +64,7 @@ class InputModule(StatefulControlModule, AbstractHandler):
 
     def _update_state(self, request):
         state = InputModuleState.from_request_and_state(request, self.state)
+        # self.notify() will be called when the state is set
         self.state = state
 
     def _start_control_listener(self):
@@ -88,6 +89,7 @@ class InputModule(StatefulControlModule, AbstractHandler):
         except Exception as e:
             logger.error(f"Failed to execute flush request {observer.flush_request}. Reason: {e}")
             self._send_flush_failed_reply(state, observer, f"Failed to execute flush request {observer.flush_request}. Reason: {e}")
+            return
 
         logger.debug(f"Flush successful. Sending success reply.")
         self._send_success_reply(state, observer, "Flush success")
@@ -110,7 +112,7 @@ class InputModule(StatefulControlModule, AbstractHandler):
 
     def _process_control_message(self, message):
         try:
-            control_request = from_dict(data_class=ControlRequest, data=message)
+            control_request = from_dict(data_class=ControlRequest, data=message, config=Config(cast=[InputControlOperations]))
             logger.debug(f"{self.module_name} received a control message: {control_request}")
         except Exception as e:
             logger.error(f"Failed to deserialize flush request {message}. Reason: {e}")
@@ -136,7 +138,7 @@ class InputModule(StatefulControlModule, AbstractHandler):
 
 
 # Observer to check condition
-class InputModuleFlushStateObserver(ControlModuleStateObserver):
+class InputModuleFlushStateObserver(SubjectObserver):
 
     def __init__(
             self, flush_request: ControlRequest,
@@ -147,10 +149,11 @@ class InputModuleFlushStateObserver(ControlModuleStateObserver):
 
     def on_update(self, state: InputModuleState) -> None:
         logger.debug(f"Observed state change: {state}")
-        if state.order_num > self.flush_request.orderNum:
-            self._callback(state, self)
-        elif state.order_num == self.flush_request.orderNum and state.logs_counter >= self.flush_request.logsCount:
-            self._callback(state, self)
+        if state:
+            if state.order_num > self.flush_request.orderNum:
+                self._callback(state, self)
+            elif state.order_num == self.flush_request.orderNum and state.logs_counter >= self.flush_request.logsCount:
+                self._callback(state, self)
 
 
 def to_flush_reply(flush_reply_class: Type[TFlushReply], flush_request: ControlRequest, state: InputModuleState,
