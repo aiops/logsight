@@ -9,7 +9,7 @@ from .source import StreamSource
 logger = logging.getLogger("logsight." + __name__)
 
 
-class KafkaSource(StreamSource):
+class KafkaSource(Source):
     """Data source - Kafka consumer.
     """
 
