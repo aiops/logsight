@@ -1,9 +1,9 @@
 import json
-
-from .base import Sink
-from config.global_vars import FILE_SINK_PATH
-from pathlib import Path
 import os
+from pathlib import Path
+
+from config.global_vars import FILE_SINK_PATH
+from .sink import Sink
 
 
 class FileSink(Sink):
@@ -20,6 +20,12 @@ class FileSink(Sink):
         if not os.path.exists(file_path.parent):
             os.makedirs(file_path.parent)
         return file_path
+
+    def close(self):
+        pass
+
+    def connect(self):
+        pass
 
     def send(self, data):
         if not isinstance(data, list):

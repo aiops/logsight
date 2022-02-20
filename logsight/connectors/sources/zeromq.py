@@ -1,50 +1,57 @@
+import json
 import logging
-from time import sleep
 
 import zmq
 
-from .base import Source
+from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
+from connectors.sources import Source
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class ZeroMQSource(Source):
-    """
-    Data source - zeroMQ receiver
-    """
-
-    def __init__(self, topic: str, port: int = 5321):
-        super().__init__()
-
-        self.endpoint = f"tcp://*:{port}"
-        self.topic = topic
-        self.socket = None
+class ZeroMQSubSource(ZeroMQConnector, Source):
+    def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
+                 connection_type: ConnectionTypes = ConnectionTypes.CONNECT, **kwargs):
+        ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.SUB, connection_type=connection_type)
+        if application_name and private_key:
+            self.application_id = "_".join([private_key, application_name])
+        else:
+            self.application_id = ""
+        self.topic = "_".join([self.application_id, topic]) if self.application_id else topic
 
     def connect(self):
-        # Socket to talk to server
-        context = zmq.Context()
-        self.socket = context.socket(zmq.SUB)
-        self.socket.setsockopt(zmq.SUBSCRIBE, self.topic)
-
-        while True:
-            logger.info(f"Setting up a zeroMQ SUB connection on {self.endpoint} with topic {self.topic}...")
-            try:
-                self.socket.connect(self.endpoint)
-            except Exception as e:
-                logger.error(f"Failed to setup a zeroMQ SUB connection to {self.endpoint}", e)
-                sleep(5)
-            break
-        logger.info(
-            f"Successfully connected to zeroMQ SUB on {self.endpoint}. Listening for messages on topic {self.topic}")
-
-    def receive_message(self):
-        msg = None
-        try:
-            msg = self.socket.recv_json()
-        except Exception as e:
-            logger.warning(
-                f"Error occurred while receiving message from topic {self.topic} of endpoint {self.endpoint}", e)
-        return msg
+        ZeroMQConnector.connect(self)
+        logger.info(f"Subscribing to topic {self.topic}")
+        topic_filter = self.topic.encode('utf8')
+        self.socket.subscribe(topic_filter)
 
     def to_json(self):
-        return {"connection": "zeroMQ", "endpoint": self.endpoint, "topic": self.topic}
+        return {"source_type": "zeroMQSubSource", "endpoint": self.endpoint, "topic": self.topic}
+
+    def receive_message(self):
+        if not self.socket:
+            raise ConnectionError("Socket is not connected. Please call connect() first.")
+        try:
+            topic_log = self.socket.recv().decode("utf-8")
+            message = topic_log.split(" ", 1)[1]
+            log = json.loads(message)
+        except Exception as e:
+            logger.error(e)
+            return None
+        return log
+
+
+class ZeroMQRepSource(ZeroMQConnector, Source):
+    def __init__(self, endpoint: str):
+        ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.REP,
+                                 connection_type=ConnectionTypes.BIND)
+
+    def receive_message(self):
+        msg = self.socket.recv().decode("utf-8")
+        return json.loads(msg)
+
+    def connect(self):
+        ZeroMQConnector.connect(self)
+
+    def to_json(self):
+        return {"source_type": "zeroMQRepSource", "endpoint": self.endpoint}

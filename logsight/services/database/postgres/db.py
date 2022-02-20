@@ -18,6 +18,8 @@ class PostgresDBConnection(AppDatabase):
         for row in rows:
             row = dict(zip(row.keys(), row))
             apps.append(row)
+            for k in row.keys():
+                row[k] = str(row[k])
         return apps
 
     def read_app(self, app_id):

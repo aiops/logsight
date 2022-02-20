@@ -90,7 +90,7 @@ def initialize_kafka_consumer(topic_name, kafka_url):
         try:
             consumer = KafkaConsumer(topic_name,
                                      bootstrap_servers=[kafka_url + ':9092'],
-                                     auto_offset_reset='latest',
+                                     auto_offset_reset='earliest',
                                      group_id=None,
                                      api_version=(2, 0, 2),
                                      enable_auto_commit=True,

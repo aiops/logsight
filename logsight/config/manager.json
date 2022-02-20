@@ -1,32 +1,21 @@
 {
   "connectors": {
     "source": {
-      "connection": "kafka",
-      "classname": "KafkaSource",
+      "connection": "zeromq",
+      "classname": "ZeroMQRepSource",
       "params": {
-        "topic": "manager_settings"
-      }
-    },
-    "producer": {
-      "connection": "kafka",
-      "classname": "KafkaSink",
-      "params": {
-        "topic": "manager_settings_ack"
+        "endpoint": "tcp://0.0.0.0:5555"
       }
     }
   },
   "services": {
-    "elasticsearch_admin": {
-      "classname": "ElasticSearchAdmin",
-      "connection": "elasticsearch"
-    },
-    "kafka_admin": {
-      "classname": "KafkaAdmin",
-      "connection": "kafka"
-    },
     "database": {
       "classname": "PostgresDBConnection",
       "connection": "postgres"
+    },
+    "elasticsearch_admin": {
+      "classname": "ElasticSearchAdmin",
+      "connection": "elasticsearch"
     }
   },
   "topic_list": [

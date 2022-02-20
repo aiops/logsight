@@ -9,11 +9,28 @@
     "input": {
       "classname": "InputModule",
       "args": {
-        "source": {
-          "connection": "kafka",
-          "classname": "KafkaSource",
+        "control_source": {
+          "connection": "zeromq",
+          "classname": "ZeroMQSubSource",
           "params": {
-            "topic": "input"
+            "topic": "input_ctrl",
+            "endpoint": "tcp://0.0.0.0:5557"
+          }
+        },
+        "control_sink": {
+          "connection": "zeromq",
+          "classname": "ZeroMQPubSink",
+          "params": {
+            "topic": "result_init",
+            "endpoint": "tcp://0.0.0.0:5558"
+          }
+        },
+        "data_source": {
+          "connection": "zeromq",
+          "classname": "ZeroMQSubSource",
+          "params": {
+            "topic": "input",
+            "endpoint": "tcp://0.0.0.0:5559"
           }
         }
       },
@@ -33,7 +50,7 @@
       "args": {
         "timeout_period": 30,
         "buffer_size": 2048,
-        "retrain_after": 200000
+        "retrain_after": 1000
       },
       "next_handler": "anomaly_detection"
     },
@@ -71,8 +88,9 @@
       "classname": "ForkModule",
       "args": {},
       "next_handler": [
-        "log_aggregation",
-        "log_incidents"
+        "ad_sink",
+        "log_incidents",
+        "log_aggregation"
       ]
     },
     "agg_sink": {

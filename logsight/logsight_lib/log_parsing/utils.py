@@ -80,5 +80,5 @@ def get_template(seq1, seq2):
 
 def add_parameters_to_log_json(log, new_template, parameter_list):
     for w, param in enumerate(parameter_list):
-        log['param_' + str(w)] = param
+        log['param_' + str(w)] = "# " + str(param)
     return log

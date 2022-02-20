@@ -1,0 +1,212 @@
+
+div .templates {
+    overflow: scroll;
+    height: 650px;
+    margin-top: 6px;
+}
+
+.templates table {
+    font-family: 'helvetica neue', helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.templates table thead tr {
+    border-bottom: 1px solid #222;
+}
+
+.templates table thead tr th {
+    text-transform: uppercase;
+    vertical-align: bottom;
+    text-align: left !important;
+}
+
+.templates table thead tr th.rotate {
+    height: 65px;
+    width: 41px;
+    padding: 0;
+    position: relative;
+}
+
+.templates table thead tr th.rotate>div {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.templates table thead tr th.rotate>div svg line {
+    stroke-width: 1;
+    stroke: #cdcdcd;
+}
+
+.templates table tbody tr td {
+    vertical-align: middle;
+}
+
+.templates table tbody tr td.risk {
+    text-align: center;
+    border-right: 1px solid #222;
+    width: 40px;
+    min-width: 40px;
+    font-size: 11px;
+}
+
+.templates table tbody tr td.risk>div {
+    border: 2px solid;
+    border-radius: 50%;
+    height: 10px;
+    width: 10px;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.templates table tbody tr td.description {
+    font-family: "helvetica neue", helvetica;
+    padding-left: 5px;
+    min-width: 60px;
+    width: 60px;
+    font-size: 12px;
+    text-align: left;
+    font-weight: 250;
+}
+
+.templates table tbody tr td.dates {
+    border-left: 1px solid #222;
+    padding-left: 5px;
+    min-width: 70px;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #999;
+    text-align: center;
+}
+
+.templates table tbody tr td.template {
+    font-family: "DecimaMonoPro", monospace;
+    padding-left: 5px;
+    min-width: 90x;
+    font-size: 12px;
+    text-align: left;
+}
+
+.templates table tbody tr td.code {
+    text-align: center;
+
+    width: 40px;
+    min-width: 40px;
+    font-size: 11px;
+}
+
+.templates table tbody tr td.count {
+    width: 75px;
+    min-width: 75px;
+    font-size: 13px;
+    text-align: right;
+    font-family: "DecimaMonoPro", monospace;
+    margin-right: 5px;
+    padding-left: 5px;
+    text-transform: uppercase;
+}
+
+.templates table tbody tr td.trend {
+    padding-left: 5px;
+    min-width: 50px;
+    text-align: left;
+}
+
+.templates table tbody tr td.just-text {
+    padding-left: 5px;
+    min-width: 80px;
+    font-size: 13px;
+    text-align: left;
+}
+
+.templates table tbody tr td.semantics {
+    text-align: center;
+    padding-left: 1px;
+    border-right: 1px solid #222;
+    font-family: "DecimaMonoPro", monospace;
+    font-size: 13px;
+    width: 10px;
+    min-width: 10px;
+}
+
+.templates table tbody tr td.semantics>div {
+    border: 0px solid;
+    border-radius: 10%;
+    height: 15px;
+    width: 15px;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.templates table tbody tr td.level {
+    width: 40px;
+    min-width: 40px;
+    font-size: 13px;
+    text-align: left;
+    font-family: "DecimaMonoPro", monospace;
+    margin-right: 5px;
+    padding-left: 5px;
+    text-transform: uppercase;
+}
+
+.templates table tbody tr td.coverage {
+    font-size: 13px;
+    text-align: right;
+    vertical-align: middle;
+    font-family: "DecimaMonoPro", monospace;
+    width: 90px;
+    min-width: 90px;
+    border-right: 1px solid #222;
+    text-transform: uppercase;
+    padding-left: 5px;
+    box-sizing: content-box;
+}
+
+.coverage_signal {
+    width: 35px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    display: table;
+    float: left;
+    box-sizing: content-box;
+}
+
+.coverage_bar {
+    margin-left: 5%;
+    padding: 0;
+    width: 12%;
+    display: inline-block;
+    box-sizing: content-box;
+}
+
+.templates table tbody tr td.heat {
+    padding: 0;
+}
+
+.templates table tbody tr td.heat>div {
+    width: 40px;
+    min-width: 40px;
+    height: 50px;
+    font-family: "DecimaMonoPro", monospace;
+    font-size: 13px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.templates table tbody tr td.change {
+    width: 75px;
+    min-width: 75px;
+    font-size: 13px;
+    text-align: right;
+    font-family: "DecimaMonoPro", monospace;
+    padding-left: 5px;
+    margin-right: 5px;
+    text-transform: uppercase;
+}

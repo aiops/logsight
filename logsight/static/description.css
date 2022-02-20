@@ -1,0 +1,8 @@
+.card-description {
+  flex-direction: row;
+}
+.card-description img {
+  width: 20%;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: calc(0.25rem - 1px);
+}

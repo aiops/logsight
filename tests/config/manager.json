@@ -1,0 +1,26 @@
+{
+  "connectors": {
+    "source": {
+      "connection": "zeromq",
+      "classname": "ZeroMQRepSource",
+      "params": {
+        "endpoint": "tcp://0.0.0.0:5555"
+      }
+    }
+  },
+  "services": {
+  },
+  "topic_list": [
+    "manager_settings",
+    "manager_settings_ack",
+    "internal",
+    "log_quality_settings",
+    "log_quality_ack",
+    "container_settings_ack",
+    "application_stats",
+    "logsight.logstash.logsight_json",
+    "logsight.logstash.logstash_json",
+    "logsight.logstash.syslog",
+    "logsight.log_receiver"
+  ]
+}

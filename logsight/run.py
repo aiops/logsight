@@ -2,6 +2,7 @@ import argparse
 import json
 import logging.config
 import os
+import platform
 from typing import Dict
 
 from builders.application_builder import ApplicationBuilder
@@ -10,14 +11,22 @@ from builders.module_builder import ModuleBuilder
 from config.global_vars import CONFIG_PATH
 from manager import Manager
 from services.configurator import ManagerConfig
-from services import service_names, ConnectionConfig
+from services import service_names
 from connectors import sources
 from connectors import sinks
 from config import global_vars
 from utils.fs import verify_file_ext
 
+from multiprocessing import set_start_method
+
+# hello world
 logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "log.json"), 'r')))
 logger = logging.getLogger('logsight')
+
+# needed for running on Windows or macOS
+if platform.system() != 'Linux':
+    logger.info(f"Start method fork for system {platform.system()}.")
+    set_start_method("fork", force=True)
 
 
 def setup_connector(config: ManagerConfig, connector: str):
@@ -37,6 +46,8 @@ def setup_services(config: ManagerConfig):
         service_config = config.get_service(s_name)
         conn_params = config.get_connection(service_config['connection'])
         services[s_name] = service_names[s_name](**conn_params)
+        if "kafka" in s_name:
+            services[s_name].create_topics_for_manager(config.get_topic_list())
 
     return services
 
@@ -44,14 +55,14 @@ def setup_services(config: ManagerConfig):
 def create_manager(config: ManagerConfig):
     source = setup_connector(config, 'source')
     services = setup_services(config)
-    producer = setup_connector(config, 'producer')
+    # producer = setup_connector(config, 'producer')
     topic_list = config.get_topic_list()
 
     connection_builder = ConnectionBuilder(config=config)
     module_builder = ModuleBuilder(connection_builder=connection_builder)
     app_builder = ApplicationBuilder(services, module_builder=module_builder)
 
-    return Manager(source=source, services=services, producer=producer, topic_list=topic_list, app_builder=app_builder)
+    return Manager(source=source, services=services, producer=None, app_builder=app_builder)
 
 
 def parse_arguments() -> Dict:

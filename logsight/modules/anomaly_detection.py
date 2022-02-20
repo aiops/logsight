@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import traceback
 from copy import deepcopy
 from typing import Any, Optional
 from modules.core import AbstractHandler, Context, State, Module
@@ -20,6 +21,10 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
     """
     Performs Anomaly detection on log data
     """
+
+    def flush(self, context=None) -> Optional[str]:
+        return super().flush(self.flush_state(context))
+
     module_name = "anomaly_detection"
 
     def __init__(self, config, app_settings=None):
@@ -47,10 +52,14 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
             result = self._process_data(request)
         except ModelNotLoadedException as e:
             logger.error(e)
+            print(traceback.format_exc())
         return super().handle(result)
 
 
 class IdleState(State):
+    def flush(self, **kwargs) -> Optional[Any]:
+        return
+
     def __init__(self, config):
         self.config = config
         self.detector = config.detector
@@ -65,11 +74,21 @@ class IdleState(State):
 
 
 class LoadedState(State):
+
     def __init__(self, ad: LogAnomalyDetector, config):
         self.ad = ad
         self.config = config
         self.buffer = Buffer(config.buffer_size)
         self.timer = NamedTimer(self.config.timeout_period, self.timeout_call, self.__class__.__name__).start()
+
+    def flush(self, context) -> Optional[Any]:
+        if context:
+            if isinstance(context, list):
+                self.buffer.extend(context)
+            else:
+                self.buffer.add(context)
+        if not self.buffer.is_empty:
+            return self.ad.process_log(self.buffer.flush_buffer())
 
     def handle(self, request: Any) -> Optional[Any]:
         if isinstance(request, list):
@@ -92,8 +111,5 @@ class LoadedState(State):
         if not self.buffer.is_empty:
             result = self.ad.process_log(self.buffer.flush_buffer())
             if self.context.next_handler:
-                if result:
-                    logger.debug(f"Sending {len(result)}")
-
                 self.context.next_handler.handle(result)
         self.timer.reset_timer()

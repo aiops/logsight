@@ -30,6 +30,10 @@ class Handler(ABC):
     def start(self, ctx: dict):
         raise NotImplementedError
 
+    @abstractmethod
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        raise NotImplementedError
+
 
 class AbstractHandler(Handler):
 
@@ -63,8 +67,17 @@ class AbstractHandler(Handler):
         if self.next_handler:
             self.next_handler.start(ctx)
 
+    @abstractmethod
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        if self._next_handler:
+            return self._next_handler.flush(context)
+
 
 class ForkHandler(Handler):
+    def flush(self, context: Optional[Any]) -> Optional[List]:
+        self.stats.incr_stats()
+        if self.next_handlers:
+            return [_handler.flush(context) for _handler in self.next_handlers]
 
     def __init__(self):
         super().__init__()
@@ -110,7 +123,7 @@ class HandlerStats:
 
     def log_stats(self):
         freq = float(self.num_handled) / float(self.log_stats_interval_sec)
-        logger.info(f"Handler {self.ctx} handled {self.num_handled_total} messages in total. " +
-                    f"Handling frequency during last {self.log_stats_interval_sec} seconds: {freq}")
+        logger.debug(f"Handler {self.ctx} handled {self.num_handled_total} messages in total. " +
+                     f"Handling frequency during last {self.log_stats_interval_sec} seconds: {freq}")
         self.num_handled = 0
         self.timer.reset_timer()

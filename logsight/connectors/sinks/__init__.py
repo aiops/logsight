@@ -1,4 +1,4 @@
-from .base import Sink
+from .sink import Sink
 from .stdout import PrintSink
 from .socket import SocketSink
 from .queue import SinkQueue
@@ -7,3 +7,4 @@ from .multi import MultiSink
 from .kafka import KafkaSink
 from .elasticsearch import ElasticsearchSink
 from .empty import EmptySink
+from .zeromq import ZeroMQPubSink
