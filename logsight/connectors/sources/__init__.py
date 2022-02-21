@@ -1,4 +1,3 @@
-from .kafka import KafkaSource
 from .stdin import PrintSource, FileSource
 from .socket import SocketSource
 from .source import Source
