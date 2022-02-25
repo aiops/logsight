@@ -139,7 +139,7 @@ class Log:
                 logger.debug(f"Unable to parse candidate datetime strings {datetime_strings}.")
                 timestamp = None
         else:
-            #logger.debug(f"No timestamp key found for log {self.log}")
+            logger.debug(f"No timestamp key found for log {self.log}")
             timestamp = None
 
         self.set_timestamp(timestamp)

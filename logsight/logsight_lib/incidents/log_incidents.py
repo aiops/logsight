@@ -6,7 +6,6 @@ import pandas as pd
 
 class IncidentDetector:
     def get_incident_properties(self, log_count_ad, log_ad):
-
         if len(log_ad) == 0:
             return None
         try:
@@ -20,7 +19,7 @@ class IncidentDetector:
         timestamp_end_final = log_ad_df_full.iloc[-1]["@timestamp"]
         while True:
             timestamp_end = timestamp_start + timedelta(minutes=1)
-            mask = (log_ad_df_full['@timestamp'] > timestamp_start) & (log_ad_df_full['@timestamp'] <= timestamp_end)
+            mask = (log_ad_df_full['@timestamp'] >= timestamp_start) & (log_ad_df_full['@timestamp'] < timestamp_end)
             log_ad_df = log_ad_df_full.loc[mask]
             if (len(log_ad_df) == 0):
                 timestamp_start = timestamp_end
@@ -45,17 +44,19 @@ class IncidentDetector:
                           "new_templates": new_templates, "semantic_ad": semantic_anomalies,
                           "semantic_count_ads": semantic_count_anomalies, "logs": logs}
             if (
-                    not new_templates
-                    and not semantic_anomalies
-                    and not semantic_count_anomalies
-                    and not tmp_count_anomalies
+                    not len(new_templates)
+                    and not len(semantic_anomalies)
+                    and not len(semantic_count_anomalies)
+                    and not len(tmp_count_anomalies)
             ):
                 properties = {"@timestamp": timestamp_end, "total_score": 0.0, "timestamp_start": timestamp_start,
                               "timestamp_end": timestamp_end, "count_ads": [], "application_id": application_id,
                               "new_templates": [], "semantic_ad": [],
                               "semantic_count_ads": []}
+
+            propertiy_list.append(properties)
             timestamp_start = timestamp_end
             if timestamp_start > timestamp_end_final:
                 break
-            propertiy_list.append(properties)
+
         return propertiy_list
