@@ -33,14 +33,12 @@ class FieldParser(ABC):
             log_obj.tag_failed_field_parsing(self.type)
 
         log_obj.unify_log_representation()
-
         if not log_obj.get_timestamp() and not self._prev_time:
             return None, None
         elif not log_obj.get_timestamp() and self._prev_time:
             log_obj.set_timestamp(self._prev_time)
         elif log_obj.get_timestamp():
             self._prev_time = log_obj.get_timestamp()
-
         return log_obj.log, parsed_message is not None
 
     def parse_prev_timestamp(self, logs: List[Dict]):
