@@ -80,6 +80,8 @@ class CalibrationState(State):
             result = self._process_buffer()
             if self.context.next_handler:
                 self.context.next_handler.handle(result)
+        else:
+            self.timer.reset_timer()
 
 
 class FieldParserParseState(State):
