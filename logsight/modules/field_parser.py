@@ -76,9 +76,10 @@ class CalibrationState(State):
         return result if result else None
 
     def timeout_call(self):
-        result = self._process_buffer()
-        if self.context.next_handler:
-            self.context.next_handler.handle(result)
+        if not self.buffer.is_empty:
+            result = self._process_buffer()
+            if self.context.next_handler:
+                self.context.next_handler.handle(result)
 
 
 class FieldParserParseState(State):
