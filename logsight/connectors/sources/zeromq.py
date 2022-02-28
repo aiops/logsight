@@ -36,6 +36,7 @@ class ZeroMQSubSource(ZeroMQConnector, Source):
             message = topic_log.split(" ", 1)[1]
             log = json.loads(message)
             # TODO NEEDS REVISION @PETAR
+            logger.info(log)
             if log['source'] == "FILE" or log['source'] == "SAMPLE":
                 log['message'] = log['message']['message']
             else:
@@ -43,6 +44,7 @@ class ZeroMQSubSource(ZeroMQConnector, Source):
         except Exception as e:
             logger.error(e)
             return None
+        logger.info(f"OUT: {log}")
         return log
 
 
