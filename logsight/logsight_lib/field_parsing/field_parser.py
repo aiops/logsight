@@ -33,6 +33,7 @@ class FieldParser(ABC):
             log_obj.tag_failed_field_parsing(self.type)
 
         log_obj.unify_log_representation()
+        print(log_obj.to_json_string(), log_obj.get_timestamp())
         if not log_obj.get_timestamp() and not self._prev_time:
             return None, None
         elif not log_obj.get_timestamp() and self._prev_time:
