@@ -59,6 +59,11 @@ class InputModule(StatefulControlModule, AbstractHandler):
         internal.start()
         while self.data_source.has_next():
             request = self.data_source.receive_message()
+            # TODO NEEDS REVISION @PETAR
+            if request['source'] == "FILE" or request['source'] == "SAMPLE":
+                request['message'] = request['message']['message']
+            else:
+                request['message'] = json.dumps(request['message'])  #
             self.handle(request)
             self._update_state(request)
 
