@@ -35,11 +35,7 @@ class ZeroMQSubSource(ZeroMQConnector, Source):
             topic_log = self.socket.recv().decode("utf-8")
             message = topic_log.split(" ", 1)[1]
             log = json.loads(message)
-            # TODO NEEDS REVISION @PETAR
-            if log['source'] == "FILE" or log['source'] == "SAMPLE":
-                log['message'] = log['message']['message']
-            else:
-                log['message'] = json.dumps(log['message']) #
+
         except Exception as e:
             logger.error(e)
             return None
