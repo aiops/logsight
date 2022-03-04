@@ -15,6 +15,6 @@ RUN pip install -r requirements.txt
 
 # copy code
 COPY logsight/ logsight
-
+COPY logsight-eula.txt /
 ENTRYPOINT [ "python3", "-u", "./logsight/run.py" ]
 #ENTRYPOINT [ "bash" ]
