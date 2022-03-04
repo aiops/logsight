@@ -1,19 +1,18 @@
 import json
 import logging
-import time
 from http import HTTPStatus
 from multiprocessing import Process
 
+import config
+
 from builders.application_builder import ApplicationBuilder
-from config.global_vars import USES_KAFKA, USES_ES, PIPELINE_PATH
+from configs.global_vars import PIPELINE_PATH, USES_ES, USES_KAFKA
 from logsight_classes.application import Application
 from logsight_classes.data_class import AppConfig, PipelineConfig
-from logsight_classes.responses import ErrorApplicationOperationResponse, SuccessApplicationOperationResponse, \
-    ApplicationOperationResponse
+from logsight_classes.responses import ApplicationOperationResponse, ErrorApplicationOperationResponse, \
+    SuccessApplicationOperationResponse
 from modules.core.timer import NamedTimer
-from utils.fs import load_json
 from utils.helpers import DataClassJSONEncoder
-from multiprocessing import Lock
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -29,7 +28,7 @@ class Manager:
         self.active_process_apps = {}
         self.app_builder = app_builder if app_builder else ApplicationBuilder(services)
 
-        self.pipeline_config = PipelineConfig(**load_json(PIPELINE_PATH))
+        self.pipeline_config = PipelineConfig(**config.Config(PIPELINE_PATH).as_dict())
         self.sync_timer = None
         if self.db:
             self.sync_timer = NamedTimer(timeout_period=600, callback=self._sync_apps, name="Sync app with db")

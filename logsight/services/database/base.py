@@ -3,7 +3,7 @@ from functools import wraps
 from time import sleep
 
 from sqlalchemy.engine import create_engine
-from sqlalchemy.exc import OperationalError, DatabaseError
+from sqlalchemy.exc import DatabaseError, OperationalError
 
 from utils.helpers import unpack_singleton
 
@@ -74,9 +74,9 @@ class Database:
                 self._create_engine()
             self.conn = self.engine.connect()
             self._reconnect_attempts = 5
+            logger.debug(f"Connected to database {self.db_name}")
         except OperationalError:
             self.reconnect()
-        logger.debug(f"Connected to database {self.db_name}")
 
     def reconnect(self):
         """Reconnect to database"""
@@ -88,7 +88,6 @@ class Database:
                 self.connect()
             else:
                 self.conn = None
-                logger.debug(f"Failed connecting to database {self.db_name}")
                 logger.error(f"Failed connecting to database {self.db_name}")
         except OperationalError:
             self.reconnect()

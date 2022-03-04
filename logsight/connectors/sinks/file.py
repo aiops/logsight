@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-from config.global_vars import FILE_SINK_PATH
+from configs.global_vars import FILE_SINK_PATH
 from .sink import Sink
 
 

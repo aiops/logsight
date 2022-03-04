@@ -3,21 +3,19 @@ import json
 import logging.config
 import os
 import platform
+from multiprocessing import set_start_method
 from typing import Dict
 
 from builders.application_builder import ApplicationBuilder
 from builders.connection_builder import ConnectionBuilder
 from builders.module_builder import ModuleBuilder
-from config.global_vars import CONFIG_PATH
+from configs import global_vars
+from configs.global_vars import CONFIG_PATH
+from connectors import sinks, sources
 from manager import Manager
-from services.configurator import ManagerConfig
 from services import service_names
-from connectors import sources
-from connectors import sinks
-from config import global_vars
+from services.configurator import ManagerConfig
 from utils.fs import verify_file_ext
-
-from multiprocessing import set_start_method
 
 # hello world
 logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "log.json"), 'r')))
@@ -55,7 +53,7 @@ def setup_services(config: ManagerConfig):
 def create_manager(config: ManagerConfig):
     source = setup_connector(config, 'source')
     services = setup_services(config)
-    # producer = setup_connector(config, 'producer')
+    # producer = setup_connector(configs, 'producer')
     topic_list = config.get_topic_list()
 
     connection_builder = ConnectionBuilder(config=config)
@@ -67,20 +65,20 @@ def create_manager(config: ManagerConfig):
 
 def parse_arguments() -> Dict:
     parser = argparse.ArgumentParser(description='Logsight monolith.')
-    parser.add_argument('--cconf', help='Connection config to use (filename in logsight/config directory)',
+    parser.add_argument('--cconf', help='Connection configs to use (filename in logsight/configs directory)',
                         type=str, default='connections', required=False)
-    parser.add_argument('--mconf', help='Manager config to use (filename in logsight/config directory)',
+    parser.add_argument('--mconf', help='Manager configs to use (filename in logsight/configs directory)',
                         type=str, default='manager', required=False)
-    parser.add_argument('--pconf', help='Pipeline config to use (filename in logsight/config directory)',
+    parser.add_argument('--pconf', help='Pipeline configs to use (filename in logsight/configs directory)',
                         type=str, default='pipeline', required=False)
     args = vars(parser.parse_args())
     return args
 
 
 def get_config(args: Dict) -> ManagerConfig:
-    connection_conf_file = verify_file_ext(args['cconf'], ".json")
+    connection_conf_file = verify_file_ext(args['cconf'], ".cfg")
     connection_conf_path = os.path.join(CONFIG_PATH, connection_conf_file)
-    manager_conf_file = verify_file_ext(args['mconf'], ".json")
+    manager_conf_file = verify_file_ext(args['mconf'], ".cfg")
     manager_conf_path = os.path.join(CONFIG_PATH, manager_conf_file)
     return ManagerConfig(connection_conf_path, manager_conf_path)
 
