@@ -14,8 +14,8 @@ class TestManager(unittest.TestCase):
 
     def setUp(self) -> None:
         super().setUp()
-        connection_conf_path = 'config/connections.json'
-        manager_conf_path = "config/manager.json"
+        connection_conf_path = 'configs/connections.json'
+        manager_conf_path = "configs/manager.json"
         config = ManagerConfig(connection_conf_path, manager_conf_path)
         self.manager = create_manager(config)
         logger.info("Manager created successfully.")
