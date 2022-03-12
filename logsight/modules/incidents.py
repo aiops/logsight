@@ -51,6 +51,8 @@ class LogIncidentModule(Module, AbstractHandler):
             else:
                 self.log_ad_buffer.add(data)
             timestamp = "@timestamp"
+            print(self.log_ad_buffer[-1])
+            print(self.log_ad_buffer[-1][timestamp])
             end_time = self._parse_time(self.log_ad_buffer[-1][timestamp])
             start_time = self._parse_time(self.log_ad_buffer[0][timestamp])
             if (end_time - start_time).seconds >= 60:
@@ -92,4 +94,7 @@ class LogIncidentModule(Module, AbstractHandler):
         try:
             return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
         except ValueError:
-            return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+            try:
+                return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+            except ValueError:
+                return datetime.strptime(str(timestamp).split("+")[0], '%Y-%m-%dT%H:%M:%S.%f')
