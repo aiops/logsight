@@ -1,13 +1,15 @@
 import json
 
-from config.global_vars import DEBUG
+from config import Config
+
+from configs.global_vars import DEBUG
 
 
 class ConnectionConfig:
     def __init__(self, connection_config_path: str):
-        self.conns = json.load(open(connection_config_path, 'r'))
+        self.conns = Config(connection_config_path)
 
-        for conn in self.conns:
+        for conn in self.conns.as_dict():
             for key in self.conns[conn].keys():
                 if 'host' in key and DEBUG:
                     self.conns[conn][key] = "localhost"
@@ -30,7 +32,7 @@ class ConnectionConfig:
 class ManagerConfig(ConnectionConfig):
     def __init__(self, connection_config_path: str, manager_config_path: str):
         super().__init__(connection_config_path)
-        self.manager_config = json.load(open(manager_config_path, 'r'))
+        self.manager_config = Config(manager_config_path)
 
     def get_source(self):
         return self.manager_config['connectors']['source']
@@ -48,7 +50,7 @@ class ManagerConfig(ConnectionConfig):
         return self.manager_config['connectors'][connector]
 
     def get_topic_list(self):
-        return self.manager_config['topic_list']
+        return self.manager_config.get('topic_list', None)
 
 
 class ModulePipelineConfig(ConnectionConfig):

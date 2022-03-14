@@ -6,10 +6,10 @@ from kafka.errors import TopicAlreadyExistsError
 
 from builders.base import Builder
 from builders.module_builder import ModuleBuilder
+from configs.global_vars import USES_ES, USES_KAFKA
 from logsight_classes.application import Application
-from logsight_classes.data_class import AppConfig, PipelineConfig, HandlerConfig
+from logsight_classes.data_class import AppConfig, HandlerConfig, PipelineConfig
 from modules.core import AbstractHandler
-from config.global_vars import USES_KAFKA, USES_ES
 
 logger = logging.getLogger("logsight." + __name__)
 

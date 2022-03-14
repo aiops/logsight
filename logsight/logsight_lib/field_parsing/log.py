@@ -69,7 +69,7 @@ class Log:
 
     def _format_timestamp(self, timestamp):
         if isinstance(timestamp, datetime.datetime):
-            timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%S.%f')
+            timestamp = timestamp.strftime('%Y-%m-%dT%H:%M:%S.%f%z')
         return timestamp
 
     def set_log_level(self, log_level: str):
