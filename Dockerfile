@@ -15,6 +15,10 @@ RUN pip install -r requirements.txt
 
 # copy code
 COPY logsight/ logsight
-COPY logsight-eula.txt /
-ENTRYPOINT [ "python3", "-u", "./logsight/run.py" ]
-#ENTRYPOINT [ "bash" ]
+# copy entrypoint.sh
+COPY entrypoint.sh .
+
+# Set logsight home dir
+ENV LOGSIGHT_HOME="/code/logsight"
+
+ENTRYPOINT [ "./entrypoint.sh" ]
