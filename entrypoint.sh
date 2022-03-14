@@ -4,10 +4,11 @@
 set -e
 
 check_license() {
-  if [[ "$ACCEPT_LOGSIGHT_LICENSE" != *"accept-license"* ]]; then
-    printf "Logsight license not accepted. You need to accept the EULA when using this image.\n"
-    printf "Please set the environment variable ACCEPT_LOGSIGHT_LICENSE='accept-license'\n"
-    printf "For example: docker run -e ACCEPT_LOGSIGHT_LICENSE=accept-license logsight/logsight\n\n"
+  if ! (echo "$ACCEPT_LOGSIGHT_LICENSE" | grep -Eq  ^.*accept-license.*$); then
+    echo "Logsight license not accepted. You need to accept the EULA when using this image."
+    echo "Please set the environment variable ACCEPT_LOGSIGHT_LICENSE='accept-license'"
+    echo "For example: docker run -e ACCEPT_LOGSIGHT_LICENSE=accept-license logsight/logsight"
+    echo ""
     # TODO: Add print with link to license text
     exit 1
   fi
