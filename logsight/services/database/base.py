@@ -13,17 +13,19 @@ logger = logging.getLogger("logsight." + __name__)
 def ensure_connection(func):
     @wraps(func)
     def decorated(cls, sql, *args):
-        try:
-            if cls.conn is None:
-                cls.connect()
-            result = func(cls, sql, *args)
-            return result
-        except OperationalError:
-            cls.reconnect()
-        except (Exception, DatabaseError) as error:
-            logger.error(error)
-            raise error
-
+        retries = 10
+        for i in range(retries):
+            try:
+                if cls.conn is None:
+                    cls.connect()
+                result = func(cls, sql, *args)
+                return result
+            except OperationalError:
+                cls.reconnect()
+            except (Exception, DatabaseError) as error:
+                logger.error(f"Failed database operation. Reason: {error}. Retry attempt {i+1}/{retries}")
+                sleep(5)
+        raise ConnectionError(f"Failed to execute data base operation after {retries} retries.")
     return decorated
 
 
