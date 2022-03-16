@@ -92,4 +92,7 @@ class LogIncidentModule(Module, AbstractHandler):
         try:
             return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
         except ValueError:
-            return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+            try:
+                return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+            except ValueError:
+                return datetime.strptime(str(timestamp).split("+")[0], '%Y-%m-%dT%H:%M:%S.%f')
