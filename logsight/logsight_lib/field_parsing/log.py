@@ -112,7 +112,8 @@ class Log:
         return key in self.log
 
     def update(self, fields: dict):
-        self.log.update(fields)
+        if type(fields) is dict:
+            self.log.update(fields)
         return self
 
     def unify_log_representation(self):
