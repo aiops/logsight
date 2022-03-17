@@ -1,6 +1,7 @@
 import logging
 
 import zmq
+from tenacity import retry, wait_fixed, stop_after_attempt
 
 from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
 from connectors.sinks import Sink
@@ -11,10 +12,8 @@ logger = logging.getLogger("logsight." + __name__)
 class ZeroMQPubSink(Sink, ZeroMQConnector):
     name = "zeroMQ pub sink"
 
-    def __init__(self, endpoint: str, topic: str = "", retry_connect_num: int = 5, retry_timeout_sec: int = 5,
-                 connection_type: ConnectionTypes = ConnectionTypes.CONNECT, **kwargs):
-        ZeroMQConnector.__init__(self, endpoint, socket_type=zmq.PUB, connection_type=connection_type,
-                                 retry_connect_num=retry_connect_num, retry_timeout_sec=retry_timeout_sec)
+    def __init__(self, endpoint: str, topic: str = "", connection_type: ConnectionTypes = ConnectionTypes.CONNECT, **kwargs):
+        ZeroMQConnector.__init__(self, endpoint, socket_type=zmq.PUB, connection_type=connection_type)
         self.topic = topic
 
     def connect(self):

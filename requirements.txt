@@ -22,3 +22,4 @@ pyzmq~=22.3.0
 python-dateutil~=2.8.2
 scikit-learn~=1.0.1
 config
+tenacity==8.0.1

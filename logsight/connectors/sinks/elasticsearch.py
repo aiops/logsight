@@ -1,6 +1,7 @@
 import logging
 
 from elasticsearch import Elasticsearch, helpers
+from tenacity import retry, wait_fixed, stop_after_attempt
 
 from .sink import Sink
 
@@ -23,6 +24,7 @@ class ElasticsearchSink(Sink):
     def connect(self):
         pass
 
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
     def send(self, data):
         if not isinstance(data, list):
             data = [data]
@@ -32,4 +34,5 @@ class ElasticsearchSink(Sink):
                          index=self.index,
                          request_timeout=200)
         except Exception as e:
-            logger.error(f"{e}")
+            logger.warning(f"Failed to send data to elasticsearch. Reason: {e}. Retrying...")
+            raise e

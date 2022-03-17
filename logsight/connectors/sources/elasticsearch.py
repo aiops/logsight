@@ -1,6 +1,7 @@
 import threading
 
 from elasticsearch.client import Elasticsearch
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 from modules.core.wrappers import synchronized
 from .source import Source
@@ -57,5 +58,6 @@ class ElasticsearchSource(Source):
         # To be implemented
         pass
 
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
     def get_data(self, query):
         return self.es.scan(query)
