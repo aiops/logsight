@@ -1,6 +1,9 @@
 import json
 import unittest
 
+from tenacity import RetryError
+from zmq import ZMQError
+
 from connectors.base.zeromq import ConnectionTypes
 from connectors.sinks.zeromq import ZeroMQPubSink
 
@@ -30,9 +33,9 @@ class TestZeroMQPubSink(unittest.TestCase):
         zeromq1 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic,
                                 connection_type=ConnectionTypes.BIND)
         zeromq2 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic,
-                                connection_type=ConnectionTypes.BIND, retry_connect_num=1, retry_timeout_sec=1)
+                                connection_type=ConnectionTypes.BIND)
         self.save_connect(zeromq1)
-        self.assertRaises(ConnectionError, zeromq2.connect)
+        self.assertRaises(RetryError, zeromq2.connect)
         self.save_close(zeromq1)
 
     def test_message_send_success(self):

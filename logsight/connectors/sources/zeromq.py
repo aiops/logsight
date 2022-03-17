@@ -2,6 +2,7 @@ import json
 import logging
 
 import zmq
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
 from connectors.sources import Source
@@ -51,6 +52,7 @@ class ZeroMQRepSource(ZeroMQConnector, Source):
         msg = self.socket.recv().decode("utf-8")
         return json.loads(msg)
 
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
     def connect(self):
         ZeroMQConnector.connect(self)
 
