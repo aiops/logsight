@@ -4,7 +4,7 @@ import sys
 import numpy as np
 
 
-PREDICTION_THRESHOLD = 0.95
+PREDICTION_THRESHOLD = 0.85
 
 def get_settings(argv):
     try:
