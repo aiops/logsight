@@ -1,3 +1,4 @@
+import json
 from time import time
 
 from .source import Source
@@ -17,12 +18,8 @@ class PrintSource(Source):
 
 
 class FileSource(Source):
-    def connect(self):
-        return
-
     def __init__(self, path=None, **kwargs):
-        super().__init__(**kwargs)
-        self.path = path or "/Users/pilijevski/work/logsight/logsight/tests/test_data/jboss_v10.json"
+        self.path = path or "/home/alex/workspace_startup/logsight/tests/test_data/jboss_v10.json"
         files_list = [self.path]
         # for root, folders, files in os.walk("/home/petar/work/logsight/data/test_log_dir"):
         #     for f in files:
@@ -35,18 +32,26 @@ class FileSource(Source):
         self.cnt = 0
         self.time = time()
 
+    def close(self):
+        pass
+
+    def connect(self):
+        return
+
     def receive_message(self):
         try:
+            txt = json.loads(self.file.readline())
+            source = "DEF"
+        except Exception:
             txt = self.file.readline()
-        except UnicodeDecodeError:
-            txt = self.file.readline()
+            source = "DEF"
 
         self.cnt += 1
         if txt == "":
             return self._reopen_file()
         if self.cnt % 10000 == 0:
             print("Sending", self.cnt, time() - self.time)
-        return {"app_name": "sample_app", "message": txt, "private_key": "sample_key"}
+        return {"application_id": "test", "app_name": "test", "message": txt, "private_key": "sample_key", "source": source}
 
     def _reopen_file(self):
         self.i += 1

@@ -1,7 +1,8 @@
 import logging
-from copy import deepcopy
 from datetime import datetime
 from typing import Any, Optional
+
+from pandas import Timestamp
 
 from modules.core import AbstractHandler, Module
 
@@ -73,11 +74,10 @@ class LogIncidentModule(Module, AbstractHandler):
                     self.log_ad_buffer.add(context)
             result = self.model.get_incident_properties(self.log_count_buffer.flush_buffer(),
                                                         self.log_ad_buffer.flush_buffer())
-        return super().handle(result)
+        return super().flush(result)
 
-    def handle(self, request: Any) -> Optional[str]:
-        result = self._process_data(request)
-        return super().handle(result)
+    def _handel(self, request: Any) -> Optional[str]:
+        return self._process_data(request)
 
     def _timeout_call(self):
         logger.debug("Initiating timer.")
@@ -89,10 +89,14 @@ class LogIncidentModule(Module, AbstractHandler):
 
     @staticmethod
     def _parse_time(timestamp):
-        try:
-            return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
-        except ValueError:
+        if type(timestamp) is str:
             try:
-                return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+                return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
             except ValueError:
-                return datetime.strptime(str(timestamp).split("+")[0], '%Y-%m-%dT%H:%M:%S.%f')
+                try:
+                    return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+                except ValueError:
+                    return datetime.strptime(str(timestamp).split("+")[0], '%Y-%m-%dT%H:%M:%S.%f')
+        elif type(timestamp) is Timestamp:
+            return timestamp.to_pydatetime()
+
