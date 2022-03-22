@@ -23,7 +23,8 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
     """
 
     def flush(self, context=None) -> Optional[str]:
-        return super().flush(self.flush_state(context))
+        result = self.flush_state(context)
+        return super().flush(result)
 
     module_name = "anomaly_detection"
 
@@ -46,14 +47,13 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
         if data:
             return self.process_context(data)
 
-    def handle(self, request: Any) -> Optional[str]:
+    def _handle(self, request: Any) -> Optional[str]:
         result = None
         try:
             result = self._process_data(request)
         except ModelNotLoadedException as e:
             logger.error(e)
-            print(traceback.format_exc())
-        return super().handle(result)
+        return result
 
 
 class IdleState(State):

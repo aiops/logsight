@@ -34,17 +34,17 @@ TFlushReply = TypeVar("TFlushReply", bound=FlushReply)
 
 @dataclass
 class FlushReplySuccess(FlushReply):
-    status: str = HTTPStatus(HTTPStatus.OK).phrase
+    status: str = HTTPStatus.OK
 
 
 @dataclass
 class FlushReplyTimeout(FlushReply):
-    status: str = HTTPStatus(HTTPStatus.REQUEST_TIMEOUT).phrase
+    status: str = HTTPStatus.REQUEST_TIMEOUT
 
 
 @dataclass
 class FlushReplyFail(FlushReply):
-    status: str = HTTPStatus(HTTPStatus.INTERNAL_SERVER_ERROR).phrase
+    status: str = HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 @dataclass
@@ -54,4 +54,4 @@ class FlushReplyValidationError(FlushReply):
     logsCount: int = -1
     currentLogsCount: int = -1
     description: str = ""
-    status: str = HTTPStatus(HTTPStatus.BAD_REQUEST).phrase
+    status: str = HTTPStatus.BAD_REQUEST

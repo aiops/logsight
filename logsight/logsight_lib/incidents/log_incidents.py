@@ -3,16 +3,17 @@ from datetime import timedelta
 
 import pandas as pd
 
+from modules.core.wrappers import synchronized
+
 
 class IncidentDetector:
+    @synchronized
     def get_incident_properties(self, log_count_ad, log_ad):
         if len(log_ad) == 0:
             return None
-        try:
-            log_ad_df_full = pd.DataFrame(log_ad).sort_values(by='@timestamp')
-            log_ad_df_full["@timestamp"] = pd.to_datetime(log_ad_df_full["@timestamp"])
-        except KeyError:
-            print(log_ad)
+
+        log_ad_df_full = pd.DataFrame(log_ad).sort_values(by='@timestamp')
+        log_ad_df_full["@timestamp"] = pd.to_datetime(log_ad_df_full["@timestamp"])
 
         propertiy_list = []
         timestamp_start = log_ad_df_full.iloc[0]["@timestamp"]
@@ -21,7 +22,7 @@ class IncidentDetector:
             timestamp_end = timestamp_start + timedelta(minutes=1)
             mask = (log_ad_df_full['@timestamp'] >= timestamp_start) & (log_ad_df_full['@timestamp'] < timestamp_end)
             log_ad_df = log_ad_df_full.loc[mask]
-            if (len(log_ad_df) == 0):
+            if len(log_ad_df) == 0:
                 timestamp_start = timestamp_end
                 continue
             total_score = 0

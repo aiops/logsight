@@ -25,9 +25,8 @@ class DataStoreModule(Module, AbstractHandler):
         if data:
             return self.sink.send(data)
 
-    def handle(self, request: Any) -> Optional[str]:
-        result = self._process_data(request)
-        return super().handle(result)
+    def _handle(self, request: Any) -> Optional[str]:
+        return self._process_data(request)
 
     def flush(self, context=None) -> Optional[str]:
         result = self._process_data(context)

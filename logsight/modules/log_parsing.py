@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from copy import deepcopy
 from typing import Any, Optional, List
 from modules.core import AbstractHandler, Context, State, Module
 from modules.core.buffer import Buffer
@@ -33,24 +32,22 @@ class LogParserModule(Module, Context, AbstractHandler):
         if data:
             return self.process_context(data)
 
-    def handle(self, request: Any) -> Optional[str]:
-        result = self._process_data(request)
-        return super().handle(result)
+    def _handle(self, request: Any) -> Optional[str]:
+        return self._process_data(request)
 
     def flush(self, context: Optional[Any]) -> Optional[str]:
-        result = None
-        if context:
-            result = self.flush_state(context)
+        result = self.flush_state(context)
         return super().flush(result)
 
 
 class TrainState(State):
 
     def flush(self, context: Optional[Any]) -> Optional[Any]:
-        if isinstance(context, list):
-            self.buffer.extend(context)
-        else:
-            self.buffer.add(context)
+        if context:
+            if isinstance(context, list):
+                self.buffer.extend(context)
+            else:
+                self.buffer.add(context)
         result = self._do_parsing()
         return result
 
@@ -96,8 +93,9 @@ class TrainState(State):
 class PredictState(State):
 
     def flush(self, context: Optional[Any]) -> Optional[Any]:
-        result = self.handle(context)
-        return result
+        if context:
+            return self.handle(context)
+        return context
 
     def __init__(self, parser: Parser, config):
         self.parser = parser

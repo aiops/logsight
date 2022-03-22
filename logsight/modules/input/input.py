@@ -33,6 +33,9 @@ class InputModuleState(Subject):
         else:
             return InputModuleState(order_counter, prev_state.logs_counter + 1)
 
+    def __str__(self):
+        return f"{{order_num: {self.order_num}, logs_counter: {self.logs_counter}}}"
+
 
 class InputModule(StatefulControlModule, AbstractHandler):
     module_name = "input_module"
@@ -42,8 +45,8 @@ class InputModule(StatefulControlModule, AbstractHandler):
         AbstractHandler.__init__(self)
         self.data_source = data_source
 
-    def handle(self, request: Any) -> Optional[str]:
-        return super().handle(request)
+    def _handle(self, request: Any) -> Optional[str]:
+        return request
 
     def start(self, ctx: dict):
         ctx["module"] = self.module_name
@@ -60,12 +63,14 @@ class InputModule(StatefulControlModule, AbstractHandler):
         while self.data_source.has_next():
             request = self.data_source.receive_message()
             # TODO NEEDS REVISION @PETAR
-            if request['source'] == "FILE" or request['source'] == "SAMPLE":
-                request['message'] = request['message']['message']
-            else:
-                request['message'] = json.dumps(request['message'])  #
-            self.handle(request)
-            self._update_state(request)
+            if request:
+                if request['source'] == "FILE" or request['source'] == "SAMPLE":
+                    request['message'] = request['message']['message']
+                else:
+                    request['message'] = json.dumps(request['message'])  #
+                self.handle(request)
+                self._update_state(request)
+        self.flush(None)
 
     def _update_state(self, request):
         state = InputModuleState.from_request_and_state(request, self.state)
@@ -92,7 +97,7 @@ class InputModule(StatefulControlModule, AbstractHandler):
         try:
             self.flush(None)
         except Exception as e:
-            logger.error(f"Failed to execute flush request {observer.flush_request}. Reason: {e}")
+            logger.exception(f"Failed to execute flush request {observer.flush_request}.")
             self._send_flush_failed_reply(state, observer, f"Failed to execute flush request {observer.flush_request}. Reason: {e}")
             return
 
@@ -153,7 +158,6 @@ class InputModuleFlushStateObserver(SubjectObserver):
         self._callback = callback
 
     def on_update(self, state: InputModuleState) -> None:
-        logger.debug(f"Observed state change: {state}")
         if state:
             if state.order_num > self.flush_request.orderNum:
                 self._callback(state, self)

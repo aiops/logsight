@@ -41,9 +41,8 @@ class LogAggregationModule(Module, AbstractHandler):
             if self.buffer.is_full:
                 return self._process_buffer()
 
-    def handle(self, request: Any) -> Optional[str]:
-        result = self._process_data(request)
-        return super().handle(result)
+    def _handle(self, request: Any) -> Optional[str]:
+        return self._process_data(request)
 
     def _process_buffer(self):
         result = self.aggregator.aggregate_logs(self.buffer.flush_buffer())
