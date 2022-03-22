@@ -47,7 +47,7 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
         if data:
             return self.process_context(data)
 
-    def _handel(self, request: Any) -> Optional[str]:
+    def _handle(self, request: Any) -> Optional[str]:
         result = None
         try:
             result = self._process_data(request)

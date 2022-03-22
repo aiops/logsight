@@ -41,7 +41,7 @@ class LogAggregationModule(Module, AbstractHandler):
             if self.buffer.is_full:
                 return self._process_buffer()
 
-    def _handel(self, request: Any) -> Optional[str]:
+    def _handle(self, request: Any) -> Optional[str]:
         return self._process_data(request)
 
     def _process_buffer(self):

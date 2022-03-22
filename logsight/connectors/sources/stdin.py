@@ -19,12 +19,8 @@ class PrintSource(Source):
 
 class FileSource(Source):
     def __init__(self, path=None, **kwargs):
-        self.path = path or "/home/alex/workspace_startup/logsight/tests/test_data/jboss_v10.json"
+        self.path = path
         files_list = [self.path]
-        # for root, folders, files in os.walk("/home/petar/work/logsight/data/test_log_dir"):
-        #     for f in files:
-        #         if "syslog" in f:
-        #             files_list.append("/".join([str(root), str(f)]))
         self.files_list = files_list
         self.i = 0
         self.file = open(self.files_list[self.i], 'r')

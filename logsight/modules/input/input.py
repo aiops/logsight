@@ -45,7 +45,7 @@ class InputModule(StatefulControlModule, AbstractHandler):
         AbstractHandler.__init__(self)
         self.data_source = data_source
 
-    def _handel(self, request: Any) -> Optional[str]:
+    def _handle(self, request: Any) -> Optional[str]:
         return request
 
     def start(self, ctx: dict):

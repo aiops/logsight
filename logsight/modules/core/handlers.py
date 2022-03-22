@@ -57,7 +57,7 @@ class AbstractHandler(Handler):
     def handle(self, request: Any) -> Optional[str]:
         if request:
             self.stats.receive_request()
-            result = self._handel(request)
+            result = self._handle(request)
             self.stats.handled_request()
             if self._next_handler:
                 return self._next_handler.handle(result)
@@ -66,7 +66,7 @@ class AbstractHandler(Handler):
         return request
 
     @abstractmethod
-    def _handel(self, request) -> Optional[str]:
+    def _handle(self, request) -> Optional[str]:
         raise NotImplementedError
 
     @property

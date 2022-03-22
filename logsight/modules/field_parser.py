@@ -37,7 +37,7 @@ class FieldParsingModule(Module, Context, AbstractHandler):
         if data:
             return self.process_context(data)
 
-    def _handel(self, request) -> Optional[str]:
+    def _handle(self, request) -> Optional[str]:
         return self._process_data(request)
 
 
