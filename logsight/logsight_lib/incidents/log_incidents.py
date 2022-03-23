@@ -7,7 +7,7 @@ from modules.core.wrappers import synchronized
 
 
 class IncidentDetector:
-    @synchronized
+
     def get_incident_properties(self, log_count_ad, log_ad):
         if len(log_ad) == 0:
             return None
@@ -28,17 +28,19 @@ class IncidentDetector:
             total_score = 0
             new_templates = []
             tmp_count_anomalies = []
-            semantic_anomalies = []
             semantic_count_anomalies = []
             application_id = log_ad_df.drop_duplicates(subset=['template']).reset_index()['application_id'].values[0]
             log_tmp = log_ad_df.loc[log_ad_df.prediction == 1].drop_duplicates(subset=['template']).reset_index()
-            semantic_anomalies = [log_tmp.iloc[i:i + 1].dropna(axis='columns').to_dict('records') for i in
-                                  range(len(log_tmp))]
+            semantic_anomalies = [[element] for element in log_tmp.dropna(axis='columns').to_dict('records')]
             log_ad_score = len(semantic_anomalies)
             total_score += log_ad_score
 
-            logs = [log_ad_df.iloc[i:i + 1].dropna(axis='columns').to_dict('records') for i in
-                    range(len(log_ad_df))]
+            # This line can be used if all logs are needed to be stored in each incident. Currently, only the semantic
+            # anomalies are shown. This line is remove to improve the performance
+            # TODO for future: This should be handled by indexing somehow. Not by storing duplicates of logs
+            # logs = [[element] for element in log_ad_df.dropna(axis='columns').to_dict('records')]
+            logs = []
+
             properties = {"@timestamp": timestamp_end, "total_score": total_score, "timestamp_start": timestamp_start,
                           "timestamp_end": timestamp_end, "count_ads": tmp_count_anomalies,
                           "application_id": application_id,
