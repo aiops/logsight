@@ -19,7 +19,7 @@ pipeline {
                 }
             }
         }
-        stage('Linting & SonarQube')
+        stage('Linting & SonarQube') {
             parallel {
                 stage('SonarQube') {
                     agent {
@@ -58,5 +58,6 @@ pipeline {
                 }
 
             }
+        }
     }
 }
