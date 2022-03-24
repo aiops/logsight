@@ -3,14 +3,13 @@ pipeline {
     agent {
         docker {
             image 'python:3.7'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
     
     stages {
         stage('Test') {
             steps {
-                sh 'pip install -r requirements.txt --user'
+                sh 'pip install -r requirements.txt'
                 sh 'py.test --junitxml test-report.xml --cov-report xml:coverage-report.xml --cov=logsight tests/'
             }
             post {
