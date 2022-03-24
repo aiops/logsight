@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'pip install -r requirements.txt --user'
                 sh 'py.test --junitxml test-report.xml --cov-report xml:coverage-report.xml --cov=logsight tests/'
             }
             post {
