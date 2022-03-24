@@ -11,6 +11,7 @@ pipeline {
             steps {
                 sh 'pip install -r requirements.txt'
                 sh 'PYTHONPATH=$PWD/logsight py.test --junitxml test-report.xml --cov-report xml:coverage-report.xml --cov=logsight tests/'
+                stash name: 'test-reports', includes: '*.xml' 
             }
             post {
                 always {
@@ -29,6 +30,7 @@ pipeline {
                     }
                     steps {
                         script {
+                            unstash "test-reports"
                             withSonarQubeEnv('logsight-sonarqube') {
                                 // comment in with SonarQube dev license to enable branch analysis
                                 //sh """ 
