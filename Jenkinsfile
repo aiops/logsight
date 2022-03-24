@@ -1,13 +1,13 @@
 pipeline {
+    agent none
 
-    agent {
-        docker {
-            image 'python:3.7'
-        }
-    }
-    
     stages {
         stage('Test') {
+            agent {
+                docker {
+                    image 'python:3.7'
+                }
+            }
             steps {
                 sh 'pip install -r requirements.txt'
                 sh 'PYTHONPATH=$PWD/logsight py.test --junitxml test-report.xml --cov-report xml:coverage-report.xml --cov=logsight tests/'
@@ -56,7 +56,6 @@ pipeline {
                         }
                     }
                 }
-
             }
         }
     }
