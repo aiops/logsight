@@ -30,8 +30,16 @@ pipeline {
                     steps {
                         script {
                             withSonarQubeEnv('logsight-sonarqube') {
+                                // comment in with SonarQube dev license to enable branch analysis
+                                //sh """ 
+                                //    sonar-scanner -Dsonar.projectKey=logsight -Dsonar.branch.name=$BRANCH_NAME \
+                                //        -Dsonar.sources=logsight -Dsonar.tests=tests/. \
+                                //        -Dsonar.inclusions="**/*.py" \
+                                //        -Dsonar.python.coverage.reportPaths=coverage-report.xml \
+                                //        -Dsonar.test.reportPath=test-report.xml
+                                //"""
                                 sh """
-                                    sonar-scanner -Dsonar.projectKey=logsight -Dsonar.branch.name=$BRANCH_NAME \
+                                    sonar-scanner -Dsonar.projectKey=logsight
                                         -Dsonar.sources=logsight -Dsonar.tests=tests/. \
                                         -Dsonar.inclusions="**/*.py" \
                                         -Dsonar.python.coverage.reportPaths=coverage-report.xml \
