@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'sudo -H pip install -r requirements.txt'
+                sh 'pip install -r requirements.txt'
                 sh 'PYTHONPATH="$PWD/logsight py.test --junitxml test-report.xml --cov-report xml:coverage-report.xml --cov=logsight tests/'
             }
             post {
