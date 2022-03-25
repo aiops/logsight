@@ -42,7 +42,7 @@ pipeline {
                                 //"""
                                 sh """
                                     sonar-scanner -Dsonar.projectKey=logsight
-                                        -Dsonar.sources=logsight -Dsonar.tests=tests/. \
+                                        -Dsonar.tests=tests/. \
                                         -Dsonar.inclusions="**/*.py" \
                                         -Dsonar.python.coverage.reportPaths=coverage-report.xml \
                                         -Dsonar.test.reportPath=test-report.xml
