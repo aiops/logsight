@@ -1,10 +1,12 @@
 import gc
 import getopt
+import os
 import sys
+
 import numpy as np
 
+PREDICTION_THRESHOLD = os.environ.get('PREDICTION_THRESHOLD', 0.85)
 
-PREDICTION_THRESHOLD = 0.85
 
 def get_settings(argv):
     try:
@@ -37,6 +39,7 @@ def softmax(x):
     f_x = e_x / sum
     gc.collect()
     return f_x
+
 
 def get_padded_data(arr, max_pad, pad_value=0):
     return np.array([np.pad(i, (0, max_pad - len(i)), mode='constant', constant_values=pad_value) for i in arr])
