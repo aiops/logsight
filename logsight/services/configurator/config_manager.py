@@ -1,8 +1,9 @@
-import json
+import os
 
 from config import Config
 
-from configs.global_vars import DEBUG
+from configs.global_vars import DEBUG, PIPELINE_PATH
+from logsight_classes.data_class import PipelineConfig
 
 
 class ConnectionConfig:
@@ -53,13 +54,19 @@ class ManagerConfig(ConnectionConfig):
         return self.manager_config.get('topic_list', None)
 
 
-class ModulePipelineConfig(ConnectionConfig):
-    def __init__(self, connection_config_path: str, pipeline_config_path: str):
-        super().__init__(connection_config_path)
-        self.module_pipline_config = json.load(open(pipeline_config_path, 'r'))
+class ModulePipelineConfig:
+    def __init__(self, pipeline_config_path: str = PIPELINE_PATH):
+        self.pipeline_config = PipelineConfig(**Config(pipeline_config_path).as_dict())
+        self._modify_config()
+
+    def __repr__(self):
+        return self.pipeline_config
+
+    def _modify_config(self):
+        ad = os.environ.get("DISABLE_AD")
+        if ad and ad.lower() == "true":
+            self.pipeline_config.handlers['ad_fork'].next_handler.remove('ad_sink')
+            del self.pipeline_config.handlers['ad_sink']
 
     def get_module(self, module):
-        return self.module_pipline_config[module]
-
-    def get_connector(self, module, connector):
-        return self.module_pipline_config[module][connector]
+        return self.pipeline_config.handlers[module]

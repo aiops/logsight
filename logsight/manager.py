@@ -3,15 +3,14 @@ import logging
 from http import HTTPStatus
 from multiprocessing import Process
 
-import config
-
 from builders.application_builder import ApplicationBuilder
-from configs.global_vars import PIPELINE_PATH, USES_ES, USES_KAFKA
+from configs.global_vars import USES_ES, USES_KAFKA
 from logsight_classes.application import Application
-from logsight_classes.data_class import AppConfig, PipelineConfig
+from logsight_classes.data_class import AppConfig
 from logsight_classes.responses import ApplicationOperationResponse, ErrorApplicationOperationResponse, \
     SuccessApplicationOperationResponse
 from modules.core.timer import NamedTimer
+from services import ModulePipelineConfig
 from utils.helpers import DataClassJSONEncoder
 
 logger = logging.getLogger("logsight." + __name__)
@@ -28,7 +27,7 @@ class Manager:
         self.active_process_apps = {}
         self.app_builder = app_builder if app_builder else ApplicationBuilder(services)
 
-        self.pipeline_config = PipelineConfig(**config.Config(PIPELINE_PATH).as_dict())
+        self.pipeline_config = ModulePipelineConfig()
         self.sync_timer = None
         if self.db:
             self.sync_timer = NamedTimer(timeout_period=600, callback=self._sync_apps, name="Sync app with db")
@@ -45,7 +44,7 @@ class Manager:
             )
 
         logger.info(f"Building App {app_settings.application_name}.")
-        app = self.app_builder.build_object(self.pipeline_config, app_settings)
+        app = self.app_builder.build_object(self.pipeline_config.pipeline_config, app_settings)
         app_process = Process(target=start_process, args=(app,))
         self.active_apps[app_settings.application_id] = app
         self.active_process_apps[app_settings.application_id] = app_process
