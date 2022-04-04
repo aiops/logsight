@@ -10,8 +10,9 @@ PREDICTION_THRESHOLD = os.environ.get('PREDICTION_THRESHOLD', 0.85)
 try:
     PREDICTION_THRESHOLD = float(PREDICTION_THRESHOLD)
 except Exception as e:
-    logging.error("Prediction threshold is not a valid float.")
     PREDICTION_THRESHOLD = 0.90
+    logging.error(f"Prediction threshold is not a valid float. Using default prediction_thredhold={PREDICTION_THRESHOLD}")
+
 
 def get_settings(argv):
     try:

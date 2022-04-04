@@ -142,9 +142,9 @@ class DrainLogParser(Parser):
 
         # Match no existing log cluster
             if match_cluster is None:
-                if self.state in [Parser.TRAIN_STATE, Parser.TUNE_STATE]:
-                    new_cluster = LogCluster(log_message_preprocessed)
-                    self.add_seq_to_prefix_tree(self.rootNode, new_cluster)
+                # if self.state in [Parser.TRAIN_STATE, Parser.TUNE_STATE]:
+                #     new_cluster = LogCluster(log_message_preprocessed)
+                #     self.add_seq_to_prefix_tree(self.rootNode, new_cluster)
                 log['template'] = ' '.join(log_message_preprocessed)
                 parameter_list = get_parameter_list(log_tmp, ' '.join(log_message_preprocessed))
                 log = add_parameters_to_log_json(log, log_message_preprocessed, parameter_list)
