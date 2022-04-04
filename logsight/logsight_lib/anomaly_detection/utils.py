@@ -1,12 +1,17 @@
 import gc
 import getopt
+import logging
 import os
 import sys
 
 import numpy as np
 
 PREDICTION_THRESHOLD = os.environ.get('PREDICTION_THRESHOLD', 0.85)
-
+try:
+    PREDICTION_THRESHOLD = float(PREDICTION_THRESHOLD)
+except Exception as e:
+    logging.error("Prediction threshold is not a valid float.")
+    PREDICTION_THRESHOLD = 0.90
 
 def get_settings(argv):
     try:

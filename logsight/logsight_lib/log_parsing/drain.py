@@ -24,7 +24,7 @@ class DrainLogParser(Parser):
     def __init__(self, depth=3, st=0.35, max_child=100, rex=None, keep_para=True):
         super().__init__()
         if rex is None:
-            rex = [r'<\d+\ssec', r'0x.*?\s', r'(\d+\.){3}\d+(:\d+)?', r'\S*\d+\S*']
+            rex = [r'\S*\d+\S*', r'((?:[A-Z]:|(?<![:/\\])[\\\/]|\~[\\\/]|(?:\.{1,2}[\\\/])+)[\w+\\\s_\-\(\)\/]*(?:\.\w+)*)']
         self.rootNode = Node()
         self.depth = depth - 2
         self.st = st
@@ -137,8 +137,10 @@ class DrainLogParser(Parser):
             log_message_preprocessed = log_message_preprocessed.strip().split()
 
             # trying to match existing cluster
-            match_cluster = self.tree_search(self.rootNode, log_message_preprocessed)
-            # Match no existing log cluster
+            # match_cluster = self.tree_search(self.rootNode, log_message_preprocessed)
+            match_cluster = None
+
+        # Match no existing log cluster
             if match_cluster is None:
                 if self.state in [Parser.TRAIN_STATE, Parser.TUNE_STATE]:
                     new_cluster = LogCluster(log_message_preprocessed)
@@ -161,11 +163,13 @@ class DrainLogParser(Parser):
 
     def preprocess(self, line):
         line_tmp = re.sub("=", " = ", line)
+        line_tmp = re.sub(":", " : ", line_tmp)
         line_tmp = re.sub("\"", "\\\"", line_tmp)
+        line_r = line_tmp
         if self.rex is not None:
             for current_rex in self.rex:
-                line = re.sub(current_rex, '<*>', line_tmp)
-        return line, line_tmp
+                line_r = re.sub(current_rex, '<*>', line_r)
+        return line_r, line_tmp
 
     def process_log(self, log):
         return self.parse(log)
