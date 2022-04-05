@@ -25,7 +25,7 @@ class DrainLogParser(Parser):
         super().__init__()
         if rex is None:
             rex = [r'\S*\d+\S*', r'((?:[A-Z]:|(?<![:/\\])[\\\/]|\~[\\\/]|(?:\.{1,2}[\\\/])+)[\w+\\\s_\-\(\)\/]*('
-                                 r'?:\.\w+)*)', r'\b[A-Z][A-Z0-9]+\b']
+                                 r'?:\.\w+)*)', r'\b[A-Z][A-Z0-9_]+\b']
         self.rootNode = Node()
         self.depth = depth - 2
         self.st = st
