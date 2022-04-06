@@ -162,8 +162,8 @@ class DrainLogParser(Parser):
         #     return
 
     def preprocess(self, line):
-        line_tmp = re.sub("=", " = ", line)
-        line_tmp = re.sub(":", " : ", line_tmp)
+        line_tmp = re.sub(r'=[A-Z 0-9 a-z]*', r" = <*> ", line)
+        line_tmp = re.sub(r':', r' : ', line_tmp)
         line_tmp = re.sub("\"", "\\\"", line_tmp)
         line_r = line_tmp
         if self.rex is not None:
