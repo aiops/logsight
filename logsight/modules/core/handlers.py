@@ -10,7 +10,7 @@ from time import perf_counter
 from typing import Any, Optional, List
 
 from modules.core.timer import NamedTimer
-from modules.core.wrappers import synchronized
+from modules.core.wrappers import synchronized, Synchronized
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -117,7 +117,7 @@ class ForkHandler(Handler):
         return self._next_handlers
 
 
-class HandlerStats:
+class HandlerStats(Synchronized):
     def __init__(self, ctx: dict, log_stats_interval_sec: int = 60):
         self.ctx = ctx
         self.num_request = 0
@@ -134,13 +134,11 @@ class HandlerStats:
         self.num_request += 1
         self.perf_counter = perf_counter()
 
-    @synchronized
     def handled_request(self):
         self.num_result += 1
         perf_counter_request = perf_counter()
         self.request_result_times.append(perf_counter_request - self.perf_counter)
 
-    @synchronized
     def log_stats(self):
         mean_processing_time = 0
         if len(self.request_result_times) > 0:
