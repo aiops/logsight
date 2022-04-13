@@ -13,7 +13,7 @@ class ParsingRegexTest(unittest.TestCase):
 
         test_lines_correct_outputs = [
             "<*> <*> INFO <*> Started <*>",
-            "<*> <*> INFO <*> Started <*> host_ms = <W*> , <*>"
+            "<*> <*> INFO <*> Started <*> host_ms = <*> , <*>"
         ]
 
         parser = DrainLogParser()
