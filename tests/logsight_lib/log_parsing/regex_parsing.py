@@ -6,9 +6,6 @@ from logsight_lib.log_parsing import DrainLogParser
 
 class ParsingRegexTest(unittest.TestCase):
     def test_valid_regex_to_be_parsed(self):
-        rex = [r'(\S*\d+\S*)',
-               r'(\S*((?:[A-Z]:|(?<![:/\\])[\\\/]|\~[\\\/]|(?:\.{1,2}[\\\/])+)[\w+\\\s_\-\(\)\/]*(?:\.\w+)*)\S*)',
-               r'(\S*(?:\.+\S*)+)']
 
         test_lines = [
             "2021-12-16 05:15:56,329 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.w.WebAppContext@1800a575{datanode,/,file:///home/hduser/hadoop-3.3.0/share/hadoop/hdfs/webapps/datanode/,AVAILABLE}{file:/home/hduser/hadoop-3.3.0/share/hadoop/hdfs/webapps/datanode}",
