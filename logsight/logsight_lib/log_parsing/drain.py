@@ -24,7 +24,7 @@ class DrainLogParser(Parser):
     def __init__(self, depth=3, st=0.35, max_child=100, rex=None, keep_para=True):
         super().__init__()
         if rex is None:
-            rex = [r'\S*\d+\S*', r'((?:[A-Z]:|(?<![:/\\])[\\\/]|\~[\\\/]|(?:\.{1,2}[\\\/])+)[\w+\\\s_\-\(\)\/]*(?:\.\w+)*)']
+            rex = [r'(\S*\d+\S*)', r'(\S*((?:[A-Z]:|(?<![:/\\])[\\\/]|\~[\\\/]|(?:\.{1,2}[\\\/])+)[\w+\\\s_\-\(\)\/]*(?:\.\w+)*)\S*)',  r'(\S*(?:\.+\S*)+)']
         self.rootNode = Node()
         self.depth = depth - 2
         self.st = st
@@ -162,8 +162,7 @@ class DrainLogParser(Parser):
         #     return
 
     def preprocess(self, line):
-        line_tmp = re.sub("=", " = ", line)
-        line_tmp = re.sub(":", " : ", line_tmp)
+        line_tmp = re.sub(r'=[A-Z 0-9 a-z]*', r" = <*> ", line)
         line_tmp = re.sub("\"", "\\\"", line_tmp)
         line_r = line_tmp
         if self.rex is not None:
