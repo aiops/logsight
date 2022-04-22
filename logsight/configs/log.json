@@ -9,6 +9,10 @@
     "debug": {
       "format": "%(asctime)s|%(threadName)15s|%(module)15s|%(funcName)25s|%(levelname)7s| %(message)s",
       "datefmt": "%Y-%m-%d %H:%M:%S"
+    },
+    "warning": {
+      "format": "%(asctime)s|%(threadName)15s|%(module)15s|%(funcName)25s|%(levelname)7s| %(message)s",
+      "datefmt": "%Y-%m-%d %H:%M:%S"
     }
   },
   "handlers": {
@@ -25,6 +29,11 @@
     "debug": {
       "level": "DEBUG",
       "formatter": "debug",
+      "class": "logging.StreamHandler"
+    },
+    "warning": {
+      "level": "WARNING",
+      "formatter": "warning",
       "class": "logging.StreamHandler"
     }
   },

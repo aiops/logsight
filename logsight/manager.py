@@ -119,6 +119,7 @@ class Manager:
                 application_id=msg.get("id"),
                 application_name=msg.get("name"),
                 private_key=msg.get("userKey"),
+                application_key=msg.get("applicationKey"),
                 action=msg.get("action")
             )
         except Exception as e:

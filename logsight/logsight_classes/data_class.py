@@ -1,12 +1,12 @@
-from uuid import UUID
+from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel, validator
-from typing import Optional, List, Union, Dict
 
 
 class AppConfig(BaseModel):
     application_id: str
     application_name: str
+    application_key: str
     private_key: str
     action: str = ""
 
