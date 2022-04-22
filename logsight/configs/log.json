@@ -40,10 +40,10 @@
   "loggers": {
     "logsight": {
       "handlers": [
-        "debug"
+        "info"
       ],
-      "level": "DEBUG",
-      "propagate": true
+      "level": "INFO",
+      "propagate": false
     }
   }
 }
