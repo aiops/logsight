@@ -1,7 +1,7 @@
 import logging
 
 from elasticsearch import Elasticsearch, helpers
-from tenacity import retry, stop_after_attempt, wait_fixed
+from tenacity import retry, wait_fixed, stop_after_attempt
 
 from .sink import Sink
 
@@ -10,9 +10,9 @@ logger = logging.getLogger("logsight." + __name__)
 
 class ElasticsearchSink(Sink):
 
-    def __init__(self, host, port, username, password, private_key=None, application_key=None, index="", **kwargs):
-        if application_key and private_key:
-            self.application_id = "_".join([private_key, application_key])
+    def __init__(self, host, port, username, password, private_key=None, application_name=None, index="", **kwargs):
+        if application_name and private_key:
+            self.application_id = "_".join([private_key, application_name])
         else:
             self.application_id = None
         self.index = "_".join([self.application_id, index]) if self.application_id else index

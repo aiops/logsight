@@ -22,7 +22,7 @@ class ApplicationBuilder(Builder):
 
     def build_object(self, pipeline_config: PipelineConfig, app_config: AppConfig) -> Application:
         if self.es_admin:
-            self.es_admin.create_indices(app_config.private_key, app_config.application_key)
+            self.es_admin.create_indices(app_config.private_key, app_config.application_name)
 
         kafka_topics = self._create_kafka_topics(pipeline_config, app_config)
 
@@ -63,7 +63,7 @@ class ApplicationBuilder(Builder):
     def _create_kafka_topics(self, pipeline_config: PipelineConfig, app_config: AppConfig):
         created_topics = []
         if self.kafka_admin:
-            topic_prefix = "_".join([app_config.private_key, app_config.application_key])
+            topic_prefix = "_".join([app_config.private_key, app_config.application_name])
             for topic in pipeline_config.metadata.kafka_topics:
                 topic_name = "_".join([topic_prefix, topic])
                 try:
