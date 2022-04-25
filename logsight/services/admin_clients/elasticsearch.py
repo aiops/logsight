@@ -1,15 +1,27 @@
 import logging
 
 from elasticsearch import Elasticsearch
-from tenacity import retry, wait_fixed, stop_after_attempt
+from tenacity import retry, stop_after_attempt, wait_fixed
 
-logger = logging.getLogger(".logsight")
+logger = logging.getLogger("logsight." + __name__)
 
 
 class ElasticSearchAdmin:
     def __init__(self, host, port, username, password, **_kwargs):
         self.client = Elasticsearch([{'host': host, 'port': port}],
                                     http_auth=(username, password))
+        self.host = host
+        self.port = port
+        self.connect()
+
+    @retry(reraise=True, stop=stop_after_attempt(5), wait=wait_fixed(5))
+    def connect(self):
+        logger.info(f"Verifying elasticsearch connection on {self.host}:{self.port}.")
+        if not self.client.ping():
+            msg = f"Elasticsearch endpoint {self.host}:{self.port} is unreachable."
+            logger.error(msg)
+            raise ConnectionError(msg)
+        logger.info("Elasticsearch connected.")
 
     @retry(stop=stop_after_attempt(10), wait=wait_fixed(18))
     def create_indices(self, private_key, app_name):
@@ -18,7 +30,7 @@ class ElasticSearchAdmin:
         mapping = {
             "mappings": {
                 "properties": {
-                    "prediction": {
+                    "prediction"        : {
                         "type": "integer"  # formerly "string"
                     },
                     "prediction.keyword": {
@@ -43,16 +55,16 @@ class ElasticSearchAdmin:
         mapping = {
             "mappings": {
                 "properties": {
-                    "prediction": {
+                    "prediction"        : {
                         "type": "integer"  # formerly "string"
                     },
                     "prediction.keyword": {
                         "type": "integer"
                     },
-                    "timestamp_start": {
+                    "timestamp_start"   : {
                         "type": "date"
                     },
-                    "timestamp_end": {
+                    "timestamp_end"     : {
                         "type": "date"
                     }
                 }
@@ -63,16 +75,16 @@ class ElasticSearchAdmin:
         mapping = {
             "mappings": {
                 "properties": {
-                    "total_score": {
+                    "total_score"        : {
                         "type": "double"
                     },
                     "total_score.keyword": {
                         "type": "double"
                     },
-                    "timestamp_start": {
+                    "timestamp_start"    : {
                         "type": "date"
                     },
-                    "timestamp_end": {
+                    "timestamp_end"      : {
                         "type": "date"
                     }
                 }
