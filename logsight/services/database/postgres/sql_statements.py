@@ -6,3 +6,8 @@ LIST_APPS = """SELECT App.id as application_id,App.status as application_status,
                       Users.key as private_key
                FROM applications as App, users as Users
                 WHERE App.user_id = Users.id;"""
+
+SELECT_DATABASES = """SELECT datname FROM pg_database;"""
+
+SELECT_TABLES = """SELECT table_name FROM information_schema.tables
+                   WHERE table_schema = 'public'"""
