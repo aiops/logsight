@@ -15,7 +15,7 @@ class SocketSink(Sink):
         self.socket.close()
 
     def __init__(self, host, port, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__()
         self.host = host
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

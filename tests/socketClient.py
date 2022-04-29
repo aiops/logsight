@@ -1,5 +1,3 @@
-from time import sleep
-
 import zmq
 
 context = zmq.Context()

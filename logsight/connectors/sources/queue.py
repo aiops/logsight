@@ -1,13 +1,13 @@
 from time import sleep
 
-from .source import Source
+from .source import ConnectionSource
 
 
 class NoQueueException(Exception):
     pass
 
 
-class SourceQueue(Source):
+class SourceQueue(ConnectionSource):
     def close(self):
         self.queue = None
 

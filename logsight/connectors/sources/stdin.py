@@ -1,53 +1,43 @@
-import json
-from time import time
+from typing import List, Optional, Union
 
 from .source import Source
+from ..transformers import Transformer
 
 
-class PrintSource(Source):
-
-    def close(self):
-        pass
-
-    def connect(self):
-        return
-
-    def receive_message(self):
+class StdinSource(Source):
+    def _receive_message(self) -> str:
         txt = input("[SOURCE] Enter message: ")
-        return {"type": txt, "app_name": "test", "version": None}
+        return txt
 
 
 class FileSource(Source):
-    def __init__(self, path=None, **kwargs):
-        self.path = path
-        files_list = [self.path]
-        self.files_list = files_list
-        self.i = 0
+
+    def __init__(self, path: Union[str, List[str]], batch_size=None, transformer: Optional[Transformer] = None):
+        super().__init__(transformer)
+        self.files_list = path if isinstance(path, list) else [path]
+        self.i = self.cnt = 0
+        self.batch_size = batch_size
         self.file = open(self.files_list[self.i], 'r')
         self.eof = False
-        self.cnt = 0
-        self.time = time()
 
-    def close(self):
-        pass
+    def _receive_message(self) -> Union[str, List[str]]:
+        if self.batch_size:
+            batch = []
+            for i in range(self.batch_size):
+                line = self._read_line()
+                if line:
+                    batch.append(line)
+                else:
+                    break
+            return batch
+        return self._read_line()
 
-    def connect(self):
-        return
-
-    def receive_message(self):
-        try:
-            txt = json.loads(self.file.readline())
-            source = "DEF"
-        except Exception:
-            txt = self.file.readline()
-            source = "DEF"
-
+    def _read_line(self):
+        line = self.file.readline()
         self.cnt += 1
-        if txt == "":
+        if line == "":
             return self._reopen_file()
-        if self.cnt % 10000 == 0:
-            print("Sending", self.cnt, time() - self.time)
-        return {"application_id": "test", "app_name": "test", "message": txt, "private_key": "sample_key", "source": source}
+        return line
 
     def _reopen_file(self):
         self.i += 1

@@ -3,15 +3,15 @@ import logging
 from http import HTTPStatus
 from multiprocessing import Process
 
-from builders.application_builder import ApplicationBuilder
 from configs.global_vars import USES_ES, USES_KAFKA
-from logsight_classes.application import Application
-from logsight_classes.data_class import AppConfig
-from logsight_classes.responses import ApplicationOperationResponse, ErrorApplicationOperationResponse, \
+from common.logsight_classes.configs import AppConfig
+from common.logsight_classes.responses import ApplicationOperationResponse, ErrorApplicationOperationResponse, \
     SuccessApplicationOperationResponse
-from modules.core.timer import NamedTimer
+from pipeline.modules.core import NamedTimer
+from scrap_files.application import Application
+from scrap_files.builders.application_builder import ApplicationBuilder
 from services import ModulePipelineConfig
-from utils.helpers import DataClassJSONEncoder
+from common.utils import DataClassJSONEncoder
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -44,7 +44,7 @@ class Manager:
             )
 
         logger.info(f"Building App {app_settings.application_name}.")
-        app = self.app_builder.build_object(self.pipeline_config.pipeline_config, app_settings)
+        app = self.app_builder.build(self.pipeline_config.pipeline_config)
         app_process = Process(target=start_process, args=(app,))
         self.active_apps[app_settings.application_id] = app
         self.active_process_apps[app_settings.application_id] = app_process

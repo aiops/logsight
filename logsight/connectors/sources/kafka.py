@@ -4,12 +4,12 @@ from time import sleep
 
 from kafka import KafkaConsumer as Consumer, TopicPartition
 
-from .source import Source
+from connectors.sources.source import ConnectionSource
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class KafkaSource(Source):
+class KafkaSource(ConnectionSource):
     """Data source - Kafka consumer.
     """
 

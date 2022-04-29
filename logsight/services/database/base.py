@@ -6,7 +6,7 @@ from sqlalchemy.exc import DatabaseError, OperationalError
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
 from services.database.exceptions import DatabaseException
-from utils.helpers import unpack_singleton
+from common.utils import unpack_singleton
 
 logger = logging.getLogger("logsight." + __name__)
 

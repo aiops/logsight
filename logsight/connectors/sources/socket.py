@@ -1,10 +1,10 @@
 import json
 import socket
 
-from .source import Source
+from .source import ConnectionSource
 
 
-class SocketSource(Source):
+class SocketSource(ConnectionSource):
     def close(self):
         self.socket.close()
         self.connected = False

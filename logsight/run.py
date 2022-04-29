@@ -6,16 +6,16 @@ import platform
 from multiprocessing import set_start_method
 from typing import Dict
 
-from builders.application_builder import ApplicationBuilder
-from builders.connection_builder import ConnectionBuilder
-from builders.module_builder import ModuleBuilder
 from configs import global_vars
 from configs.global_vars import CONFIG_PATH
 from connectors import sinks, sources
+from connectors.connection_builder import ConnectionBuilder
 from manager import Manager
+from pipeline.modules.module_builder import ModuleBuilder
+from scrap_files.builders.application_builder import ApplicationBuilder
 from services import service_names
 from services.configurator import ManagerConfig
-from utils.fs import verify_file_ext
+from common.utils.fs import verify_file_ext
 
 # hello world
 logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "log.json"), 'r')))

@@ -10,7 +10,3 @@ class Sink(Connector):
     @abstractmethod
     def send(self, data):
         raise NotImplementedError
-
-    @abstractmethod
-    def connect(self):
-        raise NotImplementedError
