@@ -1,4 +1,5 @@
 import logging
+import sys
 
 try:
     import regex as re
@@ -11,6 +12,7 @@ import pkg_resources
 
 DEFAULT_PATTERNS_DIR = pkg_resources.resource_filename(__name__, 'patterns')
 TIME_PATTERN_FILE = "times"
+logger = logging.getLogger(__name__)
 
 
 class Grok:
@@ -142,7 +144,7 @@ def read_grok_datetime_parsers():
             try:
                 time_pattern_name = line.split()[0]
             except Exception as ex:
-                logging.info('Failed to retrieve time pattern name for line %s. Reason %s', line, ex)
+                logger.info('Failed to retrieve time pattern name for line %s. Reason %s', line, ex)
                 continue
             datetime_groks[time_pattern_name.lower()] = Grok(
                 "%{{{}:timestamp}}".format(time_pattern_name), full_match=False
