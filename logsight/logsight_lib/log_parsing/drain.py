@@ -18,15 +18,15 @@ class DrainLogParser(Parser):
         super().__init__()
         self.config = TemplateMinerConfig()
         self.config.load(dirname(__file__) + "/drain3.ini")
-        self.persistence = FilePersistence("drain3_state.bin")
+        self.persistence = None
         self.template_miner = TemplateMiner(self.persistence, self.config)
 
     def parse(self, log):
         if len(log['message']) > MESSAGE_MAX_SIZE:
             log['template'] = TOO_LONG_TEMPLATE
             return log
-        result = self.template_miner.add_log_message(log['message'])
-        log['template'] = result["template_mined"]
+        result = self.template_miner.masker.mask(log['message'])
+        log['template'] = result
         return log
 
     def process_log(self, log):
