@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent any
 
     stages {
         stage('Test') {
@@ -32,16 +32,8 @@ pipeline {
                         script {
                             unstash "test-reports"
                             withSonarQubeEnv('logsight-sonarqube') {
-                                // comment in with SonarQube dev license to enable branch analysis
-                                //sh """ 
-                                //    sonar-scanner -Dsonar.projectKey=logsight -Dsonar.branch.name=$BRANCH_NAME \
-                                //        -Dsonar.sources=logsight -Dsonar.tests=tests/. \
-                                //        -Dsonar.inclusions="**/*.py" \
-                                //        -Dsonar.python.coverage.reportPaths=coverage-report.xml \
-                                //        -Dsonar.test.reportPath=test-report.xml
-                                //"""
-                                sh """
-                                    sonar-scanner -Dsonar.projectKey=logsight \
+                                sh """ 
+                                    sonar-scanner -Dsonar.projectKey=logsight -Dsonar.branch.name=$BRANCH_NAME \
                                         -Dsonar.sources=logsight -Dsonar.tests=tests/. \
                                         -Dsonar.inclusions="**/*.py" \
                                         -Dsonar.python.coverage.reportPaths=coverage-report.xml \
@@ -66,6 +58,11 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+        stage ("Build Docker Images") {
+            steps {
+               sh "echo test"
             }
         }
     }
