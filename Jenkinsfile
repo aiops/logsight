@@ -38,7 +38,7 @@ pipeline {
                             unstash "test-reports"
                             withSonarQubeEnv('logsight-sonarqube') {
                                 sh """ 
-                                    sonar-scanner -Dsonar.projectKey=logsight -Dsonar.branch.name=$BRANCH_NAME \
+                                    sonar-scanner -Dsonar.projectKey=aiops_logsight -Dsonar.branch.name=$BRANCH_NAME \
                                         -Dsonar.organization=logsight \
                                         -Dsonar.sources=logsight -Dsonar.tests=tests/. \
                                         -Dsonar.inclusions="**/*.py" \
