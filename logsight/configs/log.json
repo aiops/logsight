@@ -31,9 +31,9 @@
   "loggers": {
     "logsight": {
       "handlers": [
-        "info"
+        "debug"
       ],
-      "level": "INFO",
+      "level": "DEBUG",
       "propagate": false
     }
   }
