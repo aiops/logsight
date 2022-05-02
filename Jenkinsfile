@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // see https://github.com/git-lfs/git-lfs/issues/4248
-        GIT_LFS_SKIP_SMUDGE = 1
+        DOCKER = credentials('dockerhub')
     }
 
     stages {
@@ -66,9 +65,21 @@ pipeline {
                 }
             }
         }
-        stage ("Build Docker Images") {
+        stage ("Build and test Docker Image") {
             steps {
-               sh "echo test"
+                sh "docker build . -t logsight:${GIT_COMMIT[0..7]}"
+                // Add step/script to test (amd64) docker image
+            }
+        }
+        stage ("Build and push Docker Manifest") {
+            //when {
+                // only run when building a tag (triggered by a release)
+                // tag name = BRANCH_NAME
+            //    buildingTag()   
+            //}
+            steps {
+                sh "echo $DOCKERHUB_PSW | docker login -u $DOCKER_USR --password-stdin"
+                sh "docker buildx build --push --platform linux/amd64,linux/arm64/v8 -t srnbckr/logsight:$BRANCH_NAME -t srnbckr/logsight:latest ."
             }
         }
     }
