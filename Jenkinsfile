@@ -78,7 +78,7 @@ pipeline {
             //    buildingTag()   
             //}
             steps {
-                sh "echo $DOCKERHUB_PSW | docker login -u $DOCKER_USR --password-stdin"
+                sh "echo $DOCKER_PSW | docker login -u $DOCKER_USR --password-stdin"
                 sh "docker buildx build --push --platform linux/amd64,linux/arm64/v8 -t srnbckr/logsight:$BRANCH_NAME -t srnbckr/logsight:latest ."
             }
         }
