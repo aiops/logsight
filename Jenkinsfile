@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // see https://github.com/git-lfs/git-lfs/issues/4248
+        GIT_LFS_SKIP_SMUDGE = 1
+    }
+
     stages {
         stage('Test') {
             agent {
