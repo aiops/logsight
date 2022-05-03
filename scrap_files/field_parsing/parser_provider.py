@@ -5,7 +5,7 @@ from typing import Dict, List
 
 from logsight_lib import GrokParser, JSONParser, NoParser
 
-from analytics_core.modules.field_parsing.grok import Grok, read_grok_datetime_parsers
+from scrap_files.field_parsing.grok import Grok, read_grok_datetime_parsers
 
 logger = logging.getLogger("logsight." + __name__)
 

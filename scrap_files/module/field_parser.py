@@ -5,11 +5,9 @@ from typing import List, Optional, Union
 
 from logsight_lib import FieldParser
 
-from analytics_core.modules.field_parsing.parser_provider import FieldParserProvider
 from common.logsight_classes import LogsightLog
-from pipeline.modules.core import AbstractHandler, Context, Module, State
-from pipeline.modules.core import Buffer
-from pipeline.modules.core import NamedTimer
+from pipeline.modules.core import AbstractHandler, Buffer, Context, Module, NamedTimer, State
+from scrap_files.field_parsing.parser_provider import FieldParserProvider
 
 logger = logging.getLogger("logsight." + __name__)
 

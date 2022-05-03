@@ -6,8 +6,8 @@ from pandas import Timestamp
 
 from analytics_core.modules.incidents import IncidentDetector
 from pipeline.modules.core import Module
-from pipeline.modules.core.buffer import Buffer
 from pipeline.modules.core.timer import NamedTimer
+from scrap_files.buffer import Buffer
 
 logger = logging.getLogger("logsight." + __name__)
 

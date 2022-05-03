@@ -36,14 +36,13 @@ class LogTokenizer:
         sent = [w for w in sent if w not in self.stop_words]
         sent = ['[CLS]'] + sent
         i = 0
-        for w in range(len(sent)):
+        for _ in range(len(sent)):
             if sent[i] in self.word2index.keys():
                 sent[i] = self.word2index[sent[i]]
                 i += 1
             else:
                 sent.pop(i)
         return sent
-
 
     def convert_tokens_to_ids(self, tokens):
         return [self.word2index[w] for w in tokens]

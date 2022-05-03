@@ -1,14 +1,12 @@
-from analytics_core.modules.log_quality.qulog_level_attention import QulogLevelAttention
 from connectors.sinks import Sink
 from connectors.sources import Source
-from pipeline.modules.core import Job
 
 
 class NoDataException(Exception):
     pass
 
 
-class LogIncidentJob(Job):
+class LogIncidentJob():
 
     def __init__(self, job_config, data_source: Source, data_sink: Sink, **kwargs):
         super().__init__(job_config, **kwargs)
@@ -46,6 +44,7 @@ class LogIncidentJob(Job):
     def _store_results(self, results):
         self.data_sink.store_results(results)
 
-    def _get_unique_logs(self, logs):
+    @staticmethod
+    def _get_unique_logs(logs):
         """needs to be implemented"""
-        pass
+        return logs

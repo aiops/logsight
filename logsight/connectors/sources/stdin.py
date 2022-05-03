@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 
 from .source import Source
-from ..transformers import Transformer
+from ..serializers import Serializer
 
 
 class StdinSource(Source):
@@ -12,8 +12,8 @@ class StdinSource(Source):
 
 class FileSource(Source):
 
-    def __init__(self, path: Union[str, List[str]], batch_size=None, transformer: Optional[Transformer] = None):
-        super().__init__(transformer)
+    def __init__(self, path: Union[str, List[str]], batch_size=None, serializer: Optional[Serializer] = None):
+        super().__init__(serializer)
         self.files_list = path if isinstance(path, list) else [path]
         self.i = self.cnt = 0
         self.batch_size = batch_size

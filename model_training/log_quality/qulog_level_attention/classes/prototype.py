@@ -1,18 +1,18 @@
-import os
-import sys
-import numpy as np
-import random
 import argparse
+import os
+import random
+
+import numpy as np
 import torch
-import torch.optim as optim
 import torch.nn.functional as F
+import torch.optim as optim
 from torch import nn
 
 
 def prototype_loss(prototypes):
     # Dot product of normalized prototypes is cosine similarity.
     product = torch.matmul(prototypes, prototypes.t()) + 1
-    # Remove diagnonal from loss.
+    # Remove diagonal from loss.
     product -= 2. * torch.diag(torch.diag(product))
     # Minimize maximum cosine similarity.
     loss = product.max(dim=1)[0]
@@ -48,15 +48,15 @@ def parse_args():
 
 
 default_args = {
-    "classes": 100,
-    "dims": 100,
+    "classes"      : 100,
+    "dims"         : 100,
     "learning_rate": 0.1,
-    "momentum": 0.9,
-    "epochs": 100000,
-    "seed": 300,
-    "wtvfile": "",
-    "nn": "",
-    "resdir": ""
+    "momentum"     : 0.9,
+    "epochs"       : 100000,
+    "seed"         : 300,
+    "wtvfile"      : "",
+    "nn"           : "",
+    "resdir"       : ""
 
 }
 
@@ -65,9 +65,6 @@ def get_prototypes(config):
     args = default_args
     args.update(config)
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    device = torch.device("cuda")
-    kwargs = {'num_workers': 64, 'pin_memory': True}
-
     # Set seed.
     seed = args['seed']
     torch.manual_seed(seed)
@@ -117,7 +114,7 @@ def get_prototypes(config):
         # Update.
         loss.backward()
         optimizer.step()
-        # Renormalize prototypes.
+        # Re-normalize prototypes.
         prototypes = nn.Parameter(F.normalize(prototypes, p=2, dim=1))
         optimizer = optim.SGD([prototypes], lr=args['learning_rate'],
                               momentum=args['momentum'])

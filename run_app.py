@@ -1,6 +1,6 @@
-from connectors.connection_builder import ConnectionBuilder
 from common.logsight_classes.configs import AppConfig
-from pipeline.modules.module_builder import ModuleBuilder
+from connectors.connection_builder import ConnectionBuilder
+from pipeline.builders.module_builder import ModuleBuilder
 from run import get_config, parse_arguments, setup_services
 from scrap_files.builders.application_builder import ApplicationBuilder
 from services import ModulePipelineConfig

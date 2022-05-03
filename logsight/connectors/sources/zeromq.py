@@ -5,10 +5,10 @@ from typing import Optional
 import zmq
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
-from connectors.sources import Source
-from connectors.transformers.transformers import DictTransformer
 from common.logsight_classes.mixins import DictMixin
+from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
+from connectors.serializers.serializers import DictSerializer
+from connectors.sources import Source
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -16,8 +16,8 @@ logger = logging.getLogger("logsight." + __name__)
 # noinspection PyUnresolvedReferences
 class ZeroMQSubSource(ZeroMQConnector, Source, DictMixin):
     def __init__(self, endpoint: str, topic: str = "", private_key=None, application_name=None,
-                 connection_type: ConnectionTypes = ConnectionTypes.CONNECT, transformer=DictTransformer()):
-        Source.__init__(self, transformer)
+                 connection_type: ConnectionTypes = ConnectionTypes.CONNECT, serializer=DictSerializer()):
+        Source.__init__(self, serializer)
         ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.SUB, connection_type=connection_type)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])

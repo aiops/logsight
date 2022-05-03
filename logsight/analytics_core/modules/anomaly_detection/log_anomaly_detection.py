@@ -17,16 +17,6 @@ logger = logging.getLogger("logsight." + __name__)
 from .utils import get_padded_data, PREDICTION_THRESHOLD, softmax
 
 
-class NoneDetector:
-    def process_log(self, log_batch):
-        for i in enumerate(log_batch):
-            log_batch[i]['prediction'] = 0
-        return log_batch
-
-    def load_model(self, version, user_app):
-        pass
-
-
 class LogAnomalyDetector:
     def __init__(self):
         logger.debug("initializing the log anomaly detector")
@@ -34,7 +24,6 @@ class LogAnomalyDetector:
         self.model = None
         self.config = ConfigLogLevelEstimation()
         self.model_loaded = False
-        cur_f = os.path.dirname(os.path.realpath(__file__))
         self.ort_sess = None
         logger.debug("log anomaly detector initialized")
 
@@ -42,7 +31,7 @@ class LogAnomalyDetector:
         return self.config.get('log_mapper')[prediction[0]]
 
     def predict(self, log):
-        out_numpy = softmax(self.ort_sess.run(None, {'input'   : log,
+        out_numpy = softmax(self.ort_sess.run(None, {'input': log,
                                                      'src_mask': None})[0])
 
         log_level_prediction = np.where(out_numpy[:, 0] > PREDICTION_THRESHOLD, 0, 1)

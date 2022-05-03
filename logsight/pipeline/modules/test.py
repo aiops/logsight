@@ -1,10 +1,10 @@
 from typing import Callable
 
 from analytics_core.logs import LogsightLog
-from pipeline.modules.core import Module
+from pipeline.modules.core import TransformModule
 
 
-class TestModule(Module):
+class TestModule(TransformModule):
     def __init__(self):
         super().__init__()
 
@@ -13,5 +13,4 @@ class TestModule(Module):
 
 
 def print_line(data: LogsightLog) -> LogsightLog:
-    # print(data)
     return data

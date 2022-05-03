@@ -1,7 +1,7 @@
 class ConfigLogLevelEstimation:
     __conf = {
-        'pad_len'   : 50,
-        'max_len'   : 20,
+        'pad_len': 50,
+        'max_len': 20,
         'log_mapper': {0: 'anomaly', 1: 'normal'}
     }
 

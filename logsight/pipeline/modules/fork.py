@@ -17,5 +17,4 @@ class ForkModule(BaseModule, ForkHandler):
         return batch
 
     def _handle(self, context: LogBatch) -> LogBatch:
-        """TODO: Add documentation. Explain what this method is for"""
         return self.process(context)

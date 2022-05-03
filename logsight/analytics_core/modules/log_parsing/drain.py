@@ -46,22 +46,22 @@ class DrainLogParser(Parser):
         if seq_len not in rn.child_d:
             return ret_log_cluster
 
-        parentn = rn.child_d[seq_len]
+        parent_n = rn.child_d[seq_len]
 
         current_depth = 1
         for token in seq:
             if current_depth >= self.depth or current_depth > seq_len:
                 break
 
-            if token in parentn.child_d:
-                parentn = parentn.child_d[token]
-            elif '<*>' in parentn.child_d:
-                parentn = parentn.child_d['<*>']
+            if token in parent_n.child_d:
+                parent_n = parent_n.child_d[token]
+            elif '<*>' in parent_n.child_d:
+                parent_n = parent_n.child_d['<*>']
             else:
                 return ret_log_cluster
             current_depth += 1
 
-        log_cluster_l = parentn.child_d
+        log_cluster_l = parent_n.child_d
 
         ret_log_cluster = self.fast_match(log_cluster_l, seq)
 
@@ -75,47 +75,47 @@ class DrainLogParser(Parser):
         else:
             fist_layer_node = rn.child_d[seq_len]
 
-        parentn = fist_layer_node
+        parent_n = fist_layer_node
 
         current_depth = 1
         for token in log_cluster.log_template:
 
             # Add current log cluster to the leaf node
             if current_depth >= self.depth or current_depth > seq_len:
-                if len(parentn.child_d) == 0:
-                    parentn.child_d = deque(maxlen=100)
-                parentn.child_d.append(log_cluster)
+                if len(parent_n.child_d) == 0:
+                    parent_n.child_d = deque(maxlen=100)
+                parent_n.child_d.append(log_cluster)
                 break
 
             # If token not matched in this layer of existing tree.
-            if token in parentn.child_d:
-                parentn = parentn.child_d[token]
+            if token in parent_n.child_d:
+                parent_n = parent_n.child_d[token]
 
             elif not has_numbers(token):
-                if '<*>' in parentn.child_d:
-                    if len(parentn.child_d) < self.maxChild:
+                if '<*>' in parent_n.child_d:
+                    if len(parent_n.child_d) < self.maxChild:
                         new_node = Node(depth=current_depth + 1, digit_token=token)
-                        parentn.child_d[token] = new_node
-                        parentn = new_node
+                        parent_n.child_d[token] = new_node
+                        parent_n = new_node
                     else:
-                        parentn = parentn.child_d['<*>']
-                elif len(parentn.child_d) + 1 < self.maxChild:
+                        parent_n = parent_n.child_d['<*>']
+                elif len(parent_n.child_d) + 1 < self.maxChild:
                     new_node = Node(depth=current_depth + 1, digit_token=token)
-                    parentn.child_d[token] = new_node
-                    parentn = new_node
-                elif len(parentn.child_d) + 1 == self.maxChild:
+                    parent_n.child_d[token] = new_node
+                    parent_n = new_node
+                elif len(parent_n.child_d) + 1 == self.maxChild:
                     new_node = Node(depth=current_depth + 1, digit_token='<*>')
-                    parentn.child_d['<*>'] = new_node
-                    parentn = new_node
+                    parent_n.child_d['<*>'] = new_node
+                    parent_n = new_node
                 else:
-                    parentn = parentn.child_d['<*>']
+                    parent_n = parent_n.child_d['<*>']
 
-            elif '<*>' not in parentn.child_d:
+            elif '<*>' not in parent_n.child_d:
                 new_node = Node(depth=current_depth + 1, digit_token='<*>')
-                parentn.child_d['<*>'] = new_node
-                parentn = new_node
+                parent_n.child_d['<*>'] = new_node
+                parent_n = new_node
             else:
-                parentn = parentn.child_d['<*>']
+                parent_n = parent_n.child_d['<*>']
 
             current_depth += 1
 

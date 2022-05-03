@@ -12,7 +12,7 @@ from common.patterns.chain_of_responsibility import AbstractHandler
 from common.patterns.observer import Subject, SubjectObserver
 from common.utils.helpers import DataClassJSONEncoder
 from connectors.sources import Source
-from pipeline.modules.input.control_io import ControlRequest, FlushReply, FlushReplyFail, FlushReplySuccess, \
+from scrap_files.input.control_io import ControlRequest, FlushReply, FlushReplyFail, FlushReplySuccess, \
     FlushReplyValidationError, InputControlOperations, TFlushReply
 
 logger = logging.getLogger("logsight." + __name__)

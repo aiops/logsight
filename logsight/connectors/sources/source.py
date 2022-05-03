@@ -2,14 +2,14 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from connectors.base.connector import Connector
-from connectors.transformers import DictTransformer, Transformer
+from connectors.serializers import DictSerializer, Serializer
 
 
 class Source:
     """Abstract class depicting source of data. Every data source should implement a method for receiving messages."""
 
-    def __init__(self, transformer: Optional[Transformer] = None):
-        self.transformer = transformer or DictTransformer()
+    def __init__(self, serializer: Optional[Serializer] = None):
+        self.serializer = serializer or DictSerializer()
 
     def has_next(self):
         """Whether the source has a next message."""
@@ -27,10 +27,10 @@ class Source:
         :return: The transformed message
         """
         msg = self._receive_message()
-        return self.transformer.transform(msg)
+        return self.serializer.serialize(msg)
 
 
-class ConnectionSource(Source, Connector, ABC):
+class ConnectableSource(Source, Connector, ABC):
     """Interface for Source that is also able to connect to endpoint."""
 
 

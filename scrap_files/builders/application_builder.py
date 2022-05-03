@@ -4,11 +4,11 @@ from typing import Dict, Optional
 from kafka.admin import NewTopic
 from kafka.errors import TopicAlreadyExistsError
 
-from configs.global_vars import USES_ES, USES_KAFKA
 from common.logsight_classes.configs import AppConfig, ModuleConfig, PipelineConfig
 from common.patterns.builder import Builder
-from pipeline.modules.core import AbstractHandler
-from pipeline.modules.module_builder import ModuleBuilder
+from common.patterns.chain_of_responsibility import AbstractHandler
+from configs.global_vars import USES_ES, USES_KAFKA
+from pipeline.builders.module_builder import ModuleBuilder
 from scrap_files.application import Application
 
 logger = logging.getLogger("logsight." + __name__)

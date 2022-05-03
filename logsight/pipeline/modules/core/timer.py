@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import logging
+from functools import wraps
 from threading import Timer
+from time import time
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -31,18 +33,13 @@ class NamedTimer:
         # logger.debug(f"New timer object {self.timer}")
 
 
-from functools import wraps
-from time import time
-
-
 def timing(f):
     @wraps(f)
     def wrap(*args, **kw):
         ts = time()
         result = f(*args, **kw)
         te = time()
-        print('func:%r %r took: %2.4f sec' % \
-              (f.__name__, kw, te - ts))
+        print('func:%r %r took: %2.4f sec' % (f.__name__, kw, te - ts))
         return result
 
     return wrap

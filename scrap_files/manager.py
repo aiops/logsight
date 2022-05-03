@@ -6,17 +6,18 @@ from multiprocessing import Process
 from common.logsight_classes.configs import AppConfig
 from common.logsight_classes.responses import ApplicationOperationResponse, ErrorApplicationOperationResponse, \
     SuccessApplicationOperationResponse
-from common.utils import DataClassJSONEncoder
+from common.utils.helpers import DataClassJSONEncoder
 from configs.global_vars import USES_ES, USES_KAFKA
-from pipeline.modules.core import NamedTimer
+from pipeline.modules.core.timer import NamedTimer
 from scrap_files.application import Application
+from scrap_files.builders.application_builder import ApplicationBuilder
 from services import ModulePipelineConfig
 
 logger = logging.getLogger("logsight." + __name__)
 
 
 class Manager:
-    def __init__(self, source, services, producer):
+    def __init__(self, source, services, producer, app_builder: ApplicationBuilder = None):
         self.source = source
         self.kafka_admin = services.get('kafka_admin', None) if USES_KAFKA else None
         self.elasticsearch_admin = services.get('elasticsearch_admin', None) if USES_ES else None
@@ -24,6 +25,7 @@ class Manager:
         self.db = services.get('database', None)
         self.active_apps = {}
         self.active_process_apps = {}
+        self.app_builder = app_builder if app_builder else ApplicationBuilder(services)
 
         self.pipeline_config = ModulePipelineConfig()
         self.sync_timer = None

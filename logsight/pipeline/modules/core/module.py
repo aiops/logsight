@@ -38,10 +38,6 @@ class Module(BaseModule, AbstractHandler, ABC):
         BaseModule.__init__(self)
         AbstractHandler.__init__(self)
 
-    def _flush(self, context: LogBatch) -> LogBatch:
-        """TODO: Add documentation. Explain what this method is for"""
-        pass
-
     def _handle(self, context: LogBatch) -> LogBatch:
         """TODO: Add documentation. Explain what this method is for"""
         return self.process(context)

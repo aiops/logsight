@@ -6,16 +6,16 @@ import platform
 from multiprocessing import set_start_method
 from typing import Dict
 
+from common.utils.fs import verify_file_ext
 from configs import global_vars
 from configs.global_vars import CONFIG_PATH
 from connectors import sinks, sources
 from connectors.connection_builder import ConnectionBuilder
-from manager import Manager
-from pipeline.modules.module_builder import ModuleBuilder
+from pipeline.builders.module_builder import ModuleBuilder
 from scrap_files.builders.application_builder import ApplicationBuilder
+from scrap_files.manager import Manager
 from services import service_names
 from services.configurator import ManagerConfig
-from common.utils.fs import verify_file_ext
 
 # hello world
 logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "log.json"), 'r')))
@@ -54,7 +54,6 @@ def create_manager(config: ManagerConfig):
     source = setup_connector(config, 'source')
     services = setup_services(config)
     # producer = setup_connector(configs, 'producer')
-    topic_list = config.get_topic_list()
 
     connection_builder = ConnectionBuilder(config=config)
     module_builder = ModuleBuilder(connection_builder=connection_builder)

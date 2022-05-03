@@ -17,6 +17,8 @@ class Incidents:
         self.end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         self.jobs = []
 
+    # TODO: Separate start and end date for every index
+
     def callback(self):
         indices = self.es.get_all_indices()
         for index in indices:

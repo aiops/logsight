@@ -1,8 +1,8 @@
 import datetime
 import pickle
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 class ModelNotLoadedException(Exception):
@@ -29,9 +29,9 @@ class CountADPredictor:
             raise ModelNotLoadedException("Model is not loaded")
         new_data = data[~data['template'].isin(self.label_encoder.classes_)]
         data.template[~data['template'].isin(self.label_encoder.classes_)] = "NEW_TEMPLATE"
-        data['template_labels'] = self.label_encoder.transform(data.template.values)
+        data['template_labels'] = self.label_encoder.serialize(data.template.values)
         window_size_in_seconds = 60
-
+        tmp = tmp_tmp = None
         for window in range(1):
             start_time = data.index[window].to_pydatetime() + datetime.timedelta(
                 seconds=int(window_size_in_seconds / 2))
@@ -58,6 +58,8 @@ class CountADPredictor:
                 # print(i," is correlated with : ", idx, " with smr ", smr)
                 for j in idx:
                     try:
+                        # The above code is checking if the rate is a string or a float. If it is a string, it is
+                        # converted to a float.
                         tmp_rate[j] = tmp_tmp[j]
                     except Exception as e:
                         print(e)
@@ -69,17 +71,18 @@ class CountADPredictor:
                 anom_idx = []
                 for t in range(len(tmp_rate)):
                     if np.abs((tmp_rate[t] - smr[t]) / smr[t]) >= self.MINIMUM_CHANGE_PERCENTAGE:
-                        tmp_a = [self.label_encoder.inverse_transform([idx[k]])[0] for k in range(len(idx))]
-                        tmp_b = data.drop_duplicates(subset=['template'])
-                        tmp_c = tmp_b[tmp_b['template'].isin(tmp_a)]
+                        # tmp_a = [self.label_encoder.inverse_transform([idx[k]])[0] for k in range(len(idx))]
+                        # tmp_b = data.drop_duplicates(subset=['template'])
+                        # tmp_c = tmp_b[tmp_b['template'].isin(tmp_a)]
                         anom_idx.append((self.label_encoder.inverse_transform([int(idx[t])])[0],
                                          float(tmp_rate[t]),
                                          float(smr[t]),
-                                         [{"templatetogo": data[
+                                         [{"templatetags": data[
                                                                data.template ==
                                                                self.label_encoder.inverse_transform([idx[k]])[0]].iloc[
                                                            0:1].dropna(axis='columns').to_dict('records'),
-                                           "rate_now": tmp_rate[k], "expected_rate": smr[k]} for k in range(len(idx))]
+                                           "rate_now": tmp_rate[k], "expected_rate": smr[k]} for k in
+                                          range(len(idx))]
                                          ))
 
                 if anom_idx:
@@ -93,7 +96,7 @@ class CountADPredictor:
         prediction = np.mean(predictions) if predictions else 0
         new_data = new_data.drop_duplicates(subset=['template'])
         new_data.index = new_data.index.astype(str)
-        new_templates = [new_data.iloc[i:i + 1].dropna(axis='columns').to_dict('records') for i in range(len(new_data))]
+        # new_templates = [new_data.iloc[i:i + 1].dropna(axis='columns').to_dict('records') for i in range(len(new_data))]
 
         x0, idx = np.unique([j[0] for i in output for j in i[0]], return_index=True)
         # print("OUTPUT 0", x0, idx)

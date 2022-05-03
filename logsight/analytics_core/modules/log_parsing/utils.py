@@ -41,12 +41,12 @@ def get_parameter_list(log, template):
 
 def is_date(string, fuzzy=False):
     """
-    Return whether the string can be interpreted as a date.
+      Return whether the string can be interpreted as a date.
 
-    :param string: str, string to check for date
-    :param fuzzy: bool, ignore unknown tokens in string if True
-    """
-    # TODO: Remove logging from this function.
+       Args:
+        :param string: str, string to check for date
+        :param fuzzy: bool, ignore unknown tokens in string if True
+      """
     try:
         int(string)
         return False

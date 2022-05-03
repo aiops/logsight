@@ -11,7 +11,8 @@ try:
     PREDICTION_THRESHOLD = float(PREDICTION_THRESHOLD)
 except Exception as e:
     PREDICTION_THRESHOLD = 0.90
-    logging.error(f"Prediction threshold is not a valid float. Using default prediction_thredhold={PREDICTION_THRESHOLD}")
+    logging.error(
+        f"Prediction threshold is not a valid float. Using default prediction_threshold={PREDICTION_THRESHOLD}")
 
 
 def get_settings(argv):
@@ -41,8 +42,8 @@ def get_settings(argv):
 
 def softmax(x):
     e_x = np.exp(x - np.max(x, axis=1, keepdims=True))  # subtracts each row with its max value
-    sum = np.sum(e_x, axis=1, keepdims=True)  # returns sum of each row and keeps same dims
-    f_x = e_x / sum
+    _sum = np.sum(e_x, axis=1, keepdims=True)  # returns sum of each row and keeps same dims
+    f_x = e_x / _sum
     gc.collect()
     return f_x
 

@@ -14,14 +14,14 @@ class SocketSink(Sink):
     def close(self):
         self.socket.close()
 
-    def __init__(self, host, port, **kwargs):
+    def __init__(self, host, port):
         super().__init__()
         self.host = host
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    def send(self, data):
+    def send(self, data, index=None):
         if not isinstance(data, list):
             data = [data]
         for d in data:
-            self.socket.sendall(bytes(json.dumps(d) + "\n", "utf-8"))
+            self.socket.sendall(bytes(json.dumps(d, default=list) + "\n", "utf-8"))

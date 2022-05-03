@@ -1,13 +1,13 @@
 from time import sleep
 
-from .source import ConnectionSource
+from .source import ConnectableSource
 
 
 class NoQueueException(Exception):
     pass
 
 
-class SourceQueue(ConnectionSource):
+class SourceQueue(ConnectableSource):
     def close(self):
         self.queue = None
 
@@ -20,7 +20,7 @@ class SourceQueue(ConnectionSource):
         if self.queue is None:
             self.queue = queue
 
-    def receive_message(self):
+    def _receive_message(self):
         if self.queue is None:
             raise NoQueueException("Please connect with sink")
         if self.queue.empty():

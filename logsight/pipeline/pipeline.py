@@ -4,7 +4,7 @@ import uuid
 from typing import Dict, Optional
 
 from connectors import Connector, Source
-from connectors.sources.source import ConnectionSource
+from connectors.sources.source import ConnectableSource
 from .modules.core import Module
 from .modules.core.module import ConnectableModule
 
@@ -16,7 +16,7 @@ class Pipeline:
     _id = uuid.uuid4()
 
     def __init__(self, modules: Dict[str, Module], input_module: Module, data_source: Source,
-                 control_source: Optional[ConnectionSource] = None, metadata: Optional[Dict] = None):
+                 control_source: Optional[ConnectableSource] = None, metadata: Optional[Dict] = None):
         self.control_source = control_source
         self.data_source = data_source
         self.input_module = input_module

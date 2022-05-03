@@ -1,37 +1,34 @@
 import logging
+from typing import Optional
 
 from elasticsearch import Elasticsearch, helpers
-from tenacity import retry, wait_fixed, stop_after_attempt
+from tenacity import retry, stop_after_attempt, wait_fixed
 
-from .sink import Sink
+from connectors.sinks.sink import ConnectableSink
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class ElasticsearchSink(Sink):
+class ElasticsearchSink(ConnectableSink):
 
-    def __init__(self, host, port, username, password, private_key=None, application_name=None, index="", **kwargs):
-        if application_name and private_key:
-            self.application_id = "_".join([private_key, application_name])
-        else:
-            self.application_id = None
-        self.index = "_".join([self.application_id, index]) if self.application_id else index
+    def __init__(self, host, port, username, password):
+        super().__init__()
         self.es = Elasticsearch([{'host': host, 'port': port}], http_auth=(username, password))
 
     def close(self):
         self.es.close()
 
     def connect(self):
-        pass
+        self.es.ping()
 
     @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
-    def send(self, data):
+    def send(self, data, index: Optional[str] = None):
         if not isinstance(data, list):
             data = [data]
         try:
             helpers.bulk(self.es,
                          data,
-                         index=self.index,
+                         index=index,
                          request_timeout=200)
         except Exception as e:
             logger.warning(f"Failed to send data to elasticsearch. Reason: {e}. Retrying...")

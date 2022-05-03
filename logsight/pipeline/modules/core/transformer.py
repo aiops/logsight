@@ -9,9 +9,6 @@ class DataTransformer:
         Every Implementation requires implementing _get_transform_function where the transformation function is provided."""
     _transform_function: Callable[[LogsightLog], LogsightLog] = None
 
-    def __init__(self):
-        self._transform_function = self._get_transform_function()
-
     @abstractmethod
     def _get_transform_function(self) -> Callable[[LogsightLog], LogsightLog]:
         raise NotImplementedError
@@ -27,5 +24,5 @@ class DataTransformer:
         Returns:
             LogBatch:  A LogBatch object with the logs transformed by the _transform_function
         """
-        data.logs = list(map(self._transform_function, data.logs))
+        data.logs = list(map(self._get_transform_function(), data.logs))
         return data

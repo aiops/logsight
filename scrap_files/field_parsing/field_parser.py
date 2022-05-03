@@ -7,9 +7,9 @@ from datetime import datetime
 from json import JSONDecodeError
 from typing import Dict, List, Optional, Tuple
 
-from analytics_core.modules.field_parsing.grok import Grok
-from analytics_core.modules.field_parsing.log import Log
 from common.logsight_classes import LogEvent
+from scrap_files.field_parsing.grok import Grok
+from scrap_files.field_parsing.log import Log
 
 logger = logging.getLogger("logsight." + __name__)
 
