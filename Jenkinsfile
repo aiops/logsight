@@ -78,7 +78,7 @@ pipeline {
         stage ("Build and push Docker Manifest") {
             when {
                 // only run when building a tag (triggered by a release)
-                // tag name = BRANCH_NAME 
+                // tag name = BRANCH_NAME
                 buildingTag()
             }
             steps {
