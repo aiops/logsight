@@ -56,11 +56,14 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'hadolint --format checkstyle Dockerfile | tee -a hadolint.xml'
+                        sh 'hadolint --format json Dockerfile | tee -a hadolint.json'
                     }
                     post {
                         always {
-                            archiveArtifacts 'hadolint.xml'
+                            archiveArtifacts 'hadolint.json'
+                            recordIssues(
+                                tools: [hadolint(pattern: "hadolint.json", id: "dockerfile")]
+                            )
                         }
                     }
                 }
