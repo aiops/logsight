@@ -76,11 +76,11 @@ pipeline {
             }
         }
         stage ("Build and push Docker Manifest") {
-            //when {
-            //    // only run when building a tag (triggered by a release)
-            //    // tag name = BRANCH_NAME
-            //    buildingTag()   
-            //}
+            when {
+                // only run when building a tag (triggered by a release)
+                // tag name = BRANCH_NAME
+                buildingTag()
+            }
             steps {
                 sh "docker buildx create --driver docker-container --name multiarch --use --bootstrap"
                 sh "echo $DOCKER_PSW | docker login -u $DOCKER_USR --password-stdin"
