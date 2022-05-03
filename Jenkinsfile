@@ -62,7 +62,7 @@ pipeline {
                         always {
                             archiveArtifacts 'hadolint.json'
                             recordIssues(
-                                tools: [hadolint(pattern: "hadolint.json", id: "dockerfile")]
+                                tools: [hadoLint(pattern: "hadolint.json", id: "dockerfile")]
                             )
                         }
                     }
