@@ -84,7 +84,7 @@ pipeline {
             steps {
                 sh "docker buildx create --driver docker-container --name multiarch --use --bootstrap"
                 sh "echo $DOCKER_PSW | docker login -u $DOCKER_USR --password-stdin"
-                sh "docker buildx build --push --platform linux/amd64,linux/arm64/v8 -t $DOCKER_REPO:$BRANCH_NAME -t $DOCKER_REPO:latest ."
+                //sh "docker buildx build --push --platform linux/amd64,linux/arm64/v8 -t $DOCKER_REPO:$BRANCH_NAME -t $DOCKER_REPO:latest ."
                 sh "docker buildx rm"
             }
         }
