@@ -5,7 +5,8 @@ import numpy as np
 
 from .core.config import AnomalyDetectionConfig
 from .core.base import BaseAnomalyDetector
-from modules.anomaly_detection.models.onnx_model import OnnxModel
+from modules.anomaly_detection.models.onnx_model import RFModel
+
 from ...logs import LogBatch
 from .utils import get_padded_data
 
@@ -18,23 +19,11 @@ class LogAnomalyDetector(BaseAnomalyDetector):
         super().__init__()
         logger.debug("Initializing LogAnomalyDetector.")
         self.config = AnomalyDetectionConfig()
-        self.model = OnnxModel()
-        self.model.load_model()
+        self.model = RFModel()
         logger.debug("LogAnomalyDetector initialized successfully.")
 
     def predict(self, log_batch: LogBatch) -> LogBatch:
-        log_messages = []
-        tokenized = None
-
-        for log in log_batch.logs:
-            tokenized = np.array(self.model.tokenizer.tokenize_test(log.event.message))
-            log_messages.append(tokenized[:self.config.get('max_len')])
-
-        log_messages[-1] = np.concatenate((tokenized, np.array([0] * self.config.get('pad_len'))))[
-                           :self.config.get('pad_len')]
-
-        padded = get_padded_data(log_messages, self.config.get('pad_len'))
-        prediction = self.model.predict(padded)
+        prediction = self.model.predict(log_batch.logs)
         for i, log in enumerate(log_batch.logs):
             try:
                 log_batch.logs[i].metadata['prediction'] = 1 if prediction == 0 else 0
