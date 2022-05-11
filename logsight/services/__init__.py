@@ -1,5 +1,6 @@
-from .admin_clients import ElasticSearchAdmin, KafkaAdmin
-from .configurator import ConnectionConfig, ManagerConfig, ModulePipelineConfig
+from .configurator import ConnectionConfigParser, ManagerConfig, ModulePipelineConfig
 from .database import PostgresDBConnection
+from .elasticsearch.elasticsearch_service import ElasticsearchService
+from .kafka_service import KafkaService
 
-service_names = {"elasticsearch_admin": ElasticSearchAdmin, "kafka_admin": KafkaAdmin, "database": PostgresDBConnection}
+service_names = {"elasticsearch": ElasticsearchService, "kafka": KafkaService, "database": PostgresDBConnection}

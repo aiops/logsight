@@ -1,10 +1,9 @@
 import logging
-import time
 from enum import Enum
 from typing import Optional
 
 import zmq
-from tenacity import stop_after_attempt, wait_fixed, retry
+from tenacity import retry, stop_after_attempt, wait_fixed
 from zmq import Socket
 
 from connectors.base.connector import Connector

@@ -2,8 +2,8 @@ import logging
 import unittest
 import uuid
 
-from logsight_classes.data_class import AppConfig
-from logsight_classes.responses import SuccessApplicationOperationResponse, ErrorApplicationOperationResponse
+from common.logsight_classes.configs import AppConfig
+from common.logsight_classes.responses import ErrorApplicationOperationResponse, SuccessApplicationOperationResponse
 from run import create_manager
 from services.configurator import ManagerConfig
 

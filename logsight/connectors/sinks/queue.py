@@ -10,12 +10,6 @@ class SinkQueue(Sink):
         self.link = link
         self.queue = multiprocessing.Manager().Queue(maxsize=100000)
 
-    def close(self):
-        pass
-
-    def connect(self):
-        pass
-
     def send(self, data):
         if not isinstance(data, list):
             data = [data]

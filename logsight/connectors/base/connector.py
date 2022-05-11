@@ -6,12 +6,10 @@ class Connector(ABC):
 
     @abstractmethod
     def connect(self):
-        # default behaviour
+        """Establish connection to endpoint."""
         raise NotImplementedError
 
     @abstractmethod
     def close(self):
+        """Close connection to endpoint."""
         raise NotImplementedError
-
-    def to_json(self):
-        return {}

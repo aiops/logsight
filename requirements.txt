@@ -14,11 +14,13 @@ psycopg2==2.8.4
 guppy3
 onnxruntime==1.10.0
 flask
+gensim
 waitress
 dacite~=1.6.0
 zmq~=0.0.0
 pyzmq~=22.3.0
-config
+python-dateutil~=2.8.2
+scikit-learn~=1.0.1
+config~=0.5.1
 tenacity==8.0.1
-pytest
-pytest-cov
+ujson~=5.2.0
