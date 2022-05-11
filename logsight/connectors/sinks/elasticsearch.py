@@ -11,8 +11,8 @@ logger = logging.getLogger("logsight." + __name__)
 
 class ElasticsearchSink(ConnectableSink):
 
-    def __init__(self, host, port, username, password):
-        super().__init__()
+    def __init__(self, host, port, username, password, serializer=None):
+        super().__init__(serializer)
         self.es = Elasticsearch([{'host': host, 'port': port}], http_auth=(username, password))
 
     def close(self):
@@ -22,13 +22,13 @@ class ElasticsearchSink(ConnectableSink):
         self.es.ping()
 
     @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
-    def send(self, data, index: Optional[str] = None):
+    def send(self, data, target: Optional[str] = None):
         if not isinstance(data, list):
             data = [data]
         try:
             helpers.bulk(self.es,
                          data,
-                         index=index,
+                         index=target,
                          request_timeout=200)
         except Exception as e:
             logger.warning(f"Failed to send data to elasticsearch. Reason: {e}. Retrying...")
