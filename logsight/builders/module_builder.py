@@ -17,8 +17,12 @@ class ModuleBuilder(Builder):
     def build_object(self, object_config: HandlerConfig, app_settings: AppConfig) -> Module:
         args = object_config.args
         c_name = getattr(modules, object_config.classname)
-        if {"source", "sink"}.intersection(set(args.keys())):
-            conn = self.conn_builder.build_object(args.get('source', args.get('sink')), app_settings)
-            return c_name(conn)
+        if any(substring in string for string in set(args.keys()) for substring in ['source', 'sink']):
+            conns = dict()
+            for arg in set(args.keys()):
+                if any(substring in arg for substring in ['source', 'sink']):
+                    conns[arg] = self.conn_builder.build_object(args[arg], app_settings)
+
+            return c_name(**conns)
         else:
-            return c_name(Struct(**args),app_settings=app_settings)
+            return c_name(Struct(**args), app_settings=app_settings)

@@ -1,0 +1,99 @@
+End-User License Agreement
+
+
+Last updated: 03 March 2022
+
+This End-User License Agreement (referred to as the "EULA") is a legally binding agreement between you, the Licensee, an individual customer or entity, and the Licensor, logsight.ai GmbH ("Company", “we”, “us”, or “our”), the author of logsight.ai, the Software, which may include associated media, printed materials, and online or electronic documentation. This Agreement is a legally binding contract that includes terms that limit your legal rights and Licensor liability to you, and shall govern all access to and use of this Software. You hereby agree, without limitation or alteration, to all the terms and conditions contained herein.
+By installing, copying, or otherwise using the Licensed Product (Software), the Licensee agrees to be bound by the terms and conditions outlined in this EULA. However, if the Licensee does not agree to the terms and conditions outlined in this EULA, the said Licensee may not download, install, or use Software.
+
+(1) Definitions
+"EULA" shall refer to this End-User-License-Agreement, including any amendment to this Agreement.
+"Licensee" shall refer to the individual or entity that downloads and uses the Software.
+"Licensor" shall refer to the company or author, logsight.ai GmbH.
+"Software/Licensed product" shall mean logsight.ai, the Licensed Product provided pursuant to this EULA.
+
+(2) License Rights
+Subject to the terms of this EULA, the logsight.ai GmbH hereby grants to the Licensee, revocable, non-exclusive, worldwide, nontransferable, and nonsublicensable license during the term of this EULA to possess and to use a copy of the Software. The Software is being distributed by logsight.ai GmbH. The Licensee is not allowed to make a charge for distributing this Software, either for profit or merely to recover media and distribution costs.
+
+(3) Intellectual Property
+You hereby unconditionally agree that all right, title and interest in the copyrights and other intellectual property rights in the Licensed Product reside with the Licensor. The trademarks, logos, designs, and service marks appearing on the Licensed Product are registered and unregistered marks of Licensor.  Accordingly, nothing in this EULA or the Licensed Product grants you any right to use any form of intellectual property contained in the Licensed Product.
+Therefore, all rights, titles, interests, and copyrights in and/or to the Software, including but not limited to all images, graphics, animations, audio, video, music, text, data, code, algorithm, and information, are owned by the Licensor. Accordingly, the Software is protected by all applicable copyright laws and international treaties, and the Licensee is expected to use the Software concerning all intellectual property contained therein, except as otherwise provided for in this EULA.
+
+(4) Description of Rights and Limitations
+4.1. Installation and Use
+Licensee may install and use the Software on a shared computer or concurrently on different computers, and make multiple back-up copies of the Software, solely for Licensee's use within Licensee's personal use.
+
+4.2. Reproduction and Distribution
+Licensee may not duplicate or re-distribute copies of the Software, without the Licensors express written permission.
+
+4.3. Licensee Limitation
+The Licensee agrees not to:
+    1. Use the Licensed Product for any purpose other than personal and non-commercial purposes; 
+    2. Use the Licensed Product for any illegal or unlawful purpose; 
+    3. Circumvent, disable, or otherwise interfere with security-related features of the Software, including features that prevent or restrict the use or copying of any Content or enforce limitations on the use of the Software and/or the Content contained therein. 
+    4. Engage in unauthorized framing of or linking to the Software. 
+    5. Make improper use of our support services or submit false reports of abuse or misconduct. 
+    6. Engage in any automated use of the system, such as using scripts to send comments or messages, or using any data mining, robots, or similar data gathering and extraction tools.
+    7. Attempt to impersonate another user or person or use the username of another user. 
+    8. Sell or otherwise transfer the Software. 
+    9.  Use the Software as part of any effort to compete with us or otherwise use the Software and/or the Content for any revenue-generating endeavor or commercial enterprise. 
+    10. Decipher, decompile, disassemble, or reverse engineer any of the software comprising or in any way making up a part of the Software. 
+    11. Attempt to bypass any measures of the Software designed to prevent or restrict access, or any portion of the Software. 
+    12. Harass, annoy, intimidate, or threaten any of our employees or agents engaged in providing any portion of the Software to you. 
+    13. Delete the copyright or other proprietary rights notice from any Content. 
+    14. Copy or adapt the Software, including but not limited to Flash, PHP, HTML, JavaScript, or other code. 
+    15. Except as may be the result of standard search engine or Internet browser usage, use, launch, develop, or distribute any automated system, including without limitation, any spider, robot, cheat utility, scraper, or offline reader that accesses the , or using or launching any unauthorized script or other software.
+    
+(5) Contribution License
+Licensee and the Licensor agree that we may access, store, process, and use any information and personal data that you provide following the terms of the Privacy Policy and your choices (including settings). By submitting suggestions or other feedback regarding the Software, you agree that we can use and share such feedback for any purpose without compensation to you. We do not assert any ownership over your Contributions. You retain full ownership of all of your Contributions and any intellectual property rights or other proprietary rights associated with your Contributions. We are not liable for any statements or representations in your Contributions provided by you in any area on the Site. You are solely responsible for your Contributions to the Site and you expressly agree to exonerate us from any and all responsibility and to refrain from any legal action against us regarding your Contributions.
+
+(6) General Provisions
+6.1. Termination
+In the event of termination, all licenses provided under this EULA shall immediately terminate, and you agree to discontinue accessing or attempting to access this Licensed product.
+Accordingly, this EULA may be:
+    1. Automatically terminated if the Licensee fails to comply with any of the terms and conditions under this EULA; 
+    2. Terminated by logsight.ai GmbH; or 
+    3. Terminated by the Licensee. 
+Either logsight.ai GmbH or the Licensee may terminate this EULA immediately upon written notice to the other party, including but not limited to electronic mail.
+
+6.2. Non-Transferability
+The Licensee has the option to permanently transfer all rights under this Agreement, provided the recipient agrees to the terms of this EULA. Accordingly, this EULA is not assignable or transferable by the Licensee without the prior written consent of logsight.ai GmbH; and any attempt to do so shall be void.
+
+6.3. Notice
+Any notice, report, approval or consent required under this EULA shall be in writing and deemed to have been duly given if delivered by recorded delivery to the respective addresses of the parties.
+
+6.4. Integration
+Both parties hereby agree that this EULA is the entire and exclusive statement and legal acknowledgment of the mutual understanding of the parties and supersedes and cancels any previous written and oral agreement and/or communication relating to the subject matter of this EULA.
+
+6.5. Severability
+No delay or failure to exercise, on the part of either party, any privilege, power or rights under this EULA shall operate as a waiver of any of the terms and provisions of this EULA. Accordingly, no single or partial exercise of any right under this Agreement shall preclude further exercise of any other right under this EULA. Suppose any of the outlined provisions of this EULA is deemed to be unenforceable or invalid in whole or in part by a court of competent jurisdiction. In that case, such provision shall be limited to the minimum extent necessary for this EULA to remain in full force and effect and enforceable. The remaining provisions of this Agreement shall not be rendered unenforceable or invalid. They shall continue to be enforceable and valid in isolation of the unenforceable and invalid provisions of this EULA.
+
+6.6. Publicity
+The Licensor may issue a press release, case study, or general marketing communications concerning its involvement with Licensee, including mentioning Licensee as a client on its website. Licensee agrees to provide a reasonable level of cooperation and assistance in connection with development and publication of a case study related to Licensee’s use of the Software.
+
+6.7. Modifications
+We reserve the right to change, modify, or remove the contents of the Software at any time or for any reason at our sole discretion without notice. However, we have no obligation to update any information. We also reserve the right to modify or discontinue all or part of the Software without notice at any time. We will not be liable to you or any third party for any modification, price change, suspension, or discontinuance of the Software. We cannot guarantee the Software will be available at all times. We reserve the right to change, revise, update, suspend, discontinue, or otherwise modify the Software at any time or for any reason without notice to you. You agree that we have no liability whatsoever for any loss, damage, or inconvenience caused by your inability to access or use the Software during any downtime or discontinuance of the Software. Nothing in these EULA will be construed to obligate us to maintain and support the Software or to supply any corrections, updates, or releases in connection therewith.
+
+6.9. Corrections
+There may be information on the Software that contains typographical errors, inaccuracies, or omissions, including descriptions, pricing, availability, and various other information. We reserve the right to correct any errors, inaccuracies, or omissions and to change or update the information on the Software at any time, without prior notice.
+
+6.10. Warranty and Disclaimer
+logsight.ai GmbH, and author of this Software, expressly disclaim any warranty for the Software. The Licensed Product and all applicable documentation is provided as-is, without warranty of any kind, whether express or implied, including, without limitation, the implied warranties of merchantability, fitness for a particular purpose, or non-infringement. Accordingly, the Licensee accepts any risk arising out of the use or performance of the Software.
+
+6.11. Limited Liability
+The Licensee agrees that the logsight.ai GmbH shall not be liable to Licensee, or any other related person or entity claiming any loss of profits, income, savings, or any other consequential, incidental, special, punitive, direct or indirect damage, whether arising in contract, tort, warranty, or otherwise. Even if logsight.ai GmbH has been advised of the possibility of such damages. These limitations shall necessarily apply regardless of the primary purpose of any limited remedy. Under no circumstances shall logsight.ai GmbH aggregate liability to the Licensee, or any other person or entity claiming through the Licensee, exceed the actual monetary amount paid by the Licensee to logsight.ai GmbH for the Software.
+
+6.12. Indemnification
+You hereby agree to indemnify and hold logsight.ai GmbH harmless from and against all liabilities, damages, losses or expenses, including but not limited to reasonable attorney or other professional fees in any claim, demand, action or proceeding initiated by any third-party against logsight.ai GmbH, arising from any of your acts, including without limitation, violating this EULA or any other agreement or any applicable law.
+
+6.13. Entire Agreement
+This Agreement rightly constitutes the entire understanding between the logsight.ai GmbH and the Licensee and all parties involved. It supersedes all prior agreements of the parties, whether written or oral, express or implied, statement, condition, or a representation or warranty.
+
+6.14. Governing Law and Jurisdiction
+This EULA shall be deemed to be construed under the jurisdiction of the courts located in Germany, without regard to conflicts of laws as regards the provisions thereof. Any legal action relating to this EULA shall be brought exclusively in the courts of Germany, and all parties consent to the jurisdiction thereof. Furthermore, the prevailing party in any action to enforce this EULA shall be entitled to recover costs and expenses including, without limitation, legal fees. Accordingly, this EULA is made within the exclusive jurisdiction of the Germany, and its jurisdiction shall supersede any other jurisdiction of either party's election.
+
+(7) Miscellaneous
+This EULA and any policies or operating rules posted by us on the constitute the entire agreement and understanding between Licensee and Licensor. Our failure to exercise or enforce any right or provision of this EULA shall not operate as a waiver of such right or provision. This EULA operate to the fullest extent permissible by law. We may assign any or all of our rights and obligations to others at any time. We shall not be responsible or liable for any loss, damage, delay, or failure to act caused by any cause beyond our reasonable control. If any provision or part of a provision of this EULA is determined to be unlawful, void, or unenforceable, that provision or part of the provision is deemed severable from this EULA and does not affect the validity and enforceability of any remaining provisions. There is no joint venture, partnership, employment or agency relationship created between Licensee and Licensor as a result of this EULA or use of the Software. You agree that this EULA will not be construed against us by virtue of having drafted them. You hereby waive any and all defenses you may have based on the electronic form of this EULA and the lack of signing by the parties hereto to execute this EULA.
+
+(8) Contact Us
+In order to resolve a complaint regarding the Software or to receive further information regarding use of the Software,please contact us at: support@logsight.ai

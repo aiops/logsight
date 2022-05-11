@@ -96,7 +96,7 @@ class AppBuilder:
         internal_source = self.setup_connector(module_name, 'control_source', self.module_config, app_settings)
         internal_sink = self.setup_connector(module_name, 'control_sink', self.module_config, app_settings)
         config = module.get('configs', {})
-        config.update(app_settings)
+        config.on_update(app_settings)
         config = Struct(**config)
 
         return module_classes[module_name](
@@ -119,8 +119,8 @@ class AppBuilder:
         if len(conn_config) == 0:
             return
         conn_params = deepcopy(config.get_connection(conn_config['connection']))
-        conn_params.update(conn_config['params'])
-        conn_params.update(app_settings)
+        conn_params.on_update(conn_config['params'])
+        conn_params.on_update(app_settings)
         private_key = app_settings['private_key']
         app_name = app_settings['application_name']
 

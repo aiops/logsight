@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from typing import Any, Optional, List, Dict
 
 from logsight_lib.field_parsing import FieldParser
@@ -13,14 +14,22 @@ logger = logging.getLogger("logsight." + __name__)
 
 
 class FieldParsingModule(Module, Context, AbstractHandler):
+
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        return super().flush(self.flush_state(context))
+
     module_name = "field_parsing"
 
     def __init__(self, config, app_settings=None):
-        self.app_settings = app_settings
         Context.__init__(self, CalibrationState(config))
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
 
-    def start(self):
-        super().start()
+        self.app_settings = app_settings
+
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         if isinstance(self._state, CalibrationState):
             self._state.timer.start()
 
@@ -28,14 +37,16 @@ class FieldParsingModule(Module, Context, AbstractHandler):
         if data:
             return self.process_context(data)
 
-    def handle(self, request: Any) -> Optional[str]:
-        result = self._process_data(request)
-        if self.next_handler:
-            return self._next_handler.handle(result)
-        return result
+    def _handle(self, request) -> Optional[str]:
+        return self._process_data(request)
 
 
 class CalibrationState(State):
+    def flush(self, context: Optional[Any]) -> Optional[Any]:
+        if context:
+            self.buffer.add(context)
+        return self._process_buffer()
+
     def __init__(self, config):
         self.config = config
         self.buffer = Buffer(config.buffer_size)
@@ -65,12 +76,21 @@ class CalibrationState(State):
         return result if result else None
 
     def timeout_call(self):
-        result = self._process_buffer()
-        if self.context.next_handler:
-            self.context.next_handler.handle(result)
+        if not self.buffer.is_empty:
+            result = self._process_buffer()
+            if self.context.next_handler:
+                self.context.next_handler.handle(result)
+        else:
+            self.timer.reset_timer()
 
 
 class FieldParserParseState(State):
+    def flush(self, context: Optional[Any]) -> Optional[Any]:
+        result = None
+        if context:
+            result = self.parser.parse_fields(context)[0]
+        return result
+
     def __init__(self, parser: FieldParser):
         self.parser = parser
 

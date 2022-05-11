@@ -1,7 +1,7 @@
 class ConfigLogLevelEstimation:
     __conf = {
-        'pad_len': 50,
-        'max_len': 20,
+        'pad_len'   : 50,
+        'max_len'   : 20,
         'log_mapper': {0: 'anomaly', 1: 'normal'}
     }
 
@@ -15,5 +15,5 @@ class ConfigLogLevelEstimation:
             ConfigLogLevelEstimation.__conf[name] = value
         else:
             raise ValueError("The variable name does not exist! "
-                             "The possible config variables to be set are:",
+                             "The possible configs variables to be set are:",
                              ConfigLogLevelEstimation.__conf.keys())

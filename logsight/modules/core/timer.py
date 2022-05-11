@@ -5,6 +5,7 @@ from threading import Timer
 
 logger = logging.getLogger("logsight." + __name__)
 
+
 class NamedTimer:
     def __init__(self, timeout_period: int, callback: callable, name: str = ""):
         self.timeout_period = timeout_period

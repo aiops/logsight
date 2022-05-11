@@ -14,13 +14,17 @@ class LogParserModule(Module, Context, AbstractHandler):
     """
     Performs Anomaly detection on log data
     """
+
     module_name = "log_parsing"
 
-    def __init__(self, config,app_settings=None):
+    def __init__(self, config, app_settings=None):
         Context.__init__(self, TrainState(DrainLogParser(), config))
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
 
-    def start(self):
-        super().start()
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         if isinstance(self._state, TrainState):
             self._state.timer.start()
 
@@ -28,14 +32,24 @@ class LogParserModule(Module, Context, AbstractHandler):
         if data:
             return self.process_context(data)
 
-    def handle(self, request: Any) -> Optional[str]:
-        result = self._process_data(request)
-        if self.next_handler:
-            return self._next_handler.handle(result)
-        return result
+    def _handle(self, request: Any) -> Optional[str]:
+        return self._process_data(request)
+
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        result = self.flush_state(context)
+        return super().flush(result)
 
 
 class TrainState(State):
+
+    def flush(self, context: Optional[Any]) -> Optional[Any]:
+        if context:
+            if isinstance(context, list):
+                self.buffer.extend(context)
+            else:
+                self.buffer.add(context)
+        result = self._do_parsing()
+        return result
 
     def __init__(self, parser: Parser, config):
         self.parser = parser
@@ -52,6 +66,12 @@ class TrainState(State):
             return self._process_buffer()
 
     def _process_buffer(self) -> Optional[List[dict]]:
+        result = self._do_parsing()
+        self.context.transition_to(PredictState(self.parser, self.config))
+        self.timer.cancel()
+        return result
+
+    def _do_parsing(self):
         result = None
         if not self.buffer.is_empty:
             flushed_buffer = self.buffer.flush_buffer()
@@ -62,8 +82,6 @@ class TrainState(State):
                 res = self.parser.parse(item)
                 if res:
                     result.append(res)
-        self.context.transition_to(PredictState(self.parser, self.config))
-        self.timer.cancel()
         return result
 
     def timeout_call(self):
@@ -73,6 +91,11 @@ class TrainState(State):
 
 
 class PredictState(State):
+
+    def flush(self, context: Optional[Any]) -> Optional[Any]:
+        if context:
+            return self.handle(context)
+        return context
 
     def __init__(self, parser: Parser, config):
         self.parser = parser
@@ -96,6 +119,11 @@ class PredictState(State):
 
 
 class TuneState(State):
+
+    def flush(self, context: Optional[Any]) -> Optional[Any]:
+        result = self.handle(context)
+        logger.debug(f"Flushed {len(result)} messages.")
+        return result
 
     def __init__(self, parser: Parser, config):
         self.parser = parser

@@ -19,6 +19,7 @@ class LogAggregator:
         # t0 = perf_counter()
         logger.info(f"Logs to be aggregated: {len(logs)}")
         df = pd.DataFrame(logs).set_index('@timestamp')
+        application_id = df["application_id"].values[0]
         # t1 = perf_counter()
         df.index = pd.to_datetime(df.index)
         # t2 = perf_counter()
@@ -32,6 +33,7 @@ class LogAggregator:
             result_dict = defaultdict()
             result_dict["log_levels"] = tpl.level
             result_dict["prediction"] = tpl.prediction
+            result_dict["application_id"] = application_id
             result_dict["count"] = tpl.count
             result_dict["@timestamp"] = tpl.Index.strftime(format='%Y-%m-%dT%H:%M:%S.%f')
             result.append(result_dict)

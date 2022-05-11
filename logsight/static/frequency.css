@@ -1,0 +1,37 @@
+
+<!--Frequency analysis-->
+<div class="row">
+	<div class="col-12 col-md-12 col-lg-12 mb-4 mb-lg-0">
+		<div class="card h-15">
+			<h5 class="card-header">Frequency analysis</h5>
+			<div class="card-content">
+				<div class="card-body">
+					<fieldset>
+						<div>
+							<div class="d-inline-block custom-control custom-radio mr-1">
+								<input type="radio" class="custom-control-input" name="frequency" id="fa_radio1">
+								<label class="custom-control-label" for="fa_radio1">Top 10</label>
+							</div>
+							<div class="d-inline-block custom-control custom-radio mr-1">
+								<input type="radio" class="custom-control-input" name="frequency" id="fa_radio2" checked>
+								<label class="custom-control-label" for="fa_radio2">Top 20</label>
+							</div>
+							<div class="d-inline-block custom-control custom-radio mr-1">
+								<input type="radio" class="custom-control-input" name="frequency" id="fa_radio3">
+								<label class="custom-control-label" for="fa_radio3">Top 50</label>
+							</div>
+							<div class="d-inline-block custom-control custom-radio mr-1">
+								<input type="radio" class="custom-control-input" name="frequency" id="fa_radio4" disabled>
+								<label class="custom-control-label" for="fa_radio4">auto</label>
+							</div>
+						</div>
+					</fieldset>
+					<div>
+						<canvas id="Frequency_Bar"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--/Frequency analysis-->

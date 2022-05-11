@@ -32,6 +32,9 @@ class Context:
     def process_context(self, context: Any):
         return self._state.handle(context)
 
+    def flush_state(self, context: Optional[Any]):
+        return self._state.flush(context)
+
     def _timeout_call(self) -> Optional[Any]:
         return self._state.timeout_call()
 
@@ -56,6 +59,10 @@ class State(ABC):
 
     @abstractmethod
     def handle(self, request: Any) -> Optional[Any]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def flush(self, context: Optional[Any]) -> Optional[Any]:
         raise NotImplementedError
 
     def timeout_call(self) -> Optional[Any]:

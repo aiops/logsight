@@ -1,9 +1,14 @@
 import json
 import socket
-from .base import Source
+
+from .source import Source
 
 
 class SocketSource(Source):
+    def close(self):
+        self.socket.close()
+        self.connected = False
+
     def __init__(self, host, port, **kwargs):
         super().__init__(**kwargs)
         self.server_address = None
@@ -24,5 +29,5 @@ class SocketSource(Source):
 
     def receive_message(self):
         request, client_address = self.socket.accept()
-        return json.loads(request.recv(2048).decode("utf-8").strip())
-
+        payload = request.recv(2048).decode("utf-8").strip()
+        return json.loads(payload)

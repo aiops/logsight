@@ -1,0 +1,7 @@
+.git
+.github
+Dockerfile
+.idea
+.venv
+README.md
+__pycache__
