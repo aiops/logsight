@@ -1,10 +1,13 @@
-import os
+import json
 from time import time
 
-from .base import Source
+from .source import Source
 
 
 class PrintSource(Source):
+
+    def close(self):
+        pass
 
     def connect(self):
         return
@@ -15,17 +18,9 @@ class PrintSource(Source):
 
 
 class FileSource(Source):
-    def connect(self):
-        return
-
     def __init__(self, path=None, **kwargs):
-        super().__init__(**kwargs)
-        self.path = path or "/home/petar/work/logsight/log-monolith/tests/test_data/logfile.txt"
+        self.path = path
         files_list = [self.path]
-        # for root, folders, files in os.walk("/home/petar/work/logsight/data/test_log_dir"):
-        #     for f in files:
-        #         if "syslog" in f:
-        #             files_list.append("/".join([str(root), str(f)]))
         self.files_list = files_list
         self.i = 0
         self.file = open(self.files_list[self.i], 'r')
@@ -33,18 +28,26 @@ class FileSource(Source):
         self.cnt = 0
         self.time = time()
 
+    def close(self):
+        pass
+
+    def connect(self):
+        return
+
     def receive_message(self):
         try:
+            txt = json.loads(self.file.readline())
+            source = "DEF"
+        except Exception:
             txt = self.file.readline()
-        except UnicodeDecodeError:
-            txt = self.file.readline()
+            source = "DEF"
 
         self.cnt += 1
         if txt == "":
             return self._reopen_file()
         if self.cnt % 10000 == 0:
             print("Sending", self.cnt, time() - self.time)
-        return {"app_name": "sample_app", "message": txt, "private_key": "sample_key"}
+        return {"application_id": "test", "app_name": "test", "message": txt, "private_key": "sample_key", "source": source}
 
     def _reopen_file(self):
         self.i += 1
@@ -52,7 +55,6 @@ class FileSource(Source):
             self.eof = True
             return
         self.file.close()
-        print(self.files_list[self.i])
         self.file = open(self.files_list[self.i], 'r')
         return self.receive_message()
 

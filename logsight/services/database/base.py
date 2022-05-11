@@ -1,17 +1,21 @@
 import logging
 from functools import wraps
-from time import sleep
 
 from sqlalchemy.engine import create_engine
-from sqlalchemy.exc import OperationalError, DatabaseError
+from sqlalchemy.exc import DatabaseError, OperationalError
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
+from services.database.exceptions import DatabaseException
 from utils.helpers import unpack_singleton
 
 logger = logging.getLogger("logsight." + __name__)
 
+MAX_ATTEMPTS = 5
+
 
 def ensure_connection(func):
     @wraps(func)
+    @retry(reraise=True, stop=stop_after_attempt(MAX_ATTEMPTS), wait=wait_fixed(20))
     def decorated(cls, sql, *args):
         try:
             if cls.conn is None:
@@ -21,7 +25,7 @@ def ensure_connection(func):
         except OperationalError:
             cls.reconnect()
         except (Exception, DatabaseError) as error:
-            logger.error(error)
+            logger.error(f"Failed database operation. Reason: {error}.")
             raise error
 
     return decorated
@@ -58,40 +62,44 @@ class Database:
         self.password = password or ''
         self.host = host or ''
         self.port = port or ''
-        self._reconnect_attempts = 5
         self.engine = None
         self.conn = self.connect()
 
     def _create_engine(self):
         """Create a new Engine instance."""
         self.engine = create_engine(f"{self.driver}://{self.username}:{self.password}@"
-                                    f"{self.host}:{self.port}/{self.db_name}", pool_pre_ping=True)
+                                    f"{self.host}:{self.port}/{self.db_name}", pool_pre_ping=True,
+                                    echo=False)
 
+    @retry(reraise=True, retry=retry_if_exception_type(ConnectionError), stop=stop_after_attempt(MAX_ATTEMPTS),
+           wait=wait_fixed(5))
     def connect(self):
         """Connect to the postgres database"""
+        n_attempt = self.connect.retry.statistics['attempt_number']
+        attempt_msg = f"Attempt: {n_attempt}/{MAX_ATTEMPTS}" if n_attempt > 1 else ""
+        logger.debug(
+            f"Connecting to database {self.db_name} on {self.host}:{self.port}.{attempt_msg}")
+        conn = None
+        reason = ""
         try:
-            if self.engine is None:
+            if not self.engine:
                 self._create_engine()
-            self.conn = self.engine.connect()
-            self._reconnect_attempts = 5
-        except OperationalError:
-            self.reconnect()
-        logger.debug(f"Connected to database {self.db_name}")
+            conn = self.engine.connect()  # will return a valid object if connection success
+        except OperationalError as e:
+            logger.debug(e)
+            reason = f"Database {self.db_name} unreachable on {self.host}:{self.port}"
+        if conn:
+            try:
+                self._verify_database_exists(conn)
+                logger.info(f"Connected to database {self.db_name}")
+                return conn
+            except DatabaseException as e:
+                reason = e
+        logger.error(reason)
+        raise ConnectionError(reason)
 
-    def reconnect(self):
-        """Reconnect to database"""
-        try:
-            if self._reconnect_attempts > 0:
-                self._reconnect_attempts -= 1
-                sleep(1)
-                logger.debug(f"Trying to reconnect. Attempts : {self._reconnect_attempts}.")
-                self.connect()
-            else:
-                self.conn = None
-                logger.debug(f"Failed connecting to database {self.db_name}")
-                logger.error(f"Failed connecting to database {self.db_name}")
-        except OperationalError:
-            self.reconnect()
+    def _verify_database_exists(self, conn):
+        raise NotImplementedError
 
     def close(self):
         """Close the postgres connection"""

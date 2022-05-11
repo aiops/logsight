@@ -1,7 +1,9 @@
 import logging
-from elasticsearch import helpers, Elasticsearch
 
-from .base import Sink
+from elasticsearch import Elasticsearch, helpers
+from tenacity import retry, wait_fixed, stop_after_attempt
+
+from .sink import Sink
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -9,7 +11,6 @@ logger = logging.getLogger("logsight." + __name__)
 class ElasticsearchSink(Sink):
 
     def __init__(self, host, port, username, password, private_key=None, application_name=None, index="", **kwargs):
-        super().__init__(**kwargs)
         if application_name and private_key:
             self.application_id = "_".join([private_key, application_name])
         else:
@@ -17,6 +18,13 @@ class ElasticsearchSink(Sink):
         self.index = "_".join([self.application_id, index]) if self.application_id else index
         self.es = Elasticsearch([{'host': host, 'port': port}], http_auth=(username, password))
 
+    def close(self):
+        self.es.close()
+
+    def connect(self):
+        pass
+
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
     def send(self, data):
         if not isinstance(data, list):
             data = [data]
@@ -26,4 +34,5 @@ class ElasticsearchSink(Sink):
                          index=self.index,
                          request_timeout=200)
         except Exception as e:
-            logger.error(f"{e}")
+            logger.warning(f"Failed to send data to elasticsearch. Reason: {e}. Retrying...")
+            raise e

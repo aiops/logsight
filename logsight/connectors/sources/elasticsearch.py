@@ -1,12 +1,16 @@
 import threading
 
 from elasticsearch.client import Elasticsearch
+from tenacity import retry, stop_after_attempt, wait_fixed
 
-from .base import Source, StreamSource
 from modules.core.wrappers import synchronized
+from .source import Source
 
 
-class ElasticsearchStreamSource(StreamSource):
+class ElasticsearchStreamSource(Source):
+
+    def close(self):
+        pass
 
     def __init__(self, host, port, username, password, query, pull_interval, **kwargs):
         super().__init__(**kwargs)
@@ -37,6 +41,9 @@ class ElasticsearchStreamSource(StreamSource):
 
 
 class ElasticsearchSource(Source):
+    def close(self):
+        self.es.close()
+
     def receive_message(self):
         # to be implemented
         pass
@@ -51,5 +58,6 @@ class ElasticsearchSource(Source):
         # To be implemented
         pass
 
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
     def get_data(self, query):
         return self.es.scan(query)

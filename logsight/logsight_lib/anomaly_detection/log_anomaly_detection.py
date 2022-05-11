@@ -67,26 +67,27 @@ class LogAnomalyDetector:
     def process_log(self, log_batch):
         result = []
         log_messages = []
-        for log in log_batch:
-            tmp = ''
-            try:
-                tmp = log['message']
-            except Exception as e:
-                logger.error(f"Exception: {e}")
-            tokenized = self.tokenize(tmp)
-            log_messages.append(tokenized[:self.config.get('max_len')])
-        log_messages[-1] = np.concatenate((tokenized, np.array([0] * self.config.get('pad_len'))))[
-                           :self.config.get('pad_len')]
+        if len(log_batch) > 0:
+            for log in log_batch:
+                tmp = ''
+                try:
+                    tmp = log['message']
+                except Exception as e:
+                    logger.error(f"Exception: {e}")
+                tokenized = self.tokenize(tmp)
+                log_messages.append(tokenized[:self.config.get('max_len')])
+            log_messages[-1] = np.concatenate((tokenized, np.array([0] * self.config.get('pad_len'))))[
+                               :self.config.get('pad_len')]
 
-        padded = get_padded_data(log_messages, self.config.get('pad_len'))
-        prediction, attention_scores = self.predict(padded)
-        for i, log_message in enumerate(log_batch):
-            try:
-                log_message["prediction"] = 1 if prediction[i] == 0 else 0
-                result.append(log_message)
-            except Exception as e:
-                print("exception ad batch", e)
+            padded = get_padded_data(log_messages, self.config.get('pad_len'))
+            prediction, attention_scores = self.predict(padded)
+            for i, log_message in enumerate(log_batch):
+                try:
+                    log_message["prediction"] = 1 if prediction[i] == 0 else 0
+                    result.append(log_message)
+                except Exception as e:
+                    print("exception ad batch", e)
 
-        del log_messages, padded, prediction, log_batch
-        gc.collect()
+            del log_messages, padded, prediction, log_batch
+            gc.collect()
         return result

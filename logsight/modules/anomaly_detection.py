@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import logging
+import traceback
+from copy import deepcopy
 from typing import Any, Optional
 from modules.core import AbstractHandler, Context, State, Module
 from modules.core.buffer import Buffer
@@ -19,15 +21,24 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
     """
     Performs Anomaly detection on log data
     """
-    module_name = "ad"
 
-    def __init__(self, config,app_settings=None):
+    def flush(self, context=None) -> Optional[str]:
+        result = self.flush_state(context)
+        return super().flush(result)
+
+    module_name = "anomaly_detection"
+
+    def __init__(self, config, app_settings=None):
+        Context.__init__(self, IdleState(config))
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
+
         self.app_settings = app_settings
         self.timeout_period = config.timeout_period
-        Context.__init__(self, IdleState(config))
 
-    def start(self):
-        super().start()
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         self._state.handle(None)  # Moves from Init State to Loaded state automatically
 
     def _process_data(self, data: Any) -> Optional[Any]:
@@ -36,18 +47,19 @@ class AnomalyDetectionModule(Module, Context, AbstractHandler):
         if data:
             return self.process_context(data)
 
-    def handle(self, request: Any) -> Optional[str]:
-        if request:
-            try:
-                result = self._process_data(request)
-                if self._next_handler and result:
-                    return self._next_handler.handle(result)
-                return result
-            except ModelNotLoadedException as e:
-                logger.error(e)
+    def _handle(self, request: Any) -> Optional[str]:
+        result = None
+        try:
+            result = self._process_data(request)
+        except ModelNotLoadedException as e:
+            logger.error(e)
+        return result
 
 
 class IdleState(State):
+    def flush(self, **kwargs) -> Optional[Any]:
+        return
+
     def __init__(self, config):
         self.config = config
         self.detector = config.detector
@@ -62,11 +74,21 @@ class IdleState(State):
 
 
 class LoadedState(State):
+
     def __init__(self, ad: LogAnomalyDetector, config):
         self.ad = ad
         self.config = config
         self.buffer = Buffer(config.buffer_size)
         self.timer = NamedTimer(self.config.timeout_period, self.timeout_call, self.__class__.__name__).start()
+
+    def flush(self, context) -> Optional[Any]:
+        if context:
+            if isinstance(context, list):
+                self.buffer.extend(context)
+            else:
+                self.buffer.add(context)
+        if not self.buffer.is_empty:
+            return self.ad.process_log(self.buffer.flush_buffer())
 
     def handle(self, request: Any) -> Optional[Any]:
         if isinstance(request, list):
@@ -89,8 +111,5 @@ class LoadedState(State):
         if not self.buffer.is_empty:
             result = self.ad.process_log(self.buffer.flush_buffer())
             if self.context.next_handler:
-                if result:
-                    logger.debug(f"Sending {len(result)}")
-
                 self.context.next_handler.handle(result)
         self.timer.reset_timer()

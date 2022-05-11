@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 from typing import Any, Optional
 
+from pandas import Timestamp
+
 from modules.core import AbstractHandler, Module
 
 from logsight_lib.incidents import IncidentDetector
@@ -14,7 +16,10 @@ logger = logging.getLogger("logsight." + __name__)
 class LogIncidentModule(Module, AbstractHandler):
     module_name = "incidents"
 
-    def __init__(self, config,app_settings=None):
+    def __init__(self, config, app_settings=None):
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
+
         self.config = config
         self.timeout_period = config.timeout_period
 
@@ -24,8 +29,9 @@ class LogIncidentModule(Module, AbstractHandler):
 
         self.model = IncidentDetector()
 
-    def start(self):
-        super().start()
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         self.timer.start()
 
     def _process_data(self, data: Optional[dict]) -> Optional[Any]:
@@ -53,11 +59,25 @@ class LogIncidentModule(Module, AbstractHandler):
                 return self.model.get_incident_properties(self.log_count_buffer.flush_buffer(),
                                                           self.log_ad_buffer.flush_buffer())
 
-    def handle(self, request: Any) -> Optional[str]:
-        result = self._process_data(request)
-        if self.next_handler:
-            return self._next_handler.handle(result)
-        return result
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        result = None
+        if context:
+            if 'timestamp_start' in context:
+                if isinstance(context, list):
+                    self.log_count_buffer.extend(context)
+                else:
+                    self.log_count_buffer.add(context)
+            else:
+                if isinstance(context, list):
+                    self.log_ad_buffer.extend(context)
+                else:
+                    self.log_ad_buffer.add(context)
+            result = self.model.get_incident_properties(self.log_count_buffer.flush_buffer(),
+                                                        self.log_ad_buffer.flush_buffer())
+        return super().flush(result)
+
+    def _handle(self, request: Any) -> Optional[str]:
+        return self._process_data(request)
 
     def _timeout_call(self):
         logger.debug("Initiating timer.")
@@ -69,7 +89,14 @@ class LogIncidentModule(Module, AbstractHandler):
 
     @staticmethod
     def _parse_time(timestamp):
-        try:
-            return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
-        except ValueError:
-            return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+        if type(timestamp) is str:
+            try:
+                return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+            except ValueError:
+                try:
+                    return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+                except ValueError:
+                    return datetime.strptime(str(timestamp).split("+")[0], '%Y-%m-%dT%H:%M:%S.%f')
+        elif type(timestamp) is Timestamp:
+            return timestamp.to_pydatetime()
+

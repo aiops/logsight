@@ -1,3 +1,6 @@
+import multiprocessing
+
+
 class Application:
     def __init__(self, handlers, application_id, private_key, application_name, input_module, services=None,
                  topic_list=None, **kwargs):
@@ -12,14 +15,14 @@ class Application:
         self.topic_list = topic_list or []
 
     def start(self):
-        self.start_module.start()
+        self.start_module.start({"app": self.application_name})
 
     def __repr__(self):
         return "-".join([self.application_id, self.application_name])
 
     def to_json(self):
         return {
-            "application_id": self.application_id,
+            "application_id"  : self.application_id,
             "application_name": self.application_name,
-            "input": self.input_module.to_json()
+            "input"           : self.input_module.to_json()
         }

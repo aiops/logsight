@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from typing import Any, Optional
 
 from modules.core import AbstractHandler, Module
@@ -12,7 +13,10 @@ logger = logging.getLogger("logsight." + __name__)
 class LogAggregationModule(Module, AbstractHandler):
     module_name = "log_aggregation"
 
-    def __init__(self, config,app_settings=None):
+    def __init__(self, config, app_settings=None):
+        Module.__init__(self)
+        AbstractHandler.__init__(self)
+
         self.app_settings = app_settings
         self.config = config
         self.buffer = Buffer(config.buffer_size)
@@ -21,30 +25,36 @@ class LogAggregationModule(Module, AbstractHandler):
         self.timer.name = self.module_name + '_timer'
         self.aggregator = LogAggregator()
 
-    def start(self):
-        super().start()
+    def start(self, ctx: dict):
+        ctx["module"] = self.module_name
+        super().start(ctx)
         self.timer.start()
 
-    def _process_data(self, data: Any) -> Optional[Any]:
+    def _process_data(self, data: Any, force_flush=False) -> Optional[Any]:
         if data:
             if isinstance(data, list):
                 self.buffer.extend(data)
             else:
                 self.buffer.add(data)
+            if force_flush:
+                return self._process_buffer()
             if self.buffer.is_full:
                 return self._process_buffer()
 
-    def handle(self, request: Any) -> Optional[str]:
-        if request:
-            result = self._process_data(request)
-            if self.next_handler:
-                return self._next_handler.handle(result)
-            return result
+    def _handle(self, request: Any) -> Optional[str]:
+        return self._process_data(request)
 
     def _process_buffer(self):
         result = self.aggregator.aggregate_logs(self.buffer.flush_buffer())
         self.timer.reset_timer()
         return result
+
+    def flush(self, context: Optional[Any]) -> Optional[str]:
+        result = self._process_data(context, force_flush=True)
+        lenres = 0 if not result else len(result)
+        lencontext = 0 if not context else len(context)
+        logger.debug(f"Flushed  Accept: {lencontext} process{lenres} ")
+        return super().flush(result)
 
     def timeout_call(self):
         logger.debug(f"Initiating timer for app {self.app_settings.application_name}")
