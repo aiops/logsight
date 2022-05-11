@@ -2,11 +2,10 @@ import logging
 import os
 import pickle
 import sys
-
 import numpy as np
 
-from ..core.base import BaseModel
-from ..core.config import AnomalyDetectionConfig
+from modules.anomaly_detection.core.config import AnomalyDetectionConfig
+from modules.anomaly_detection.core.base import BaseModel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../core"))
 logger = logging.getLogger("logsight." + __name__)
