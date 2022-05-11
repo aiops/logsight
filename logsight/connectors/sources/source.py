@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Union
 
 from connectors.base.connector import Connector
 from connectors.serializers import DictSerializer, Serializer
@@ -15,7 +15,7 @@ class Source:
         """Whether the source has a next message."""
         return True
 
-    def _receive_message(self) -> str:
+    def _receive_message(self) -> Union[str, bytes]:
         """
         This function receives a message from the source
         """
@@ -27,7 +27,7 @@ class Source:
         :return: The transformed message
         """
         msg = self._receive_message()
-        return self.serializer.serialize(msg)
+        return self.serializer.deserialize(msg)
 
 
 class ConnectableSource(Source, Connector, ABC):

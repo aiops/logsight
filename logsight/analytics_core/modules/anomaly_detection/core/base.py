@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from logs import LogBatch
+from ....logs import LogBatch
 
 
 class BaseAnomalyDetector:

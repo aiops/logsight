@@ -33,7 +33,8 @@ class DataStoreModule(ConnectableModule):
         """
         if self.store_logs:
             processed = [to_flat_dict(log) for log in batch.logs]
-            self.connector.send(processed, target=batch.store_index)
+            self.connector.send(processed, target=batch.index)
         if self.store_metadata:
             self.connector.send(batch.metadata)
+        print(batch)
         return batch

@@ -32,7 +32,7 @@ class ConnectionConfig:
     classname: str
     connection: str
     params: Dict[str, Any] = field(default_factory=dict)
-    transformer: Optional[str] = None
+    serializer: Optional[str] = None
 
 
 @dataclass

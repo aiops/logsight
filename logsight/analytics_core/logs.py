@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional
 from uuid import uuid4
 
 
@@ -15,16 +15,18 @@ class LogsightLog:
     event: LogEvent
     id: Optional[str] = ""
     metadata: Optional[Dict] = field(default_factory=dict)
-    tags: Optional[Set[str]] = field(default_factory=set)
+    tags: Optional[Dict[str, str]] = field(default_factory=dict)
 
     # TODO: Should the results from the pipeline go into a separate attribute
     def __post_init__(self):
-        self.tags.update(["default"]) if len(self.tags) == 0 else self.tags
+        if not self.metadata:
+            self.metadata = dict()
+        self.tags.update({"default": "default"}) if len(self.tags) == 0 else self.tags
 
 
 @dataclass
 class LogBatch:
     logs: List[LogsightLog]
-    store_index: str
+    index: str
     id: Optional[str] = str(uuid4())
     metadata: Optional[Dict] = field(default_factory=dict)

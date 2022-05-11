@@ -25,5 +25,5 @@ class ConnectionBuilder(Builder):
         conn_params = deepcopy(self.conn_config.get_connection(config.connection))
         conn_params.update(config.params)
         c_name = getattr(connectors, config.classname)
-        transformer = getattr(serializers, config.transformer)() if config.transformer else None
-        return c_name(**conn_params, transformer=transformer)
+        serializer = getattr(serializers, config.serializer)() if config.serializer else None
+        return c_name(**conn_params, serializer=serializer)
