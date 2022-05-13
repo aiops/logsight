@@ -10,7 +10,7 @@ setuptools==57.0.0
 SQLAlchemy==1.4.27
 kafka-python==2.0.2
 elasticsearch==7.15.2
-psycopg2==2.8.4
+psycopg2-binary==2.8.4
 guppy3
 onnxruntime==1.10.0
 flask
