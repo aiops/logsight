@@ -11,11 +11,11 @@ SQLAlchemy==1.4.27
 kafka-python==2.0.2
 elasticsearch==7.15.2
 psycopg2-binary==2.8.4
-guppy3
+guppy3==3.1.2
 onnxruntime==1.10.0
-flask
-gensim
-waitress
+flask==2.1.2
+waitress==2.1.1
+gensim==4.2.0
 dacite~=1.6.0
 zmq~=0.0.0
 pyzmq~=22.3.0
@@ -24,3 +24,5 @@ scikit-learn~=1.0.1
 config~=0.5.1
 tenacity==8.0.1
 ujson~=5.2.0
+pytest==7.1.2
+pytest-cov==3.0.0

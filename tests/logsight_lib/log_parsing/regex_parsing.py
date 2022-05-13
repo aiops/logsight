@@ -1,6 +1,6 @@
 import unittest
 
-from logsight_lib import DrainLogParser
+from analytics_core.modules.log_parsing import DrainLogParser
 
 
 class ParsingRegexTest(unittest.TestCase):
