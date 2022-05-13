@@ -1,13 +1,14 @@
 import os
 
 from config import Config
+from dacite import from_dict
 
-from configs.global_vars import DEBUG, PIPELINE_PATH
-from logsight_classes.data_class import PipelineConfig
+from common.logsight_classes.configs import PipelineConfig
+from configs.global_vars import CONNECTIONS_PATH, DEBUG, PIPELINE_PATH
 
 
-class ConnectionConfig:
-    def __init__(self, connection_config_path: str):
+class ConnectionConfigParser:
+    def __init__(self, connection_config_path: str = CONNECTIONS_PATH):
         self.conns = Config(connection_config_path)
 
         for conn in self.conns.as_dict():
@@ -26,11 +27,14 @@ class ConnectionConfig:
     def get_elasticsearch_params(self):
         return self.conns['elasticsearch']
 
+    def get_postgres_params(self):
+        return self.conns['postgres']
+
     def get_connection(self, conn):
         return self.conns.get(conn, {})
 
 
-class ManagerConfig(ConnectionConfig):
+class ManagerConfig(ConnectionConfigParser):
     def __init__(self, connection_config_path: str, manager_config_path: str):
         super().__init__(connection_config_path)
         self.manager_config = Config(manager_config_path)
@@ -56,7 +60,7 @@ class ManagerConfig(ConnectionConfig):
 
 class ModulePipelineConfig:
     def __init__(self, pipeline_config_path: str = PIPELINE_PATH):
-        self.pipeline_config = PipelineConfig(**Config(pipeline_config_path).as_dict())
+        self.pipeline_config = from_dict(data=Config(pipeline_config_path).as_dict(), data_class=PipelineConfig)
         self._modify_config()
 
     def __repr__(self):
@@ -65,8 +69,8 @@ class ModulePipelineConfig:
     def _modify_config(self):
         ad = os.environ.get("DISABLE_AD")
         if ad and ad.lower() == "true":
-            self.pipeline_config.handlers['ad_fork'].next_handler.remove('ad_sink')
-            del self.pipeline_config.handlers['ad_sink']
+            self.pipeline_config.modules['ad_fork'].next_module.remove('ad_sink')
+            del self.pipeline_config.modules['ad_sink']
 
     def get_module(self, module):
-        return self.pipeline_config.handlers[module]
+        return self.pipeline_config.modules[module]

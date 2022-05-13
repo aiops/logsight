@@ -9,7 +9,7 @@
   "deleted_states": "10",
   "deleted_states_info": "5",
   "deleted_states_fault": "5",
-  "reccuring_states": "8",
+  "recurring_states": "8",
   "recurring_states_info": "3",
   "recurring_states_fault": "5",
   "frequency_change_threshold": "50",

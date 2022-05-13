@@ -6,16 +6,16 @@ import platform
 from multiprocessing import set_start_method
 from typing import Dict
 
-from builders.application_builder import ApplicationBuilder
-from builders.connection_builder import ConnectionBuilder
-from builders.module_builder import ModuleBuilder
+from common.utils.fs import verify_file_ext
 from configs import global_vars
 from configs.global_vars import CONFIG_PATH
 from connectors import sinks, sources
-from manager import Manager
+from connectors.connection_builder import ConnectionBuilder
+from pipeline.builders.module_builder import ModuleBuilder
+from scrap_files.builders.application_builder import ApplicationBuilder
+from scrap_files.manager import Manager
 from services import service_names
 from services.configurator import ManagerConfig
-from utils.fs import verify_file_ext
 
 # hello world
 logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "log.json"), 'r')))
@@ -30,7 +30,7 @@ if platform.system() != 'Linux':
 def setup_connector(config: ManagerConfig, connector: str):
     conn_config = config.get_connector(connector)
     conn_params = config.get_connection(conn_config['connection'])
-    conn_params.update(conn_config['params'])
+    conn_params.update_timestamps(conn_config['params'])
     try:
         c_name = getattr(sources, conn_config['classname'])
     except AttributeError:
@@ -53,8 +53,6 @@ def setup_services(config: ManagerConfig):
 def create_manager(config: ManagerConfig):
     source = setup_connector(config, 'source')
     services = setup_services(config)
-    # producer = setup_connector(configs, 'producer')
-    topic_list = config.get_topic_list()
 
     connection_builder = ConnectionBuilder(config=config)
     module_builder = ModuleBuilder(connection_builder=connection_builder)

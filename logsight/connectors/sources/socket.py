@@ -1,10 +1,10 @@
 import json
 import socket
 
-from .source import Source
+from .source import ConnectableSource
 
 
-class SocketSource(Source):
+class SocketSource(ConnectableSource):
     def close(self):
         self.socket.close()
         self.connected = False
@@ -27,7 +27,7 @@ class SocketSource(Source):
         self.socket.listen(5)
         self.connected = True
 
-    def receive_message(self):
+    def _receive_message(self):
         request, client_address = self.socket.accept()
         payload = request.recv(2048).decode("utf-8").strip()
         return json.loads(payload)

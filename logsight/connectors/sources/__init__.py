@@ -1,6 +1,5 @@
-from .stdin import PrintSource, FileSource
+from .queue import SourceQueue
 from .socket import SocketSource
 from .source import Source
-from .queue import SourceQueue
-from .zeromq import ZeroMQSubSource, ZeroMQRepSource
-
+from .stdin import FileSource, StdinSource
+from .zeromq import ZeroMQRepSource, ZeroMQSubSource
