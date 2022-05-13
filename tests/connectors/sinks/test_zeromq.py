@@ -20,18 +20,18 @@ class TestZeroMQPubSink(unittest.TestCase):
         super().tearDown()
 
     def test_socket_connect_and_close_success(self):
-        zeromq = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic)
+        zeromq = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, topic="")
         self.save_connect(zeromq)
         self.save_close(zeromq)
 
     def test_close_not_connected_success(self):
-        zeromq = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic)
+        zeromq = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, topic="")
         self.save_close(zeromq)
 
     def test_socket_connect_fail_address_in_use(self):
-        zeromq1 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic,
+        zeromq1 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, topic="",
                                 connection_type=ConnectionTypes.BIND)
-        zeromq2 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, socket_type=TestZeroMQPubSink.topic,
+        zeromq2 = ZeroMQPubSink(endpoint=TestZeroMQPubSink.endpoint, topic="",
                                 connection_type=ConnectionTypes.BIND)
         self.save_connect(zeromq1)
         self.assertRaises(RetryError, zeromq2.connect)

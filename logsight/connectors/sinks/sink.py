@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
-from connectors import Connector
+from connectors.base.connector import Connector
 from connectors.serializers import DictSerializer, Serializer
 
 
