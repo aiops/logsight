@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Dict, List
 
 import pandas as pd
@@ -11,21 +12,21 @@ class IncidentDetector:
         df.tags = df.tags.apply(sorted).astype(str)
 
         properties_list = []
-        for tags, grp_df in df.groupby("tags"):
-            for time, grp in grp_df.groupby(pd.Grouper(freq='T')):
-                start_time = grp.index[0]
-                end_time = grp.index[-1]
-                dropped = grp.drop_duplicates(subset=['template'])
-                semantic_ad = dropped.loc[dropped['prediction'] == 1]
-                semantic_anomalies = [[element] for element in
-                                      semantic_ad.dropna(axis='columns').reset_index().to_dict('records')]
+        for time, grp in df.groupby(pd.Grouper(freq='T')):
+            if not len(grp):
+                continue
+            start_time = time
+            end_time = time + timedelta(minutes=1)
+            dropped = grp.drop_duplicates(subset=['template'])
+            semantic_ad = dropped.loc[dropped['prediction'] == 1]
+            semantic_anomalies = [[element] for element in
+                                  semantic_ad.dropna(axis='columns').reset_index().to_dict('records')]
 
-                properties = {"@timestamp": end_time, "total_score": len(semantic_anomalies),
-                              "timestamp_start": start_time,
-                              "timestamp_end": end_time,
-                              "semantic_ad": semantic_anomalies,
-                              "tags": tags}
-                properties_list.append(properties)
+            properties = {"timestamp": end_time, "total_score": len(semantic_anomalies),
+                          "timestamp_start": start_time,
+                          "timestamp_end": end_time,
+                          "semantic_ad": semantic_anomalies}
+            properties_list.append(properties)
 
         return properties_list
 

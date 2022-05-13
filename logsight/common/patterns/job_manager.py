@@ -1,7 +1,10 @@
+import logging
 from abc import ABC
 from concurrent.futures import ProcessPoolExecutor
 
 from .job import Job
+
+logger = logging.getLogger("logsight." + __name__)
 
 
 class JobManager(ABC):
@@ -21,4 +24,5 @@ class JobManager(ABC):
 
     def submit_job(self, job: Job):
         """ Submit a job for execution to the pool of threads """
+        logger.debug(f"Submitting job: {job}")
         return self.pool.submit(job.execute)

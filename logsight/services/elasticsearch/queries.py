@@ -1,16 +1,15 @@
 GET_ALL_AD = {
 
     "index": "$index",
-    "doc_type": '_doc',
     "body": {
         "query": {
             "bool": {
                 "must": [
                     {
                         "range": {
-                            "@timestamp": {
+                            "timestamp": {
                                 "format": "strict_date_optional_time",
-                                "gte": "$start_time",
+                                "gt": "$start_time",
                                 "lte": "$end_time"
                             }
                         }

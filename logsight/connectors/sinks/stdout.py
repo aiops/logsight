@@ -1,14 +1,8 @@
 from typing import Any, Optional
 
-from connectors.sinks.sink import ConnectableSink
+from connectors.sinks.sink import Sink
 
 
-class PrintSink(ConnectableSink):
-    def connect(self):
-        pass
-
-    def close(self):
-        pass
-
+class PrintSink(Sink):
     def send(self, data: Any, target: Optional[str] = None):
         print(f"[SINK] Sending data: {data}")

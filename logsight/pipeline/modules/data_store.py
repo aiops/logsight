@@ -2,6 +2,7 @@ import logging
 
 from analytics_core.logs import LogBatch
 from common.utils.helpers import to_flat_dict
+from configs.global_vars import PIPELINE_INDEX_EXT
 from connectors.sinks import Sink
 from pipeline.modules.core.module import ConnectableModule
 
@@ -33,8 +34,7 @@ class DataStoreModule(ConnectableModule):
         """
         if self.store_logs:
             processed = [to_flat_dict(log) for log in batch.logs]
-            self.connector.send(processed, target=batch.index)
+            self.connector.send(processed, target="_".join([batch.index, PIPELINE_INDEX_EXT]))
         if self.store_metadata:
             self.connector.send(batch.metadata)
-        print(batch)
         return batch

@@ -1,4 +1,4 @@
-from .sql_statements import *
+from .sql_statements import LIST_APPS, READ_APPLICATION, SELECT_TABLES
 from ..exceptions import DatabaseException
 from ..wrappers import AppDatabase
 
@@ -10,10 +10,7 @@ class PostgresDBConnection(AppDatabase):
         super().__init__(host, port, username, password, db_name, driver)
 
     def _verify_database_exists(self, conn):
-
-        databases = conn.execute(SELECT_DATABASES, ()).fetchall()
-        if (self.db_name,) not in databases:
-            raise ConnectionError("Database does not exist.")
+        super()._verify_database_exists(conn)
         tables = conn.execute(SELECT_TABLES).fetchall()
         if ("applications",) not in tables:
             raise DatabaseException(f"Tables not yet created for database {self.db_name}.")

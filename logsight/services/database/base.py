@@ -5,8 +5,8 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.exc import DatabaseError, OperationalError
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
-from services.database.exceptions import DatabaseException
 from common.utils import unpack_singleton
+from services.database.exceptions import DatabaseException
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -63,7 +63,14 @@ class Database:
         self.host = host or ''
         self.port = port or ''
         self.engine = None
-        self.conn = self.connect()
+        self.conn = None
+
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
     def _create_engine(self):
         """Create a new Engine instance."""
@@ -79,27 +86,28 @@ class Database:
         attempt_msg = f"Attempt: {n_attempt}/{MAX_ATTEMPTS}" if n_attempt > 1 else ""
         logger.debug(
             f"Connecting to database {self.db_name} on {self.host}:{self.port}.{attempt_msg}")
-        conn = None
         reason = ""
         try:
             if not self.engine:
                 self._create_engine()
-            conn = self.engine.connect()  # will return a valid object if connection success
+            self.conn = self.engine.connect()  # will return a valid object if connection success
         except OperationalError as e:
             logger.debug(e)
             reason = f"Database {self.db_name} unreachable on {self.host}:{self.port}"
-        if conn:
+        if self.conn:
             try:
-                self._verify_database_exists(conn)
+                self._verify_database_exists(self.conn)
                 logger.info(f"Connected to database {self.db_name}")
-                return conn
+                return self
             except DatabaseException as e:
                 reason = e
         logger.error(reason)
         raise ConnectionError(reason)
 
     def _verify_database_exists(self, conn):
-        raise NotImplementedError
+        databases = conn.execute("""SELECT datname FROM pg_database;""", ()).fetchall()
+        if (self.db_name,) not in databases:
+            raise ConnectionError("Database does not exist.")
 
     def close(self):
         """Close the postgres connection"""

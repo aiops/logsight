@@ -3,8 +3,8 @@ import os
 from config import Config
 from dacite import from_dict
 
-from configs.global_vars import CONNECTIONS_PATH, DEBUG, PIPELINE_PATH
 from common.logsight_classes.configs import PipelineConfig
+from configs.global_vars import CONNECTIONS_PATH, DEBUG, PIPELINE_PATH
 
 
 class ConnectionConfigParser:
@@ -26,6 +26,9 @@ class ConnectionConfigParser:
 
     def get_elasticsearch_params(self):
         return self.conns['elasticsearch']
+
+    def get_postgres_params(self):
+        return self.conns['postgres']
 
     def get_connection(self, conn):
         return self.conns.get(conn, {})

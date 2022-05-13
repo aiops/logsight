@@ -16,5 +16,4 @@ builder = PipelineBuilder()
 
 pipeline = builder.build(pipeline_cfg)
 
-print(pipeline)
 pipeline.run()

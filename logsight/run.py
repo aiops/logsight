@@ -30,7 +30,7 @@ if platform.system() != 'Linux':
 def setup_connector(config: ManagerConfig, connector: str):
     conn_config = config.get_connector(connector)
     conn_params = config.get_connection(conn_config['connection'])
-    conn_params.update(conn_config['params'])
+    conn_params.update_timestamps(conn_config['params'])
     try:
         c_name = getattr(sources, conn_config['classname'])
     except AttributeError:
@@ -53,7 +53,6 @@ def setup_services(config: ManagerConfig):
 def create_manager(config: ManagerConfig):
     source = setup_connector(config, 'source')
     services = setup_services(config)
-    # producer = setup_connector(configs, 'producer')
 
     connection_builder = ConnectionBuilder(config=config)
     module_builder = ModuleBuilder(connection_builder=connection_builder)

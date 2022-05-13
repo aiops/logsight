@@ -30,4 +30,5 @@ class DataClassJSONEncoder(json.JSONEncoder):
 
 
 def to_flat_dict(obj: LogsightLog) -> Dict:
-    return dict(id=obj.id, tags=obj.tags, **dataclasses.asdict(obj.event), **obj.metadata)
+    return dict(id=obj.id, tags=obj.tags, **dataclasses.asdict(obj.event), **obj.metadata,
+                tag_keys=list(obj.tags.keys()))

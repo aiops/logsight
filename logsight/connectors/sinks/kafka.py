@@ -30,13 +30,14 @@ class KafkaSink(Sink):
         self.connect()
 
     def close(self):
-        pass
+        self.kafka_sink.close()
 
     def connect(self):
         logger.debug("Creating Kafka producer")
         while True:
             try:
                 self.kafka_sink = KafkaProducer(bootstrap_servers=self.address)
+
             except Exception as e:
                 logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")
                 time.sleep(5)

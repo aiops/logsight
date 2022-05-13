@@ -17,7 +17,6 @@ class LogsightLog:
     metadata: Optional[Dict] = field(default_factory=dict)
     tags: Optional[Dict[str, str]] = field(default_factory=dict)
 
-    # TODO: Should the results from the pipeline go into a separate attribute
     def __post_init__(self):
         if not self.metadata:
             self.metadata = dict()

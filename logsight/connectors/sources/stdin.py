@@ -23,7 +23,7 @@ class FileSource(Source):
     def _receive_message(self) -> Union[str, List[str]]:
         if self.batch_size:
             batch = []
-            for i in range(self.batch_size):
+            for _ in range(self.batch_size):
                 line = self._read_line()
                 if line:
                     batch.append(line)

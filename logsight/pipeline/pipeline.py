@@ -44,7 +44,8 @@ class Pipeline:
         # connect modules
         for module in self.modules.values():
             if isinstance(module, ConnectableModule):
-                module.connector.connect()
+                if isinstance(module.connector, Connector):
+                    module.connector.connect()
 
     def _start_receiving(self):
         """
@@ -57,6 +58,7 @@ class Pipeline:
         internal.start()
         while self.data_source.has_next():
             message = self.data_source.receive_message()
+            logger.debug(f"Received Batch {message.id}")
             self.input_module.handle(message)
 
     def _start_control_listener(self):
