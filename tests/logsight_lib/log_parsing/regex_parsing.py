@@ -1,6 +1,6 @@
 import unittest
 
-from analytics_core.modules.log_parsing import DrainLogParser
+from analytics_core.modules.log_parsing import MaskLogParser
 
 
 class ParsingRegexTest(unittest.TestCase):
@@ -14,7 +14,7 @@ class ParsingRegexTest(unittest.TestCase):
             "<*> <*> INFO <*> Started <*> host_ms = <*> , <*>"
         ]
 
-        parser = DrainLogParser()
+        parser = MaskLogParser()
         for line, line_correct_output in zip(test_lines, test_lines_correct_outputs):
             parsed_line, unparsed_line = parser.preprocess(line)
             self.assertEqual(line_correct_output, parsed_line)  # add assertion here
