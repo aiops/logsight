@@ -136,10 +136,9 @@ dmypy.json
 *.pdf
 .vscode/
 
-.pyc
-.gradle
-.bin
-.ipynb
+*.gradle
+*.bin
+*.ipynb
 *.pickle
 
 test.pickle
