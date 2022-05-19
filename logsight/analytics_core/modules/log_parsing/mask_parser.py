@@ -1,15 +1,14 @@
 import multiprocessing
-import os.path
 import re
 from multiprocessing import Pool
-from os.path import dirname
 from typing import List, NamedTuple, Optional
-from cachetools import cachedmethod
+
+from cachetools import cachedmethod, LRUCache
 
 from analytics_core.modules.log_parsing.lib.mask_config import MaskParserConfig
+from analytics_core.modules.log_parsing.lib.masking import LogMasker
 from analytics_core.modules.log_parsing.parser import Parser
 from logsight.analytics_core.logs import LogsightLog
-from analytics_core.modules.log_parsing.lib.masking import LogMasker
 
 ExtractedParameter = NamedTuple("ExtractedParameter", [("value", str), ("mask_name", str)])
 
@@ -18,16 +17,30 @@ class MaskLogParser(Parser):
     def __init__(self):
         super().__init__()
         config = MaskParserConfig()
-        # TODO: Pull out the configuration into pipeline building
-        config.load(os.path.join(dirname(__file__), "mask_config.ini"))
+        config.load()
         self.masker = LogMasker(config.masking_instructions, config.mask_prefix, config.mask_suffix)
         self.template_key = config.template_key
         self.parameters_key = config.parameters_key
         self.enable_parameter_extraction = config.enable_parameter_extraction
+        self.parameter_extraction_cache = LRUCache(config.parameter_extraction_cache_capacity)
 
         self.worker_pool = Pool(multiprocessing.cpu_count() - 1)
 
-    def _run_parse(self, log: LogsightLog):
+    # The Pool.map method applies pickle do IPC with python objects. It cannot pickle the pool itself.
+    # We Exclude the worker_pool from pickle to prevent Pool.map raise an exception
+    # See: https://stackoverflow.com/questions/25382455/python-notimplementederror-pool-objects-cannot-be-passed-between-processes
+    def __getstate__(self):
+        self_dict = self.__dict__.copy()
+        del self_dict['worker_pool']
+        return self_dict
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+    def parse(self, logs: List[LogsightLog]) -> List[LogsightLog]:
+        return self.worker_pool.map(self._run_parse, logs)
+
+    def _run_parse(self, log: LogsightLog) -> LogsightLog:
         """
         This method will parse the templates via masking and extract parameters if parameter extraction is enabled.
         Parallel execution of this method via worker threads is assumed.
@@ -35,14 +48,11 @@ class MaskLogParser(Parser):
         template = self.masker.mask(log.event.message)
         log.metadata[self.template_key] = template
         if self.enable_parameter_extraction:
-            parameters = self.extract_parameters(template, log.event.message)
+            parameters = self._extract_parameters(template, log.event.message)
             log.metadata[self.parameters_key] = parameters
+        return log
 
-    def parse(self, logs: List[LogsightLog]) -> List[LogsightLog]:
-        self.worker_pool.map(self._run_parse, logs)
-        return logs
-
-    def get_parameter_list(self, log_template: str, log_message: str) -> List[str]:
+    def _get_parameter_list(self, log_template: str, log_message: str) -> List[str]:
         """
         Extract parameters from a log message according to a provided template that was generated
         by calling `add_log_message()`.
@@ -52,15 +62,14 @@ class MaskLogParser(Parser):
         :return: An ordered list of parameter values present in the log message.
         """
 
-        extracted_parameters = self.extract_parameters(log_template, log_message, exact_matching=False)
+        extracted_parameters = self._extract_parameters(log_template, log_message, exact_matching=False)
         if not extracted_parameters:
             return []
         return [parameter.value for parameter in extracted_parameters]
 
-    def extract_parameters(self,
-                           log_template: str,
-                           log_message: str,
-                           exact_matching: bool = True) -> Optional[List[ExtractedParameter]]:
+    def _extract_parameters(
+            self, log_template: str, log_message: str, exact_matching: bool = True
+    ) -> Optional[List[ExtractedParameter]]:
         """
         Extract parameters from a log message according to a provided template that was generated
         by calling `add_log_message()`.
