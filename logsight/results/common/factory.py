@@ -1,6 +1,7 @@
 from common.patterns.job_manager import JobManager
 from results.common.job_dispatcher import PeriodicJobDispatcher
 from results.incidents.incidents import CalculateIncidentJob
+from results.log_aggregation.log_aggregation import CalculateLogAggregationJob
 from results.persistence.timestamp_storage import TimestampStorageProvider
 
 
@@ -19,7 +20,7 @@ class JobDispatcherFactory:
     def get_log_agg_dispatcher(n_jobs: int, timeout_period: int) -> PeriodicJobDispatcher:
         manager = JobManager(n_jobs)
         storage = TimestampStorageProvider.provide_timestamp_storage('log_agg')
-        return PeriodicJobDispatcher(job=CalculateIncidentJob,
+        return PeriodicJobDispatcher(job=CalculateLogAggregationJob,
                                      job_manager=manager,
                                      storage=storage,
                                      timeout_period=timeout_period,
