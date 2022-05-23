@@ -5,9 +5,6 @@ from .source import ConnectableSource
 
 
 class SocketSource(ConnectableSource):
-    def close(self):
-        self.socket.close()
-        self.connected = False
 
     def __init__(self, host, port, **kwargs):
         super().__init__(**kwargs)
@@ -16,6 +13,10 @@ class SocketSource(ConnectableSource):
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._data = None
+        self.connected = False
+
+    def close(self):
+        self.socket.close()
         self.connected = False
 
     def connect(self):

@@ -15,11 +15,7 @@ logger = logging.getLogger("logsight." + __name__)
 class KafkaSource(ConnectableSource):
     """Data source - a wrapper around a Kafka consumer that allows us to receive messages from a Kafka topic"""
 
-    def close(self):
-        """ Close the connection."""
-        self.kafka_source.close()
-
-    def __init__(self, address: str, topic: str, group_id: int = None, offset: str = 'earliest',
+    def __init__(self, host: str, port: int, topic: str, group_id: int = None, offset: str = 'earliest',
                  serializer: Optional[Serializer] = None):
         """
         Args:
@@ -32,7 +28,7 @@ class KafkaSource(ConnectableSource):
 
         super().__init__(serializer)
         self.topic = topic
-        self.address = address
+        self.address = f"{host}:{port}"
         self.offset = offset
         self.group_id = group_id
         self.kafka_source = None
@@ -70,6 +66,10 @@ class KafkaSource(ConnectableSource):
                 continue
             break
         self._log_current_offset()
+
+    def close(self):
+        """ Close the connection."""
+        self.kafka_source.close()
 
     def _log_current_offset(self):
         """

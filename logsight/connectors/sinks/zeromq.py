@@ -4,6 +4,7 @@ from typing import Any, Optional
 import zmq
 
 from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
+from connectors.serializers import Serializer
 from connectors.sinks import Sink
 
 logger = logging.getLogger("logsight." + __name__)
@@ -12,7 +13,9 @@ logger = logging.getLogger("logsight." + __name__)
 class ZeroMQPubSink(Sink, ZeroMQConnector):
     name = "zeroMQ pub sink"
 
-    def __init__(self, endpoint: str, topic: str = "", connection_type: ConnectionTypes = ConnectionTypes.CONNECT):
+    def __init__(self, endpoint: str, topic: str = "", connection_type: ConnectionTypes = ConnectionTypes.CONNECT,
+                 serializer: Optional[Serializer] = None):
+        Sink.__init__(self, serializer)
         ZeroMQConnector.__init__(self, endpoint, socket_type=zmq.PUB, connection_type=connection_type)
         self.topic = topic
 

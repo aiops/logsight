@@ -2,9 +2,8 @@ from typing import Dict, Tuple
 
 from common.logsight_classes.configs import ModuleConfig, PipelineConfig, PipelineConnectors
 from common.patterns.builder import Builder, BuilderException
-from connectors import Source
 from connectors.connection_builder import ConnectionBuilder
-from connectors.sources.source import ConnectableSource
+from connectors.sources import ConnectableSource, Source
 from pipeline.builders.module_builder import ModuleBuilder
 from pipeline.modules.core import Module
 from pipeline.pipeline import Pipeline
@@ -45,7 +44,9 @@ class PipelineBuilder(Builder):
             Tuple[Source, Source] : Source objects for data and control channels
         """
         data_source: Source = self.connection_builder.build(connectors.data_source)
-        control_source = self.connection_builder.build(connectors.control_source)
+        control_source = None
+        if connectors.control_source:
+            control_source = self.connection_builder.build(connectors.control_source)
         return data_source, control_source
 
     def _build_modules(self, modules_cfg: Dict[str, ModuleConfig]) -> Dict[str, Module]:

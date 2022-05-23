@@ -1,8 +1,8 @@
 from dacite import from_dict
 
-from connectors.connection_builder import ConnectionBuilder
-from common.logsight_classes.configs import ConnectionConfig, ModuleConfig
+from common.logsight_classes.configs import ConnectionConfigProperties, ModuleConfig
 from common.patterns.builder import Builder
+from connectors.connection_builder import ConnectionBuilder
 from pipeline import modules
 from pipeline.modules.core import ConnectableModule, Module
 
@@ -28,5 +28,5 @@ class ModuleBuilder(Builder):
         c_name = getattr(modules, config.classname)
         if issubclass(c_name, ConnectableModule):
             config.args['connector'] = self.conn_builder.build(
-                from_dict(data=config.args['connector'], data_class=ConnectionConfig))
+                from_dict(data=config.args['connector'], data_class=ConnectionConfigProperties))
         return c_name(**args)

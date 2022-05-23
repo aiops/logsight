@@ -11,10 +11,13 @@ class AbstractMaskingInstruction(abc.ABC):
     @abc.abstractmethod
     def mask(self, content: str, mask_prefix: str, mask_suffix: str) -> str:
         """
-        Mask content according to this instruction and return the result.
-        :param content: text to apply masking to
+        Mask content according to this instruction and return the result
+        :param content: the text to apply masking to
+        :type content: str
         :param mask_prefix: the prefix of any masks inserted
+        :type mask_prefix: str
         :param mask_suffix: the suffix of any masks inserted
+        :type mask_suffix: str
         """
         pass
 

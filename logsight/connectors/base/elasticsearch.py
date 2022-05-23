@@ -16,7 +16,7 @@ class ElasticsearchConnector(Connector):
 
     @retry(reraise=True, stop=stop_after_attempt(5), wait=wait_fixed(5))
     def connect(self):
-        logger.info(f"Verifying elasticsearch connection on {self.host}:{self.port}.")
+        logger.debug(f"Verifying elasticsearch connection on {self.host}:{self.port}.")
         if not self.es.ping():
             msg = f"Elasticsearch endpoint {self.host}:{self.port} is unreachable."
             logger.error(msg)

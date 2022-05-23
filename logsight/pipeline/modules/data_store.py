@@ -3,7 +3,6 @@ import logging
 from analytics_core.logs import LogBatch
 from common.utils.helpers import to_flat_dict
 from configs.global_vars import PIPELINE_INDEX_EXT
-from connectors.sinks import Sink
 from pipeline.modules.core.module import ConnectableModule
 
 logger = logging.getLogger("logsight." + __name__)
@@ -13,14 +12,6 @@ class DataStoreModule(ConnectableModule):
     """
     Module for storing the data using a connector.
     """
-
-    def __init__(self, connector: Sink, store_metadata: bool = False,
-                 store_logs: bool = False):
-        super().__init__(connector)
-        self.store_metadata = store_metadata
-        self.store_logs = store_logs
-        if not (self.store_logs or self.store_metadata):
-            logger.warning("Not storing any information, please specify whether to store logs or metadata from batch.")
 
     def process(self, batch: LogBatch) -> LogBatch:
         """
@@ -32,9 +23,6 @@ class DataStoreModule(ConnectableModule):
         Returns:
              LogBatch: The log batch, so we can use it in the next function
         """
-        if self.store_logs:
-            processed = [to_flat_dict(log) for log in batch.logs]
-            self.connector.send(processed, target="_".join([batch.index, PIPELINE_INDEX_EXT]))
-        if self.store_metadata:
-            self.connector.send(batch.metadata)
+        processed = [to_flat_dict(log) for log in batch.logs]
+        self.connector.send(processed, target="_".join([batch.index, PIPELINE_INDEX_EXT]))
         return batch

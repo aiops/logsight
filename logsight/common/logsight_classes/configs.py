@@ -23,12 +23,12 @@ class MetadataConfig:
 @dataclass
 class ModuleConfig:
     classname: str
-    args: Optional[Dict] = None
+    args: Optional[Dict] = field(default_factory=dict)
     next_module: Optional[Union[str, List[str]]] = None
 
 
 @dataclass
-class ConnectionConfig:
+class ConnectionConfigProperties:
     classname: str
     connection: str
     params: Dict[str, Any] = field(default_factory=dict)
@@ -37,8 +37,8 @@ class ConnectionConfig:
 
 @dataclass
 class PipelineConnectors:
-    data_source: ConnectionConfig
-    control_source: Optional[ConnectionConfig] = None
+    data_source: ConnectionConfigProperties
+    control_source: Optional[ConnectionConfigProperties] = None
 
 
 @dataclass

@@ -1,7 +1,8 @@
 import logging
 from abc import ABC
+from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
 from common.patterns.job import Job
 from configs.global_vars import PIPELINE_INDEX_EXT
@@ -11,12 +12,20 @@ from services.service_provider import ServiceProvider
 logger = logging.getLogger("logsight")
 
 
+@dataclass
+class IndexJobResult:
+    index_interval: IndexInterval
+    table: str
+
+
 class IndexJob(Job, ABC):
-    def __init__(self, index_interval: IndexInterval, index_ext: str, notification_callback=None, done_callback=None,
-                 error_callback=None, name=None, **kwargs):
+    def __init__(self, index_interval: IndexInterval, index_ext: Optional[str] = None, notification_callback=None,
+                 done_callback=None,
+                 error_callback=None, name=None, table_name="", **kwargs):
         super().__init__(notification_callback, done_callback, error_callback, name, **kwargs)
         self.index_interval = index_interval
         self.index_ext = index_ext
+        self.table_name = table_name
 
     def _execute(self):
         """
@@ -27,7 +36,7 @@ class IndexJob(Job, ABC):
         """
         while self._perform_aggregation():
             continue
-        return self.index_interval
+        return IndexJobResult(self.index_interval, self.table_name)
 
     def _perform_aggregation(self) -> bool:
         """
@@ -43,7 +52,7 @@ class IndexJob(Job, ABC):
         data = self._load_data(self.index_interval.index, self.index_interval.start_date, self.index_interval.end_date)
         if not len(data):
             self._update_index_interval(datetime.now())
-            return True
+            return False
         # calculate
         results = self._calculate(data)
         # store
@@ -51,7 +60,7 @@ class IndexJob(Job, ABC):
         logger.debug(f"Stored {len(results)} results")
         # ES Might not read all the messages in the specified period
         self._update_index_interval(datetime.fromisoformat(data[-1]['timestamp']) + timedelta(milliseconds=1))
-        return False
+        return True
 
     def _update_index_interval(self, last_date):
         """
