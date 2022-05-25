@@ -19,7 +19,7 @@ class SocketSource(ConnectableSource):
         self.socket.close()
         self.connected = False
 
-    def connect(self):
+    def _connect(self):
         if self.connected:
             return
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

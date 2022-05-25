@@ -17,7 +17,7 @@ class SocketSink(ConnectableSink):
         for d in data:
             self.socket.sendall(bytes(json.dumps(d, default=list) + "\n", "utf-8"))
 
-    def connect(self):
+    def _connect(self):
         try:
             self.socket.connect((self.host, self.port))
         except Exception as e:

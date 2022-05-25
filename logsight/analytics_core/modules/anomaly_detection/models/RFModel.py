@@ -40,7 +40,7 @@ class RFModel(BaseModel):
             raise ValueError("The model is still not loaded")
         tokenized_logs = self.tokenize(logs)
         result = self.model.predict_proba(tokenized_logs)
-        return np.where(result[:, 0] > self.config['prediction_threshold'], 0, 1)
+        return np.where(result[:, 0] > self.config.prediction_threshold, 0, 1)
 
     def load_model(self):
         cur_f = os.path.dirname(os.path.realpath(__file__))

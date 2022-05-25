@@ -1,10 +1,13 @@
+from abc import ABC, abstractmethod
+
 from analytics_core.logs import LogBatch
 
 
-class DataTransformer:
+class DataTransformer(ABC):
     """ Abstract class which performs data transformations on LogsightLog.
         Every Implementation requires implementing _get_transform_function where the transformation function is provided."""
 
+    @abstractmethod
     def transform(self, data: LogBatch) -> LogBatch:
         """
         The transform function takes a LogBatch object as input and returns a transformed

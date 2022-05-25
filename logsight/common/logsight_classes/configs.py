@@ -3,18 +3,6 @@ from typing import Any, Dict, List, Optional, Union
 
 
 @dataclass
-class AppConfig:
-    application_id: str
-    application_name: str
-    private_key: str
-    action: str = ""
-
-    def __post_init__(self):
-        assert len(self.application_name) > 0, "Application name must not be an empty string."
-        assert len(self.private_key) > 0, "Private key must not be an empty string."
-
-
-@dataclass
 class MetadataConfig:
     input_module: str
     kafka_topics: Optional[List[str]] = field(default_factory=list)

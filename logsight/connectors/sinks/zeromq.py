@@ -19,9 +19,6 @@ class ZeroMQPubSink(Sink, ZeroMQConnector):
         ZeroMQConnector.__init__(self, endpoint, socket_type=zmq.PUB, connection_type=connection_type)
         self.topic = topic
 
-    def connect(self):
-        ZeroMQConnector.connect(self)
-
     def send(self, data: Any, target: Optional[str] = None):
         topic = target if target else self.topic
         if not self.socket:

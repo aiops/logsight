@@ -13,7 +13,7 @@ from connectors.sources.source import ConnectableSource
 logger = logging.getLogger("logsight." + __name__)
 
 
-class ZeroMQSubSource(ZeroMQConnector, ConnectableSource, DictMixin):
+class ZeroMQSubSource(ZeroMQConnector, ConnectableSource):
     def __init__(self, endpoint: str, topic: str = None, connection_type: ConnectionTypes = ConnectionTypes.CONNECT,
                  serializer=DictSerializer()):
         ConnectableSource.__init__(self, serializer)

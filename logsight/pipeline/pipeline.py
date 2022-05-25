@@ -75,7 +75,7 @@ class Pipeline:
 
     @staticmethod
     def _process_control_message(msg):
-        print(msg)
+        return msg
 
     def __repr__(self):
         return f"Pipeline ({self._id})"

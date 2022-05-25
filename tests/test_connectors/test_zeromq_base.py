@@ -2,6 +2,7 @@ import unittest
 
 import zmq
 from tenacity import RetryError
+from zmq import ZMQError
 
 from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
 
@@ -43,7 +44,7 @@ class TestZeroMQBase(unittest.TestCase):
                     f"ZeroMQBase.connect() raised ConnectionError unexpectedly for socket type {socket_type} and "
                     f"connection type {connection_type.name} while connecting: {e}"
                 )
-            self.assertRaises(RetryError, zeromq_base2.connect)
+            self.assertRaises(ZMQError, zeromq_base2.connect)
             try:
                 zeromq_base1.close()
             except Exception as e:

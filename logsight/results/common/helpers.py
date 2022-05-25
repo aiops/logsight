@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from results.common.index_job import IndexJobResult
-from results.persistence.dto import IndexInterval
 from results.persistence.timestamp_storage import TimestampStorageProvider
 
 
@@ -20,3 +19,4 @@ def update_status(result: IndexJobResult):
     result.index_interval.end_date = datetime.now()
     with TimestampStorageProvider.provide_timestamp_storage(result.table) as db:
         db.update_timestamps(result.index_interval)
+    return result

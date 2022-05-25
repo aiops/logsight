@@ -17,7 +17,7 @@ class FileSink(ConnectableSink):
     def close(self):
         self.file.close()
 
-    def connect(self):
+    def _connect(self):
         ensure_path(self.path)
         self.file = open(self.path, 'a+')
 

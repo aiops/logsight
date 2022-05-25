@@ -19,7 +19,8 @@ class KafkaSource(ConnectableSource):
                  serializer: Optional[Serializer] = None):
         """
         Args:
-            address:str: Specify the address of the kafka server
+            host:str: Specify the host of the kafka server
+            port:int: Specify the port of the kafka server
             topic:str: Specify the topic to subscribe to
             group_id:int=None: Set the group_id for the consumer
             offset:str='earliest': Set the offset of the consumer group to read from
@@ -35,7 +36,7 @@ class KafkaSource(ConnectableSource):
 
         self._first_message = True
 
-    def connect(self):
+    def _connect(self):
         """The connect function creates a Kafka consumer client that connects to the specified bootstrap server and topic.
         It also sets the offset policy for the consumer, which is set to 'earliest' by default. The function will retry
         until it can successfully connect.

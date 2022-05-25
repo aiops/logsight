@@ -1,5 +1,5 @@
 import logging
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import List, Optional
@@ -99,5 +99,6 @@ class IndexJob(Job, ABC):
         with ServiceProvider.provide_elasticsearch() as es:
             es.save(results, index)
 
+    @abstractmethod
     def _calculate(self, logs) -> List:
         raise NotImplementedError

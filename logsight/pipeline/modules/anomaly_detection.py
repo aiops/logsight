@@ -18,7 +18,7 @@ class AnomalyDetectionModule(TransformModule):
     Transform module that uses the anomaly detection model to detect anomalies in the logs
     """
 
-    def __init__(self, ad_config: Optional[Dict] = None, **kwargs):
+    def __init__(self, ad_config: Optional[Dict] = None):
         if ad_config:
             ad_config = from_dict(data_class=AnomalyDetectionConfig, data=ad_config)
         self.ad = LogAnomalyDetector(ad_config)

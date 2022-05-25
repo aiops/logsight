@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Optional
 
 import zmq
-from tenacity import retry, stop_after_attempt, wait_fixed
 from zmq import Socket
 
 from connectors.base.connector import Connector
@@ -26,8 +25,7 @@ class ZeroMQConnector(Connector):
         self.socket: Optional[Socket] = None
         self.connection_type = connection_type
 
-    @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
-    def connect(self):
+    def _connect(self):
         logger.info(f"Setting up ZeroMQ socket on {self.endpoint}.")
         context = zmq.Context()
         self.socket = context.socket(self.socket_type)

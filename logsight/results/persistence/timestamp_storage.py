@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import List
 
 from dacite import from_dict
@@ -14,22 +15,26 @@ class TimestampStorageProvider:
         return PostgresTimestampStorage(**ConnectionConfig().get_postgres_params(), table=table)
 
 
-class TimestampStorage:
+class TimestampStorage(ABC):
     def __init__(self, table=None):
         self.__table__ = table or "timestamps"
 
+    @abstractmethod
     def get_timestamps_for_index(self, index: str) -> IndexInterval:
         raise NotImplementedError
 
     def get_all(self) -> List[IndexInterval]:
         raise NotImplementedError
 
+    @abstractmethod
     def update_timestamps(self, timestamps: IndexInterval) -> IndexInterval:
         raise NotImplementedError
 
+    @abstractmethod
     def select_all_application_index(self) -> List[str]:
         raise NotImplementedError
 
+    @abstractmethod
     def select_all_index(self) -> List[str]:
         raise NotImplementedError
 

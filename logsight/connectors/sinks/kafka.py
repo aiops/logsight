@@ -32,7 +32,7 @@ class KafkaSink(ConnectableSink):
         """
         self.kafka_sink.close()
 
-    def connect(self):
+    def _connect(self):
         """
         The connect function is used to connect to the Kafka server. It will try
         to connect, and if it fails, it will wait 5 seconds and try again.
