@@ -73,7 +73,7 @@ class MaskLogParser(Parser):
         """
         Extract parameters from a log message according to a provided template that was generated
         by calling `add_log_message()`.
-        For most accurate test_results, it is recommended that
+        For most accurate results, it is recommended that
         - Each `MaskingInstruction` has a unique `mask_with` value,
         - No `MaskingInstruction` has a `mask_with` value of `*`,
         - The regex-patterns of `MaskingInstruction` do not use unnamed back-references;
