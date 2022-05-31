@@ -5,9 +5,6 @@ from .source import ConnectableSource
 
 
 class SocketSource(ConnectableSource):
-    def close(self):
-        self.socket.close()
-        self.connected = False
 
     def __init__(self, host, port, **kwargs):
         super().__init__(**kwargs)
@@ -18,7 +15,11 @@ class SocketSource(ConnectableSource):
         self._data = None
         self.connected = False
 
-    def connect(self):
+    def close(self):
+        self.socket.close()
+        self.connected = False
+
+    def _connect(self):
         if self.connected:
             return
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

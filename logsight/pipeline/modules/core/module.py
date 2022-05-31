@@ -9,12 +9,10 @@ from connectors import Connector, Sink, Source
 from pipeline.modules.core.transformer import DataTransformer
 
 
-class BaseModule:
+class BaseModule(ABC):
     """A base class for all modules"""
     _transform_function: Callable[[LogsightLog], LogsightLog] = None
-
-    def __init__(self):
-        self._module_name = self.__class__.__name__
+    _module_name = __name__
 
     @property
     def name(self):
@@ -47,14 +45,6 @@ class TransformModule(Module, DataTransformer, ABC):
 
     def process(self, batch: LogBatch) -> LogBatch:
         return self.transform(batch)
-
-
-class SatusMixin:
-    def __init__(self, status):
-        self.status = status
-
-    def update(self):
-        self.status.update()
 
 
 class ConnectableModule(Module, ABC):

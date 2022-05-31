@@ -34,7 +34,8 @@ class PeriodicJobDispatcher:
         self.sync_index()
         index_intervals = self.storage.get_all()
         for it in index_intervals:
-            job = self.job(index_interval=it, error_callback=logger.error, done_callback=update_status)
+            job = self.job(index_interval=it, error_callback=logger.error, done_callback=update_status,
+                           table_name=self.storage.__table__)
             self.manager.submit_job(job)
         self.timer.reset_timer()
 

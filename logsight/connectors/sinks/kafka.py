@@ -4,35 +4,43 @@ import time
 
 from kafka import KafkaProducer
 
-from .sink import Sink
+from .sink import ConnectableSink
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class KafkaSink(Sink):
+class KafkaSink(ConnectableSink):
 
-    def __init__(self, address: str, topic: str, private_key=None, application_name=None, **kwargs):
+    def __init__(self, host: str, port: int, topic: str, **kwargs):
         """
-        Args:
-            address:
-            topic:
-            **kwargs:
+        Init
+        :param host: The hostname of the Kafka broker
+        :type host: str
+        :param port: The port number of the Kafka broker
+        :type port: int
+        :param topic: The name of the topic to which the data will be consumed
+        :type topic: str
         """
         super().__init__(**kwargs)
-        if application_name and private_key:
-            self.application_id = "_".join([private_key, application_name])
-        else:
-            self.application_id = None
-        self.topic = "_".join([self.application_id, topic]) if self.application_id else topic
-        self.address = address
-
+        self.topic = topic
+        self.address = f"{host}:{port}"
         self.kafka_sink = None
-        self.connect()
 
     def close(self):
+        """
+        Close the Kafka connection.
+        """
         self.kafka_sink.close()
 
-    def connect(self):
+    def _connect(self):
+        """
+        The connect function is used to connect to the Kafka server. It will try
+        to connect, and if it fails, it will wait 5 seconds and try again.
+
+        Returns:
+            A kafkaproducer object
+
+        """
         logger.debug("Creating Kafka producer")
         while True:
             try:
@@ -45,6 +53,15 @@ class KafkaSink(Sink):
             break
 
     def send(self, data, topic=None):
+        """
+        The send function sends a message to the Kafka topic specified in the
+        constructor.  The message is sent as a JSON string
+
+        Args:
+            data: Send the data to kafka
+            topic: Specify the topic to which you want to send the data
+
+        """
         topic = topic or self.topic
         if not isinstance(data, list):
             data = [data]

@@ -2,18 +2,18 @@ from copy import deepcopy
 from typing import Optional, Type, Union
 
 import connectors
-from common.logsight_classes.configs import ConnectionConfig
+from common.logsight_classes.configs import ConnectionConfigProperties
 from common.patterns.builder import Builder
 from connectors import Connector, Source, serializers
 from connectors.sources.source import ConnectableSource
-from services import ConnectionConfigParser
+from services.configurator.config_manager import ConnectionConfig
 
 
 class ConnectionBuilder(Builder):
-    def __init__(self, config: Optional[ConnectionConfigParser] = None):
-        self.conn_config = config if config else ConnectionConfigParser()
+    def __init__(self, config: Optional[ConnectionConfig] = None):
+        self.conn_config = config if config else ConnectionConfig()
 
-    def build(self, config: ConnectionConfig) -> Union[Source, Type[Connector], Type[Source], ConnectableSource]:
+    def build(self, config: ConnectionConfigProperties) -> Union[Type[Connector], Type[Source], ConnectableSource]:
         """
           It takes a connection configuration and returns a Connector object.
           Args:

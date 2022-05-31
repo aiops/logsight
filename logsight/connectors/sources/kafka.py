@@ -15,15 +15,12 @@ logger = logging.getLogger("logsight." + __name__)
 class KafkaSource(ConnectableSource):
     """Data source - a wrapper around a Kafka consumer that allows us to receive messages from a Kafka topic"""
 
-    def close(self):
-        """ Close the connection."""
-        self.kafka_source.close()
-
-    def __init__(self, address: str, topic: str, group_id: int = None, offset: str = 'earliest',
+    def __init__(self, host: str, port: int, topic: str, group_id: int = None, offset: str = 'earliest',
                  serializer: Optional[Serializer] = None):
         """
         Args:
-            address:str: Specify the address of the kafka server
+            host:str: Specify the host of the kafka server
+            port:int: Specify the port of the kafka server
             topic:str: Specify the topic to subscribe to
             group_id:int=None: Set the group_id for the consumer
             offset:str='earliest': Set the offset of the consumer group to read from
@@ -32,14 +29,14 @@ class KafkaSource(ConnectableSource):
 
         super().__init__(serializer)
         self.topic = topic
-        self.address = address
+        self.address = f"{host}:{port}"
         self.offset = offset
         self.group_id = group_id
         self.kafka_source = None
 
         self._first_message = True
 
-    def connect(self):
+    def _connect(self):
         """The connect function creates a Kafka consumer client that connects to the specified bootstrap server and topic.
         It also sets the offset policy for the consumer, which is set to 'earliest' by default. The function will retry
         until it can successfully connect.
@@ -70,6 +67,10 @@ class KafkaSource(ConnectableSource):
                 continue
             break
         self._log_current_offset()
+
+    def close(self):
+        """ Close the connection."""
+        self.kafka_source.close()
 
     def _log_current_offset(self):
         """

@@ -52,10 +52,11 @@ class Pipeline:
         It starts a thread that listens for control messages, and then it loops over the data source, receiving messages and
         passing them to the input module
         """
-        internal = threading.Thread(
-            name=str(self), target=self._start_control_listener, daemon=True
-        )
-        internal.start()
+        if self.control_source:
+            internal = threading.Thread(
+                name=str(self), target=self._start_control_listener, daemon=True
+            )
+            internal.start()
         while self.data_source.has_next():
             message = self.data_source.receive_message()
             logger.debug(f"Received Batch {message.id}")
@@ -74,7 +75,7 @@ class Pipeline:
 
     @staticmethod
     def _process_control_message(msg):
-        print(msg)
+        return msg
 
     def __repr__(self):
         return f"Pipeline ({self._id})"

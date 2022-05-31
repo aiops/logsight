@@ -1,40 +1,48 @@
+from abc import ABC, abstractmethod
 from typing import List
 
 from dacite import from_dict
 
 from results.persistence import sql_statements as statements
 from results.persistence.dto import IndexInterval
-from services import ConnectionConfigParser
+from services import ConnectionConfig
 from services.database.base import Database
 
 
 class TimestampStorageProvider:
     @staticmethod
     def provide_timestamp_storage(table):
-        return PostgresTimestampStorage(**ConnectionConfigParser().get_postgres_params(), table=table)
+        return PostgresTimestampStorage(**ConnectionConfig().get_postgres_params(), table=table)
 
 
-class TimestampStorage:
+class TimestampStorage(ABC):
+    def __init__(self, table=None):
+        self.__table__ = table or "timestamps"
+
+    @abstractmethod
     def get_timestamps_for_index(self, index: str) -> IndexInterval:
         raise NotImplementedError
 
     def get_all(self) -> List[IndexInterval]:
         raise NotImplementedError
 
+    @abstractmethod
     def update_timestamps(self, timestamps: IndexInterval) -> IndexInterval:
         raise NotImplementedError
 
+    @abstractmethod
     def select_all_application_index(self) -> List[str]:
         raise NotImplementedError
 
+    @abstractmethod
     def select_all_index(self) -> List[str]:
         raise NotImplementedError
 
 
 class PostgresTimestampStorage(TimestampStorage, Database):
     def __init__(self, table, host, port, username, password, db_name, driver=""):
-        super().__init__(host, port, username, password, db_name, driver)
-        self.__table__ = table or "timestamps"
+        Database.__init__(self, host, port, username, password, db_name, driver)
+        TimestampStorage.__init__(self, table)
 
     def select_all_application_index(self) -> List[str]:
         sql = statements.SELECT_ALL_APP_INDEX
