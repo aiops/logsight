@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import elasticsearch
 import pytest
 from elasticsearch import ElasticsearchException, helpers
 

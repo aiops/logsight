@@ -4,6 +4,7 @@ import pytest
 
 from pipeline import PipelineBuilder
 from services import ModulePipelineConfig
+from elasticsearch import helpers
 
 
 @pytest.fixture
@@ -21,6 +22,8 @@ def test_run(pipeline):
     )
     pipeline.modules['log_ad'].ad.model.predict = MagicMock(return_value=[0], side_effect=[0])
     pipeline.data_source.has_next = Mock(side_effect=[True, False])
+    helpers.bulk = MagicMock()
+    
     pipeline.run()
 
 
