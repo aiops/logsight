@@ -1,4 +1,0 @@
-github_weights.pickle filter=lfs diff=lfs merge=lfs -text
-stop_words.pickle filter=lfs diff=lfs merge=lfs -text
-tokenizer_dict.pickle filter=lfs diff=lfs merge=lfs -text
-github_tokenizer.pickle filter=lfs diff=lfs merge=lfs -text
