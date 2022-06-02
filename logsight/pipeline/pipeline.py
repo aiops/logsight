@@ -1,5 +1,6 @@
 import logging
 import threading
+import time
 import uuid
 from typing import Dict, Optional
 
@@ -57,10 +58,17 @@ class Pipeline:
                 name=str(self), target=self._start_control_listener, daemon=True
             )
             internal.start()
+        total = 0
+        total_t = 0
         while self.data_source.has_next():
             message = self.data_source.receive_message()
-            logger.debug(f"Received Batch {message.id}")
+            logger.info(f"Received Batch {message.id}")
+            t = time.perf_counter()
             self.input_module.handle(message)
+            total += len(message.logs)
+            total_t += time.perf_counter() - t
+            logger.debug(f"Processed {len(message.logs)} logs in {time.perf_counter() - t}")
+            logger.debug(f"Total:{total} time: {total_t}")
 
     def _start_control_listener(self):
         """
