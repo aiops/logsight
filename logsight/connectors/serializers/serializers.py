@@ -2,9 +2,10 @@ import json
 from dataclasses import asdict
 from typing import Dict
 
+import ujson
 from dacite import from_dict
 
-from analytics_core.logs import LogBatch
+from analytics_core.logs import LogBatch, LogEvent, LogsightLog
 from connectors.serializers import Serializer
 
 
@@ -64,4 +65,10 @@ class LogBatchSerializer(Serializer):
         Returns:
             A LogBatch object
         """
-        return from_dict(data_class=LogBatch, data=json.loads(data.decode('utf-8')))
+        d = ujson.loads(data.decode('utf-8'))
+        return LogBatch(id=d.get('id'), index=d.get('index'), logs=list(map(map_to_log, d['logs'])))
+        # return from_dict(data_class=LogBatch, data=)
+
+
+def map_to_log(k):
+    return LogsightLog(event=LogEvent(**k['event']), id=k.get('id'), tags=k.get('tags', {}))
