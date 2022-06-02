@@ -27,11 +27,10 @@ class ElasticsearchSink(ConnectableSink):
         if not isinstance(data, list):
             data = [data]
         try:
-            helpers.parallel_bulk(self.es,
+            helpers.bulk(self.es,
                                   data,
                                   index=target,
-                                  request_timeout=200,
-                                  thread_count=4, chunk_size=1000)
+                                  request_timeout=200)
         except Exception as e:
             logger.warning(f"Failed to send data to elasticsearch. Reason: {e}. Retrying...")
             raise e

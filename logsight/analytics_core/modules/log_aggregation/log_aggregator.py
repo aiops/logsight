@@ -1,7 +1,6 @@
 import logging
 from collections import defaultdict
 from typing import List
-
 import numpy as np
 import pandas as pd
 
@@ -25,7 +24,8 @@ class LogAggregator:
             result_dict["log_levels"] = tpl.level
             result_dict["prediction"] = tpl.prediction
             result_dict["count"] = tpl.count
-            result_dict["timestamp"] = tpl.Index.strftime(format='%Y-%m-%dT%H:%M:%S.%f')
+            result_dict["timestamp"] = tpl.Index.isoformat()
             result.append(result_dict)
+
 
         return result

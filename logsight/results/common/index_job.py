@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import List, Optional
-
+import dateutil.parser
 from common.patterns.job import Job
 from configs.global_vars import PIPELINE_INDEX_EXT
 from results.persistence.dto import IndexInterval
@@ -51,7 +51,6 @@ class IndexJob(Job, ABC):
         logger.debug(f"{self.index_interval.index, self.index_interval.start_date, self.index_interval.end_date}")
         data = self._load_data(self.index_interval.index, self.index_interval.start_date, self.index_interval.end_date)
         if not len(data):
-            self._update_index_interval(datetime.now())
             return False
         # calculate
         results = self._calculate(data)
@@ -59,7 +58,7 @@ class IndexJob(Job, ABC):
         self._store_results(results, "_".join([self.index_interval.index, self.index_ext]))
         logger.debug(f"Stored {len(results)} results")
         # ES Might not read all the messages in the specified period
-        self._update_index_interval(datetime.fromisoformat(data[-1]['timestamp']) + timedelta(milliseconds=1))
+        self._update_index_interval(dateutil.parser.isoparse(data[-1]['timestamp']) + timedelta(milliseconds=1))
         return True
 
     def _update_index_interval(self, last_date):
