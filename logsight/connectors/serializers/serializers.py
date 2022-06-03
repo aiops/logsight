@@ -1,6 +1,7 @@
 import json
 from dataclasses import asdict
 from typing import Dict
+from uuid import uuid4
 
 import ujson
 from dacite import from_dict
@@ -66,9 +67,11 @@ class LogBatchSerializer(Serializer):
             A LogBatch object
         """
         d = ujson.loads(data.decode('utf-8'))
-        return LogBatch(id=d.get('id'), index=d.get('index'), logs=list(map(map_to_log, d['logs'])))
+        return LogBatch(id=d.get('id'), index=d.get('index'), logs=list(map(map_to_log, d['logs'])),
+                        metadata=d.get('metadata', dict()))
         # return from_dict(data_class=LogBatch, data=)
 
 
 def map_to_log(k):
-    return LogsightLog(event=LogEvent(**k['event']), id=k.get('id'), tags=k.get('tags', {}))
+    return LogsightLog(event=LogEvent(**k['event']), id=k.get('id', str(uuid4())),
+                       tags=k.get('tags', {"default": "default"}))

@@ -131,7 +131,7 @@ processed_logs = [{'id': None, 'tags': {'default': 'fileName'},
                    'param_1': '# http.requests.datanode', 'prediction': 1}]
 
 agg_results = [{'log_levels': {'INFO': 20}, 'prediction': 20, 'count': 20,
-                'timestamp': '2021-12-16T05:15:00.000000'}]
+                'timestamp': '2021-12-16T05:15:00'}]
 
 incident_results = [{'timestamp': Timestamp("2021-12-16 05:16:00", freq='T'), 'total_score': 15,
                      'timestamp_start': Timestamp('2021-12-16 05:15:00', freq='T'),
