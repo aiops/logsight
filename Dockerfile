@@ -5,7 +5,7 @@ FROM python:3.7
 
 RUN apt-get update
 RUN apt-get -y install libc-bin
-RUN apt-get -y install python3-numpy
+#RUN apt-get -y install python3-numpy
 RUN apt-get -y install python3-sklearn
 RUN apt-get -y install python3-pandas
 
