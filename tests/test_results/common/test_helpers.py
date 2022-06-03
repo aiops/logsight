@@ -15,10 +15,7 @@ def job_result():
 
 
 def test_update_status(job_result):
-    start_date = job_result.index_interval.start_date
-    end_date = job_result.index_interval.end_date
     TimestampStorageProvider.provide_timestamp_storage = MagicMock()
     result = update_status(job_result)
+    TimestampStorageProvider.provide_timestamp_storage.assert_called_once()
     assert result.index_interval == job_result.index_interval
-    assert start_date != result.index_interval.start_date
-    assert end_date != result.index_interval.end_date
