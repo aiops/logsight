@@ -13,7 +13,7 @@ psycopg2-binary==2.8.4
 guppy3==3.1.2
 onnxruntime==1.10.0
 flask==2.1.2
-waitress==2.1.1
+waitress==2.1.2
 gensim==4.2.0
 dacite~=1.6.0
 zmq~=0.0.0
