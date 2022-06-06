@@ -1,13 +1,10 @@
 import json
 import socket
 
-from .source import Source
+from .source import ConnectableSource
 
 
-class SocketSource(Source):
-    def close(self):
-        self.socket.close()
-        self.connected = False
+class SocketSource(ConnectableSource):
 
     def __init__(self, host, port, **kwargs):
         super().__init__(**kwargs)
@@ -18,7 +15,11 @@ class SocketSource(Source):
         self._data = None
         self.connected = False
 
-    def connect(self):
+    def close(self):
+        self.socket.close()
+        self.connected = False
+
+    def _connect(self):
         if self.connected:
             return
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -27,7 +28,7 @@ class SocketSource(Source):
         self.socket.listen(5)
         self.connected = True
 
-    def receive_message(self):
+    def _receive_message(self):
         request, client_address = self.socket.accept()
         payload = request.recv(2048).decode("utf-8").strip()
         return json.loads(payload)

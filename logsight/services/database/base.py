@@ -3,19 +3,21 @@ from functools import wraps
 
 from sqlalchemy.engine import create_engine
 from sqlalchemy.exc import DatabaseError, OperationalError
+from sqlalchemy.pool import NullPool
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
+from common.utils import unpack_singleton
 from services.database.exceptions import DatabaseException
-from utils.helpers import unpack_singleton
 
 logger = logging.getLogger("logsight." + __name__)
 
-MAX_ATTEMPTS = 5
+MAX_ATTEMPTS = 3
+WAIT_SECONDS = 3
 
 
 def ensure_connection(func):
     @wraps(func)
-    @retry(reraise=True, stop=stop_after_attempt(MAX_ATTEMPTS), wait=wait_fixed(20))
+    @retry(reraise=True, stop=stop_after_attempt(MAX_ATTEMPTS), wait=wait_fixed(WAIT_SECONDS))
     def decorated(cls, sql, *args):
         try:
             if cls.conn is None:
@@ -54,7 +56,7 @@ class Database:
             sqlalchemy driver for connecting to the database
     """
 
-    def __init__(self, host, port, username, password, db_name, driver=""):
+    def __init__(self, host, port, username, password, db_name, driver="postgresql+psycopg2"):
 
         self.db_name = db_name
         self.driver = driver
@@ -62,50 +64,57 @@ class Database:
         self.password = password or ''
         self.host = host or ''
         self.port = port or ''
-        self.engine = None
-        self.conn = self.connect()
+        self.engine = self._create_engine()
+        self.conn = None
+
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
     def _create_engine(self):
         """Create a new Engine instance."""
-        self.engine = create_engine(f"{self.driver}://{self.username}:{self.password}@"
-                                    f"{self.host}:{self.port}/{self.db_name}", pool_pre_ping=True,
-                                    echo=False)
+        return create_engine(f"{self.driver}://{self.username}:{self.password}@"
+                             f"{self.host}:{self.port}/{self.db_name}", pool_pre_ping=True,
+                             echo=False, poolclass=NullPool)
 
     @retry(reraise=True, retry=retry_if_exception_type(ConnectionError), stop=stop_after_attempt(MAX_ATTEMPTS),
-           wait=wait_fixed(5))
+           wait=wait_fixed(WAIT_SECONDS))
     def connect(self):
         """Connect to the postgres database"""
         n_attempt = self.connect.retry.statistics['attempt_number']
         attempt_msg = f"Attempt: {n_attempt}/{MAX_ATTEMPTS}" if n_attempt > 1 else ""
         logger.debug(
             f"Connecting to database {self.db_name} on {self.host}:{self.port}.{attempt_msg}")
-        conn = None
         reason = ""
         try:
-            if not self.engine:
-                self._create_engine()
-            conn = self.engine.connect()  # will return a valid object if connection success
+            self.conn = self.engine.connect()  # will return a valid object if connection success
         except OperationalError as e:
             logger.debug(e)
             reason = f"Database {self.db_name} unreachable on {self.host}:{self.port}"
-        if conn:
+        if self.conn:
             try:
-                self._verify_database_exists(conn)
+                self._verify_database_exists(self.conn)
                 logger.info(f"Connected to database {self.db_name}")
-                return conn
+                return self
             except DatabaseException as e:
                 reason = e
         logger.error(reason)
         raise ConnectionError(reason)
 
     def _verify_database_exists(self, conn):
-        raise NotImplementedError
+        databases = conn.execute("""SELECT datname FROM pg_database;""", ()).fetchall()
+        if (self.db_name,) not in databases:
+            raise ConnectionError("Database does not exist.")
 
     def close(self):
         """Close the postgres connection"""
         logger.info(f"Closing connection to database {self.db_name}")
         if self.conn and not self.conn.closed:
             self.conn.close()
+        assert self.conn.closed
         self.conn = None
 
     @ensure_connection
@@ -165,11 +174,5 @@ class Database:
         """
 
         execute = self.conn.execute(sql, args)
-        row = execute.fetchall()
-        row = [x.values() for x in row]
-        keys = execute.keys()
-        row = [dict(zip(keys, x)) for x in row] if row else row
+        row = list(map(dict, execute.fetchall()))
         return row
-
-    def check_connection(self):
-        return

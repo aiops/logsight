@@ -1,6 +1,5 @@
-from .stdin import PrintSource, FileSource
 from .socket import SocketSource
-from .source import Source
-from .queue import SourceQueue
-from .zeromq import ZeroMQSubSource, ZeroMQRepSource
-
+from .source import ConnectableSource, Source
+from .stdin import FileSource, StdinSource
+from .zeromq import ZeroMQRepSource, ZeroMQSubSource
+from .kafka import KafkaSource

@@ -1,11 +1,23 @@
 import json
 import socket
 
-from .sink import Sink
+from .sink import ConnectableSink
 
 
-class SocketSink(Sink):
-    def connect(self):
+class SocketSink(ConnectableSink):
+    def __init__(self, host, port, serializer=None):
+        super().__init__(serializer)
+        self.host = host
+        self.port = port
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def send(self, data, index=None):
+        if not isinstance(data, list):
+            data = [data]
+        for d in data:
+            self.socket.sendall(bytes(json.dumps(d, default=list) + "\n", "utf-8"))
+
+    def _connect(self):
         try:
             self.socket.connect((self.host, self.port))
         except Exception as e:
@@ -13,15 +25,3 @@ class SocketSink(Sink):
 
     def close(self):
         self.socket.close()
-
-    def __init__(self, host, port, **kwargs):
-        super().__init__(**kwargs)
-        self.host = host
-        self.port = port
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    def send(self, data):
-        if not isinstance(data, list):
-            data = [data]
-        for d in data:
-            self.socket.sendall(bytes(json.dumps(d) + "\n", "utf-8"))
