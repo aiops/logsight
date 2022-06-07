@@ -5,6 +5,7 @@ import platform
 from multiprocessing import set_start_method
 
 # hello world
+from configs.global_vars import JOB_INTERVAL, PARALLEL_JOBS
 from pipeline import PipelineBuilder
 from results.common.factory import JobDispatcherFactory
 from services.configurator.config_manager import LogConfig, ModulePipelineConfig
@@ -24,10 +25,10 @@ def run():
     pipeline = builder.build(pipeline_cfg)
 
     # Run incidents
-    incidents = JobDispatcherFactory.get_incident_dispatcher(2, 60)
+    incidents = JobDispatcherFactory.get_incident_dispatcher(PARALLEL_JOBS, JOB_INTERVAL)
     incidents.start()
     # Run log agg
-    log_agg = JobDispatcherFactory.get_log_agg_dispatcher(2, 60)
+    log_agg = JobDispatcherFactory.get_log_agg_dispatcher(PARALLEL_JOBS, JOB_INTERVAL)
     log_agg.start()
 
     pipeline.run()
