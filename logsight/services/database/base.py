@@ -97,7 +97,7 @@ class Database:
                 return self
             except DatabaseException as e:
                 reason = e
-        logger.error(reason)
+        logger.warning(reason)
         raise ConnectionError(reason)
 
     def _verify_database_exists(self, conn):
