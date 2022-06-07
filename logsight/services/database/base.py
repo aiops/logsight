@@ -7,17 +7,14 @@ from sqlalchemy.pool import NullPool
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
 from common.utils import unpack_singleton
+from configs.global_vars import RETRY_ATTEMPTS, RETRY_TIMEOUT
 from services.database.exceptions import DatabaseException
 
 logger = logging.getLogger("logsight." + __name__)
 
-MAX_ATTEMPTS = 3
-WAIT_SECONDS = 3
-
 
 def ensure_connection(func):
     @wraps(func)
-    @retry(reraise=True, stop=stop_after_attempt(MAX_ATTEMPTS), wait=wait_fixed(WAIT_SECONDS))
     def decorated(cls, sql, *args):
         try:
             if cls.conn is None:
@@ -33,7 +30,6 @@ def ensure_connection(func):
     return decorated
 
 
-# noinspection PyNoneFunctionAssignment
 class Database:
     """Base database class which uses sqlalchemy library.
         Attributes
@@ -80,12 +76,12 @@ class Database:
                              f"{self.host}:{self.port}/{self.db_name}", pool_pre_ping=True,
                              echo=False, poolclass=NullPool)
 
-    @retry(reraise=True, retry=retry_if_exception_type(ConnectionError), stop=stop_after_attempt(MAX_ATTEMPTS),
-           wait=wait_fixed(WAIT_SECONDS))
+    @retry(reraise=True, retry=retry_if_exception_type(ConnectionError), stop=stop_after_attempt(RETRY_ATTEMPTS),
+           wait=wait_fixed(RETRY_TIMEOUT))
     def connect(self):
         """Connect to the postgres database"""
         n_attempt = self.connect.retry.statistics['attempt_number']
-        attempt_msg = f"Attempt: {n_attempt}/{MAX_ATTEMPTS}" if n_attempt > 1 else ""
+        attempt_msg = f"Attempt: {n_attempt}/{RETRY_ATTEMPTS}" if n_attempt > 1 else ""
         logger.debug(
             f"Connecting to database {self.db_name} on {self.host}:{self.port}.{attempt_msg}")
         reason = ""

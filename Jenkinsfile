@@ -15,7 +15,7 @@ pipeline {
             }
             steps {
                 script {
-                    env.RETRY_ATTEMPTS = 3
+                    env.RETRY_ATTEMPTS = 2
                     env.RETRY_TIMEOUT = 1
                 }
                 sh 'pip install -r requirements.txt'
