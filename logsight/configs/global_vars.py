@@ -10,3 +10,6 @@ CONNECTIONS_PATH = os.path.join(CONFIG_PATH, "connections.cfg")
 PIPELINE_INDEX_EXT = "pipeline"
 RETRY_ATTEMPTS = int(os.environ.get('RETRY_ATTEMPTS', 6))
 RETRY_TIMEOUT = int(os.environ.get('RETRY_TIMEOUT', 10))
+
+PARALLEL_JOBS = int(os.environ.get('PARALLEL_JOBS', 2))
+JOB_INTERVAL = int(os.environ.get('JOB_INTERVAL', 60))
