@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import List, Optional
 import dateutil.parser
+from elasticsearch import NotFoundError
+
 from common.patterns.job import Job
 from configs.global_vars import PIPELINE_INDEX_EXT
 from results.persistence.dto import IndexInterval
@@ -34,6 +36,7 @@ class IndexJob(Job, ABC):
            IncidentTimestamps
 
         """
+        logger.info(f"[x] Executing {self.__class__.__name__}-{self.name} for index interval {self.index_interval}.")
         while self._perform_aggregation():
             continue
         return IndexJobResult(self.index_interval, self.table_name)
@@ -48,7 +51,8 @@ class IndexJob(Job, ABC):
         Returns:
             True if the aggregation was successful
         """
-        logger.debug(f"{self.index_interval.index, self.index_interval.start_date, self.index_interval.end_date}")
+        logger.debug(
+            f"Performing aggregation on {self.index_interval.index} for the interval [{str(self.index_interval.start_date)} - {str(self.index_interval.end_date)}]")
         data = self._load_data(self.index_interval.index, self.index_interval.start_date, self.index_interval.end_date)
         if not len(data):
             return False
@@ -89,9 +93,13 @@ class IndexJob(Job, ABC):
 
         """
         with ServiceProvider.provide_elasticsearch() as es:
-            return es.get_all_logs_for_index("_".join([index, PIPELINE_INDEX_EXT]),
-                                             str(start_date.isoformat()),
-                                             str(end_date.isoformat()))
+            try:
+                return es.get_all_logs_for_index("_".join([index, PIPELINE_INDEX_EXT]),
+                                                 str(start_date.isoformat()),
+                                                 str(end_date.isoformat()))
+            except NotFoundError:
+                logger.warning(f"Data is not yet processed for index {'_'.join([index, PIPELINE_INDEX_EXT])}")
+                return []
 
     @staticmethod
     def _store_results(results: List, index: str):
