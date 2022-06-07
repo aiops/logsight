@@ -88,12 +88,12 @@ class Database:
         try:
             self.conn = self.engine.connect()  # will return a valid object if connection success
         except OperationalError as e:
-            logger.debug(e)
+            logger.error(e)
             reason = f"Database {self.db_name} unreachable on {self.host}:{self.port}"
         if self.conn:
             try:
                 self._verify_database_exists(self.conn)
-                logger.info(f"Connected to database {self.db_name}")
+                logger.debug(f"Connected to database {self.db_name}")
                 return self
             except DatabaseException as e:
                 reason = e
@@ -107,7 +107,7 @@ class Database:
 
     def close(self):
         """Close the postgres connection"""
-        logger.info(f"Closing connection to database {self.db_name}")
+        logger.debug(f"Closing connection to database {self.db_name}")
         if self.conn and not self.conn.closed:
             self.conn.close()
         assert self.conn.closed
