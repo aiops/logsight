@@ -40,7 +40,7 @@
   "loggers": {
     "logsight": {
       "handlers": [
-        "info",
+        "debug",
         "warning"
       ],
       "level": "DEBUG",

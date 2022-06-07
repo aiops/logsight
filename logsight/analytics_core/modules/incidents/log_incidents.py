@@ -1,32 +1,95 @@
+import json
+import math
 from datetime import timedelta
 from typing import Dict, List
 
 import pandas as pd
 
+from analytics_core.modules.incidents.vars import RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_REPORT, \
+    RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_REPORT, RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_FAULT, \
+    RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_FAULT, RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_REPORT, \
+    RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_REPORT, RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_FAULT, \
+    RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_FAULT
+
+pd.options.mode.chained_assignment = None
+
+
+class IncidentsStatus:
+    RAISED = 1
+
+
+def level_as_binary(level):
+    if str(level).upper() in ["ERROR", "ERR", "CRITICAL", "FAULT"]:
+        return 1
+    else:
+        return 0
+
+def calculate_risk(data):
+    if not (len(data)):
+        return 0
+    risk_score = []
+    for index, row in data.iterrows():
+        if row['added_state'] == 0 and row['prediction'] == 0 and level_as_binary(row['level']) == 0:
+            risk_score.append(RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_REPORT)
+        elif row['added_state'] == 0 and row['prediction'] == 0 and level_as_binary(row['level']) == 1:
+            risk_score.append(RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_REPORT)
+        elif row['added_state'] == 0 and row['prediction'] == 1 and level_as_binary(row['level']) == 0:
+            risk_score.append(RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_FAULT)
+        elif row['added_state'] == 0 and row['prediction'] == 1 and level_as_binary(row['level']) == 1:
+            risk_score.append(RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_FAULT)
+        elif row['added_state'] == 1 and row['prediction'] == 0 and level_as_binary(row['level']) == 0:
+            risk_score.append(RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_REPORT)
+        elif row['added_state'] == 1 and row['prediction'] == 0 and level_as_binary(row['level']) == 1:
+            risk_score.append(RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_REPORT)
+        elif row['added_state'] == 1 and row['prediction'] == 1 and level_as_binary(row['level']) == 0:
+            risk_score.append(RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_FAULT)
+        elif row['added_state'] == 1 and row['prediction'] == 1 and level_as_binary(row['level']) == 1:
+            risk_score.append(RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_FAULT)
+    data = data.assign(risk_score=risk_score)
+    data = data.sort_values(by=['risk_score'], ascending=False)
+    percentage = int(len(data) * 0.3)
+    top_k = data.head(percentage)
+    risk = top_k['risk_score'].max()
+
+    if len(top_k['risk_score']) > 0:
+        risk = risk + min(
+            [int(top_k['risk_score'].sum() / len(top_k['risk_score'])), 100 - top_k['risk_score'].max()])
+    else:
+        risk = 0
+
+    return risk
+
 
 class IncidentDetector:
 
     @staticmethod
-    def calculate_incidents(logs: List[Dict]):
+    def calculate_incidents(logs: List[Dict], templates: List[str]):
         df = pd.DataFrame(logs).set_index('timestamp')
         df.index = pd.to_datetime(df.index)
-        df.tags = df.tags.apply(sorted).astype(str)
-
+        df['tag_string'] = df.tags.astype(str)
         properties_list = []
-        for time, grp in df.groupby(pd.Grouper(freq='T')):
+        for (interval, tags), grp in df.groupby([pd.Grouper(freq='1Min'), 'tag_string']):
             if not len(grp):
                 continue
-            start_time = time
-            end_time = time + timedelta(minutes=1)
+            start_time = interval
+            end_time = interval + timedelta(minutes=1)
             dropped = grp.drop_duplicates(subset=['template'])
-            semantic_ad = dropped.loc[dropped['prediction'] == 1]
-            semantic_anomalies = [[element] for element in
-                                  semantic_ad.dropna(axis='columns').reset_index().to_dict('records')]
-
-            properties = {"timestamp": end_time, "total_score": len(semantic_anomalies),
-                          "timestamp_start": start_time,
-                          "timestamp_end": end_time,
-                          "semantic_ad": semantic_anomalies}
-            properties_list.append(properties)
+            dropped = dropped.assign(added_state=0)
+            dropped['added_state'].loc[~dropped['template'].isin(templates)] = 1
+            data = dropped.loc[(dropped['added_state'] == 1) | (dropped['prediction'] == 1)]
+            risk = calculate_risk(data)
+            data_json_list = [[element] for element in
+                              data.dropna(axis='columns').reset_index().to_dict('records')]
+            tags = json.loads(tags.replace('\'', "\""))
+            if risk > 0:
+                properties = {"timestamp": end_time,
+                              "risk": risk,
+                              "status": IncidentsStatus.RAISED,
+                              "severity": math.ceil((risk + 0.01) / 34),
+                              "tags": tags,
+                              "timestamp_start": start_time,
+                              "timestamp_end": end_time,
+                              "data": data_json_list}
+                properties_list.append(properties)
 
         return properties_list

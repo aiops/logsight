@@ -3,7 +3,7 @@ import logging
 from elasticsearch import helpers
 
 from connectors.base.elasticsearch import ElasticsearchConnector
-from services.elasticsearch.queries import GET_ALL_AD
+from services.elasticsearch.queries import GET_ALL_AD, GET_ALL_TEMPLATES
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -25,6 +25,13 @@ class ElasticsearchService(ElasticsearchConnector):
             str(query).replace("$index", index).replace("$start_time", start_time).replace("$end_time", end_time))
         res = self.es.search(**query, size=10000)
         return [row['_source'] for row in res['hits']['hits']]
+
+    def get_all_templates_for_index(self, index, end_time):
+        query = GET_ALL_TEMPLATES
+        query = eval(
+            str(query).replace("$index", index).replace("$end_time", end_time))
+        res = self.es.search(**query, size=10000)
+        return [row['key'] for row in res['aggregations']['aggregations']['buckets']]
 
     def get_all_indices(self, extension):
         return list(self.es.indices.get(f"*{extension}").keys())
