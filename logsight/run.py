@@ -26,10 +26,10 @@ def run():
     pipeline = builder.build(pipeline_cfg)
 
     # Run incidents
-    incidents = JobDispatcherFactory.get_incident_dispatcher(2, 10)
+    incidents = JobDispatcherFactory.get_incident_dispatcher(2, 60)
     incidents.start()
     # Run log agg
-    log_agg = JobDispatcherFactory.get_log_agg_dispatcher(2, 10)
+    log_agg = JobDispatcherFactory.get_log_agg_dispatcher(2, 60)
     log_agg.start()
 
     pipeline.run()
