@@ -24,7 +24,8 @@ class ZeroMQSubSource(ZeroMQConnector, ConnectableSource):
 
     def connect(self):
         ZeroMQConnector.connect(self)
-        logger.info(f"Subscribing to topic {self.topic}")
+        if self.topic:
+            logger.info(f"Subscribing to topic {self.topic}")
         topic_filter = self.topic.encode('utf8')
         self.socket.subscribe(topic_filter)
 
