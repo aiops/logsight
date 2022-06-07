@@ -1,8 +1,18 @@
+import json
+
 from config import Config
 from dacite import from_dict
 
 from common.logsight_classes.configs import PipelineConfig
-from configs.global_vars import CONNECTIONS_PATH, DEBUG, PIPELINE_PATH
+from configs.global_vars import CONNECTIONS_PATH, DEBUG, PIPELINE_PATH, LOGS_CONFIG_PATH, DEBUG
+
+
+class LogConfig:
+    def __init__(self, log_config_path: str = LOGS_CONFIG_PATH):
+        self.config = json.load(open(log_config_path, 'r'))
+        if DEBUG:
+            self.config['loggers']['logsight']['handlers'] = ["debug", "warning"]
+            self.config['loggers']['logsight']['level'] = 'DEBUG'
 
 
 class ConnectionConfig:

@@ -18,8 +18,8 @@ class ElasticsearchConnector(Connector):
             msg = f"Elasticsearch endpoint {self.host}:{self.port} is unreachable."
             logger.error(msg)
             raise ConnectionError(msg)
-        logger.info("Elasticsearch connected.")
+        logger.debug("Elasticsearch connected.")
 
     def close(self):
-        logger.info(f"Closing elasticsearch connection.")
+        logger.debug(f"Closing elasticsearch connection.")
         self.es.close()
