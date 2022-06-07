@@ -43,7 +43,7 @@
         "info",
         "warning"
       ],
-      "level": "DEBUG",
+      "level": "INFO",
       "propagate": false
     }
   }

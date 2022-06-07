@@ -80,5 +80,5 @@ class PostgresTimestampStorage(TimestampStorage, PostgresDBConnection):
     def _auto_create_table(self, conn):
         table = conn.execute(statements.SELECT_TABLE, self.__table__).fetchall()
         if not table:
-            logger.info(f"Auto-creating table {self.__table__}.")
+            logger.info(f"Table {self.__table__} not found. Auto-creating table {self.__table__}.")
             conn.execute(statements.CREATE_TABLE % self.__table__)

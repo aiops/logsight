@@ -4,13 +4,12 @@ import os
 import platform
 from multiprocessing import set_start_method
 
-from configs import global_vars
 # hello world
 from pipeline import PipelineBuilder
 from results.common.factory import JobDispatcherFactory
-from services.configurator.config_manager import ModulePipelineConfig
+from services.configurator.config_manager import LogConfig, ModulePipelineConfig
 
-logging.config.dictConfig(json.load(open(os.path.join(global_vars.CONFIG_PATH, "log.json"), 'r')))
+logging.config.dictConfig(LogConfig().config)
 logger = logging.getLogger('logsight')
 
 # needed for running on Windows or macOS
@@ -22,14 +21,13 @@ if platform.system() != 'Linux':
 def run():
     pipeline_cfg = ModulePipelineConfig().pipeline_config
     builder = PipelineBuilder()
-
     pipeline = builder.build(pipeline_cfg)
 
     # Run incidents
-    incidents = JobDispatcherFactory.get_incident_dispatcher(2, 60)
+    incidents = JobDispatcherFactory.get_incident_dispatcher(2, 20)
     incidents.start()
     # Run log agg
-    log_agg = JobDispatcherFactory.get_log_agg_dispatcher(2, 60)
+    log_agg = JobDispatcherFactory.get_log_agg_dispatcher(2, 20)
     log_agg.start()
 
     pipeline.run()
