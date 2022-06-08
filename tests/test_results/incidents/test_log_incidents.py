@@ -16,6 +16,6 @@ class CalculateLogAggregationTest(unittest.TestCase):
         es.get_all_logs_for_index = MagicMock(return_value=processed_logs)
 
         job = CalculateIncidentJob(IndexInterval("incidents", datetime.min, datetime.max))
-        result = job._calculate(es.get_all_logs_for_index("test"))
+        result = job._calculate(es.get_all_logs_for_index("test"), [])
 
         self.assertEqual(incident_results, result)
