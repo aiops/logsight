@@ -23,11 +23,12 @@ def test_run(pipeline):
     pipeline.modules['log_ad'].ad.model.predict = MagicMock(return_value=[0], side_effect=[0])
     pipeline.data_source.has_next = Mock(side_effect=[True, False])
     helpers.bulk = MagicMock()
-    
+
     pipeline.run()
 
 
 def test_start_control_listener(pipeline):
+    pipeline.control_source = MagicMock()
     pipeline.control_source.has_next = MagicMock(side_effect=[True, False])
     pipeline.control_source.receive_message = MagicMock(return_value="Control message")
 

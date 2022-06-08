@@ -28,9 +28,9 @@ class ElasticsearchSink(ConnectableSink):
             data = [data]
         try:
             helpers.bulk(self.es,
-                                  data,
-                                  index=target,
-                                  request_timeout=200)
+                         data,
+                         index=target,
+                         request_timeout=200)
         except Exception as e:
             logger.warning(f"Failed to send data to elasticsearch. Reason: {e}. Retrying...")
             raise e

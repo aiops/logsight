@@ -12,7 +12,7 @@ def send_status(function):
         try:
             msg = function(cls)
             cls._send_done(msg)
-            logger.info(f"[*] Finished {cls.__class__.__name__} job.")
+            logger.info(f"[x] Finished {cls.__class__.__name__}-{cls.name}.")
 
         except Exception as e:
             cls._send_error(f"<{e.__class__.__name__}> : {e}")
