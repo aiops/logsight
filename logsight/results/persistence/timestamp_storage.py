@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -7,6 +8,9 @@ from results.persistence import sql_statements as statements
 from results.persistence.dto import IndexInterval
 from services import ConnectionConfig
 from services.database.base import Database
+from services.database.postgres.db import PostgresDBConnection
+
+logger = logging.getLogger("logsight")
 
 
 class TimestampStorageProvider:
@@ -39,7 +43,7 @@ class TimestampStorage(ABC):
         raise NotImplementedError
 
 
-class PostgresTimestampStorage(TimestampStorage, Database):
+class PostgresTimestampStorage(TimestampStorage, PostgresDBConnection):
     def __init__(self, table, host, port, username, password, db_name, driver=""):
         Database.__init__(self, host, port, username, password, db_name, driver)
         TimestampStorage.__init__(self, table)
@@ -76,4 +80,5 @@ class PostgresTimestampStorage(TimestampStorage, Database):
     def _auto_create_table(self, conn):
         table = conn.execute(statements.SELECT_TABLE, self.__table__).fetchall()
         if not table:
+            logger.info(f"Table {self.__table__} not found. Auto-creating table {self.__table__}.")
             conn.execute(statements.CREATE_TABLE % self.__table__)

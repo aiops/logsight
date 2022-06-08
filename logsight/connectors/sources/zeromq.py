@@ -5,6 +5,7 @@ import zmq
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from common.logsight_classes.mixins import DictMixin
+from configs.global_vars import RETRY_ATTEMPTS, RETRY_TIMEOUT
 from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
 from connectors.serializers.serializers import DictSerializer
 from connectors.sources import Source
@@ -23,7 +24,8 @@ class ZeroMQSubSource(ZeroMQConnector, ConnectableSource):
 
     def connect(self):
         ZeroMQConnector.connect(self)
-        logger.info(f"Subscribing to topic {self.topic}")
+        if self.topic:
+            logger.info(f"Subscribing to topic {self.topic}")
         topic_filter = self.topic.encode('utf8')
         self.socket.subscribe(topic_filter)
 
@@ -42,17 +44,17 @@ class ZeroMQSubSource(ZeroMQConnector, ConnectableSource):
             logger.error(e)
 
 
-# noinspection PyUnresolvedReferences
 class ZeroMQRepSource(ZeroMQConnector, Source, DictMixin):
     def __init__(self, endpoint: str):
         ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.REP,
                                  connection_type=ConnectionTypes.BIND)
 
+    # noinspection PyUnresolvedReferences
     def _receive_message(self):
         msg = self.socket.recv().decode("utf-8")
         return msg
 
-    @retry(stop=stop_after_attempt(5), wait=wait_fixed(5))
+    @retry(stop=stop_after_attempt(RETRY_ATTEMPTS), wait=wait_fixed(RETRY_TIMEOUT))
     def connect(self):
         ZeroMQConnector.connect(self)
 
