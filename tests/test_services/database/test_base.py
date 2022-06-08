@@ -1,10 +1,8 @@
 from unittest.mock import MagicMock
 
 import pytest
-from sqlalchemy.engine import LegacyRow
 
 from services.database.base import Database
-from services.service_provider import ServiceProvider
 
 
 @pytest.fixture
