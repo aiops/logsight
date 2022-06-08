@@ -10,7 +10,6 @@ from common.patterns.job import Job
 from configs.global_vars import PIPELINE_INDEX_EXT
 from results.persistence.dto import IndexInterval
 from services.service_provider import ServiceProvider
-from dateutil.relativedelta import relativedelta
 
 logger = logging.getLogger("logsight")
 

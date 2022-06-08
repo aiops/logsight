@@ -85,6 +85,13 @@ class IncidentDetector:
                 properties = {"timestamp": end_time,
                               "risk": risk,
                               "status": IncidentsStatus.RAISED,
+                              # severity is mapped from range [0, 100] to [1,3]. 34 is chosen because if not,
+                              # we need to use 33.33(3)
+                              # the formula bellow takes care of for example:
+                              # risk = 0, severity = math.ceil(0.01/34) = 1
+                              # risk = 34, severity = math.ceil(34.01/34) = 2
+                              # risk = 67, severity = math.ceil(67.01/34) = 3
+                              # risk = 100, severity = math.ceil(100/34) = 3,
                               "severity": math.ceil((risk + 0.01) / 34),
                               "tags": tags,
                               "timestamp_start": start_time,

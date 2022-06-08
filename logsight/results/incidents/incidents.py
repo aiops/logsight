@@ -29,13 +29,13 @@ class CalculateIncidentJob(IndexJob):
     def _perform_aggregation(self):
         # Load data
         logs = self._load_data(self.index_interval.index, self.index_interval.start_date, self.index_interval.end_date)
-        if not len(logs):
+        if len(logs) == 0:
             return False
         templates = self.load_templates(self.index_interval.index, self.index_interval.end_date)
         # calculate results
         results = self.incident_detector.calculate_incidents(logs, templates)
         # store results
         self._store_results(results, "_".join([self.index_interval.index, self.index_ext]))
-        logger.debug(f"Stored {len(results)} results")
+        logger.debug(f"Stored {len(results)} incident results.")
         self._update_index_interval(dateutil.parser.isoparse(logs[-1]['timestamp']) + timedelta(milliseconds=1))
         return True
