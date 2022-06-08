@@ -1,6 +1,6 @@
 import logging
 
-from elasticsearch import helpers
+from elasticsearch import NotFoundError, helpers
 
 from connectors.base.elasticsearch import ElasticsearchConnector
 from services.elasticsearch.queries import GET_ALL_AD, GET_ALL_TEMPLATES

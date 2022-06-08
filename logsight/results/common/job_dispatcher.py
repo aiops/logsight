@@ -53,7 +53,7 @@ class PeriodicJobDispatcher:
         indices = available_idx.difference(current_idx)
 
         if len(indices):
-            logger.debug(f"Creating new indices {indices}")
+            logger.debug(f"Creating new index intervals {indices}")
             for idx in indices:
                 it = IndexInterval(idx, start_date=datetime.min, end_date=datetime.now())
                 self.storage.update_timestamps(it)

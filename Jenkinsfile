@@ -14,6 +14,10 @@ pipeline {
                 }
             }
             steps {
+                script {
+                    env.RETRY_ATTEMPTS = 2
+                    env.RETRY_TIMEOUT = 1
+                }
                 sh 'pip install -r requirements.txt'
                 sh 'PYTHONPATH=$PWD/logsight py.test --junitxml test-report.xml --cov-report xml:coverage-report.xml --cov=logsight tests/'
                 stash name: 'test-reports', includes: '*.xml' 
