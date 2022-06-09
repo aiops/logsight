@@ -58,7 +58,7 @@ def test__update_index_interval(index_job):
 
 
 def test__load_data(index_job):
-    es = ElasticsearchService("host", "port", "user", "password")
+    es = ElasticsearchService("scheme", "host", 9201, "user", "password")
     es.connect = MagicMock()
     es.get_all_logs_for_index = MagicMock(return_value=processed_logs[:5])
     ServiceProvider.provide_elasticsearch = MagicMock(return_value=es)
@@ -67,7 +67,7 @@ def test__load_data(index_job):
 
 
 def test__store_results(index_job):
-    es = ElasticsearchService("host", "port", "user", "password")
+    es = ElasticsearchService("scheme", "host", 9201, "user", "password")
     es.connect = MagicMock()
     es.save = MagicMock()
     ServiceProvider.provide_elasticsearch = MagicMock(return_value=es)

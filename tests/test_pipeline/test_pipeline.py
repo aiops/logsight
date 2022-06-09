@@ -20,6 +20,7 @@ def test_run(pipeline):
         return_value="""{"logs": [{"event": {"timestamp": "2020-01-01", "message": "Hello World", "level": "INFO"}}],
                       "index": "test_index"}""".encode('utf-8')
     )
+    pipeline.modules['data_store'].connector._connect = MagicMock()
     pipeline.modules['log_ad'].ad.model.predict = MagicMock(return_value=[0], side_effect=[0])
     pipeline.data_source.has_next = Mock(side_effect=[True, False])
     helpers.bulk = MagicMock()
