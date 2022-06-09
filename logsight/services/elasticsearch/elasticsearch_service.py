@@ -1,6 +1,6 @@
 import logging
 
-from elasticsearch import NotFoundError, helpers
+from elasticsearch import helpers
 
 from connectors.base.elasticsearch import ElasticsearchConnector
 from services.elasticsearch.queries import GET_ALL_AD, GET_ALL_TEMPLATES
@@ -9,8 +9,8 @@ logger = logging.getLogger("logsight." + __name__)
 
 
 class ElasticsearchService(ElasticsearchConnector):
-    def __init__(self, host, port, username, password, **_kwargs):
-        super(ElasticsearchService, self).__init__(host, port, username, password)
+    def __init__(self, scheme, host, port, username, password, **_kwargs):
+        super(ElasticsearchService, self).__init__(scheme, host, port, username, password)
 
     def __enter__(self):
         self.connect()

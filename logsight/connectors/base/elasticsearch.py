@@ -7,8 +7,8 @@ logger = logging.getLogger("logsight." + __name__)
 
 
 class ElasticsearchConnector(Connector):
-    def __init__(self, host, port, username, password, **_kwargs):
-        self.es = Elasticsearch([{'host': host, 'port': port}], http_auth=(username, password))
+    def __init__(self, scheme, host, port, username, password, **_kwargs):
+        self.es = Elasticsearch([{'scheme': scheme, 'host': host, 'port': int(port)}], http_auth=(username, password))
         self.host = host
         self.port = port
 
