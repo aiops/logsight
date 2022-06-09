@@ -1,8 +1,9 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from elasticsearch import ElasticsearchException, helpers
+from elasticsearch import helpers
 
+from connectors.sinks.elasticsearch import ElasticsearchException
 from services.elasticsearch.elasticsearch_service import ElasticsearchService
 from tests.inputs import processed_logs
 
@@ -10,14 +11,14 @@ from tests.inputs import processed_logs
 @pytest.fixture
 def es():
     with patch('elasticsearch.helpers.bulk', return_value="Testing"):
-        result = ElasticsearchService("host", "port", "username", "password")
+        result = ElasticsearchService("scheme", "host", 9201, "username", "password")
         yield result
 
 
 @pytest.fixture
 def es_exception():
     with patch('elasticsearch.helpers.bulk', side_effect=ElasticsearchException()):
-        result = ElasticsearchService("host", "port", "username", "password")
+        result = ElasticsearchService("scheme", "host", 9201, "username", "password")
         yield result
 
 
