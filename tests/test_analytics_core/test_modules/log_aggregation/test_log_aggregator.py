@@ -1,3 +1,4 @@
+from analytics_core.logs import LogsightLog
 from analytics_core.modules.log_aggregation import LogAggregator
 from tests.inputs import processed_logs, agg_results
 

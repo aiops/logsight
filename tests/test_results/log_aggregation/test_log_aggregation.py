@@ -11,6 +11,7 @@ class CalculateLogAggregationTest(unittest.TestCase):
     def test__calculate(self):
         es = ElasticsearchService("scheme", "host", 9201, "user", "password")
         es.connect = MagicMock()
+        es._connect = MagicMock()
         es.get_all_logs_for_index = MagicMock(return_value=processed_logs)
 
         test_output = [{'log_levels': {'INFO': 20}, 'prediction': 20, 'count': 20,

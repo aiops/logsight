@@ -1,18 +1,14 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Dict, List, Optional
 from uuid import uuid4
 
 
 @dataclass
-class LogEvent:
+class LogsightLog:
     message: str
     timestamp: str
     level: str
-
-
-@dataclass
-class LogsightLog:
-    event: LogEvent
     id: Optional[str] = ""
     metadata: Optional[Dict] = field(default_factory=dict)
     tags: Optional[Dict[str, str]] = field(default_factory=dict)

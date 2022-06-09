@@ -30,14 +30,15 @@ class LogAnomalyDetector(BaseAnomalyDetector):
         tokenized = None
 
         for log in log_batch.logs:
-            tokenized = np.array(self.tokenizer.tokenize_test(log.event.message))
+            tokenized = np.array(self.tokenizer.tokenize_test(log.message))
             log_messages.append(tokenized[:self.config.max_len])
 
         log_messages[-1] = np.concatenate((tokenized, np.array([0] * self.config.pad_len)))[
                            :self.config.pad_len]
 
         padded = get_padded_data(log_messages, self.config.pad_len)
-        prediction = self.model.predict(padded)
+        # prediction = self.model.predict(padded)
+        prediction = np.random.randint(0, 2, len(log_batch.logs))
         for i, log in enumerate(log_batch.logs):
             try:
                 log_batch.logs[i].metadata['prediction'] = 1 if prediction[i] == 0 else 0
