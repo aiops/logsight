@@ -25,7 +25,7 @@ def test_run(pipeline):
                       "index": "test_index"}""".encode('utf-8')
     )
     if 'log_ad' in pipeline.modules:
-        pipeline.modules['log_ad'].ad.model.predict = MagicMock(return_value=[0], side_effect=[0])
+        pipeline.modules['log_ad'].ad.model.predict = MagicMock(return_value=[0], side_effect=[[0]])
     for module_name in pipeline.modules:
         if isinstance(pipeline.modules[module_name], ConnectableModule):
             pipeline.modules[module_name].connector = MagicMock()
