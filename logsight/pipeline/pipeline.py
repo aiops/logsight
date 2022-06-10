@@ -2,7 +2,7 @@ import logging
 import threading
 import time
 import uuid
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from connectors import Connector, Source
 from connectors.sources.source import ConnectableSource
@@ -16,7 +16,7 @@ class Pipeline:
     """ A pipeline is a collection of modules that are connected together..."""
     _id = uuid.uuid4()
 
-    def __init__(self, modules: Dict[str, Module], input_module: Module, data_source: Source,
+    def __init__(self, modules: Dict[str, Union[Module, ConnectableModule]], input_module: Module, data_source: Source,
                  control_source: Optional[ConnectableSource] = None, metadata: Optional[Dict] = None):
         self.control_source = control_source
         self.data_source = data_source

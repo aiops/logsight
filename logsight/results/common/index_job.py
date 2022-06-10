@@ -103,6 +103,7 @@ class IndexJob(Job, ABC):
     @staticmethod
     def _store_results(results: List, index: str):
         with ServiceProvider.provide_elasticsearch() as es:
+            es.delete_logs_for_index(index, results[0]['timestamp'], results[-1]['timestamp'])
             es.save(results, index)
 
     @abstractmethod

@@ -124,6 +124,7 @@ def test__store_results(index_job):
     es = ElasticsearchService("scheme", "host", 9201, "user", "password")
     es.connect = MagicMock()
     es.save = MagicMock()
+    es.delete_logs_for_index = MagicMock()
     ServiceProvider.provide_elasticsearch = MagicMock(return_value=es)
     index_job._store_results(processed_logs[:4], "index")
     es.save.assert_called_once()
