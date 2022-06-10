@@ -12,7 +12,7 @@ from services.service_provider import ServiceProvider
 logger = logging.getLogger("logsight." + __name__)
 
 
-class RiskFactorModule(TransformModule):
+class RiskScoreModule(TransformModule):
 
     def __init__(self):
         super().__init__()

@@ -37,8 +37,7 @@ class LogAnomalyDetector(BaseAnomalyDetector):
                            :self.config.pad_len]
 
         padded = get_padded_data(log_messages, self.config.pad_len)
-        # prediction = self.model.predict(padded)
-        prediction = np.random.randint(0, 2, len(log_batch.logs))
+        prediction = self.model.predict(padded)
         for i, log in enumerate(log_batch.logs):
             try:
                 log_batch.logs[i].metadata['prediction'] = 1 if prediction[i] == 0 else 0

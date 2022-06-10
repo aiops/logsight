@@ -23,9 +23,3 @@ class CalculateIncidentJob(IndexJob):
 
     def _calculate(self, logs) -> List:
         return self.incident_detector.calculate_incidents(logs)
-
-
-if __name__ == "__main__":
-    job = CalculateIncidentJob(
-        IndexInterval("4gm73zgmmot6tycj4mzmmlmvrk0", datetime.datetime.min, datetime.datetime.max, ))
-    job.execute()
