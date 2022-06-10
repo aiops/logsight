@@ -35,7 +35,7 @@ class TimestampStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def select_all_application_index(self) -> List[str]:
+    def select_all_user_index(self) -> List[str]:
         raise NotImplementedError
 
     @abstractmethod
@@ -48,9 +48,9 @@ class PostgresTimestampStorage(TimestampStorage, PostgresDBConnection):
         Database.__init__(self, host, port, username, password, db_name, driver)
         TimestampStorage.__init__(self, table)
 
-    def select_all_application_index(self) -> List[str]:
-        sql = statements.SELECT_ALL_APP_INDEX
-        rows = [row['index'] for row in self._read_many(sql)]
+    def select_all_user_index(self) -> List[str]:
+        sql = statements.SELECT_ALL_USER_INDEX
+        rows = [row['key'] for row in self._read_many(sql)]
         return rows
 
     def select_all_index(self) -> List[str]:
@@ -70,7 +70,8 @@ class PostgresTimestampStorage(TimestampStorage, PostgresDBConnection):
 
     def update_timestamps(self, timestamps: IndexInterval):
         sql = statements.UPDATE_TIMESTAMPS
-        row = self._execute_sql(sql % (self.__table__, timestamps.index, timestamps.start_date, timestamps.end_date))
+        row = self._execute_sql(
+            sql % (self.__table__, timestamps.index, timestamps.latest_ingest_time, timestamps.latest_processed_time))
         return from_dict(data_class=IndexInterval, data=row)
 
     def _verify_database_exists(self, conn):

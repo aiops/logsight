@@ -5,24 +5,11 @@ from typing import Dict, List
 
 import pandas as pd
 
-from analytics_core.modules.risk_analysis.vars import RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_REPORT, \
-    RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_REPORT, RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_FAULT, \
-    RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_FAULT, RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_REPORT, \
-    RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_REPORT, RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_FAULT, \
-    RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_FAULT
-
 pd.options.mode.chained_assignment = None
 
 
 class IncidentsStatus:
     RAISED = 1
-
-
-def level_as_binary(level):
-    if str(level).upper() in ["ERROR", "ERR", "CRITICAL", "FAULT"]:
-        return 1
-    else:
-        return 0
 
 
 def calculate_risk(data):
@@ -45,7 +32,7 @@ def calculate_risk(data):
 class IncidentDetector:
 
     @staticmethod
-    def calculate_incidents(logs: List[Dict], templates: List[str]):
+    def calculate_incidents(logs: List[Dict]):
         df = pd.DataFrame(logs).set_index('timestamp')
         df.index = pd.to_datetime(df.index)
         df['tag_string'] = df.tags.astype(str)

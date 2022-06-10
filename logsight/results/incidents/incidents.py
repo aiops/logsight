@@ -17,15 +17,12 @@ class CalculateIncidentJob(IndexJob):
         self.incident_detector = IncidentDetector()
 
     @staticmethod
-    def load_templates(index, end_date):
+    def load_templates(index):
         with ServiceProvider.provide_elasticsearch() as es:
-            return es.get_all_templates_for_index("_".join([index, PIPELINE_INDEX_EXT]),
-                                                  str(end_date.isoformat()))
+            return es.get_all_templates_for_index("_".join([index, PIPELINE_INDEX_EXT]))
 
     def _calculate(self, logs) -> List:
-        templates = self.load_templates(self.index_interval.index, self.index_interval.end_date)
-        results = self.incident_detector.calculate_incidents(logs, templates)
-        return results
+        return self.incident_detector.calculate_incidents(logs)
 
 
 if __name__ == "__main__":

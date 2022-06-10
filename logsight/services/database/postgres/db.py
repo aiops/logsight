@@ -12,5 +12,5 @@ class PostgresDBConnection(Database):
     def _verify_database_exists(self, conn):
         super()._verify_database_exists(conn)
         tables = conn.execute(SELECT_TABLES).fetchall()
-        if ("applications",) not in tables:
+        if len(tables) == 0:
             raise DatabaseException(f"Tables not yet created for database {self.db_name}.")

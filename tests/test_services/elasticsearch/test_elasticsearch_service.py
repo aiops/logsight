@@ -26,9 +26,25 @@ def get_es_res(data):
     return {"hits": {"hits": [{"_source": x} for x in data]}}
 
 
+def get_agg_res(data):
+    return {"aggregations": {"aggregations": {"buckets": data}}}
+
+
 def test_get_all_logs_for_index(es):
     es.es.search = MagicMock(return_value=get_es_res(processed_logs))
     result = es.get_all_logs_for_index("index", "start_time", "end_time")
+    assert result == processed_logs
+
+
+def test_all_templates_for_index(es):
+    es.es.search = MagicMock(return_value=get_agg_res([]))
+    result = es.get_all_templates_for_index("index")
+    assert result == []
+
+
+def test_get_all_logs_after_ingest(es):
+    es.es.search = MagicMock(return_value=get_es_res(processed_logs))
+    result = es.get_all_logs_after_ingest("index", "end_time")
     assert result == processed_logs
 
 

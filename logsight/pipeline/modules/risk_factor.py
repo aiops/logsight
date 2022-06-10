@@ -27,7 +27,6 @@ class RiskFactorModule(TransformModule):
     def _get_templates(index: str):
         try:
             with ServiceProvider.provide_elasticsearch() as es:
-                return es.get_all_templates_for_index("_".join([index, PIPELINE_INDEX_EXT]),
-                                                      str(datetime.now().isoformat()))
+                return es.get_all_templates_for_index("_".join([index, PIPELINE_INDEX_EXT]))
         except NotFoundError:
             return []

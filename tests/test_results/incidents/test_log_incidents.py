@@ -5,7 +5,7 @@ from datetime import datetime
 from results.incidents.incidents import CalculateIncidentJob
 from results.persistence.dto import IndexInterval
 from services.elasticsearch.elasticsearch_service import ElasticsearchService
-from tests.inputs import processed_logs
+from tests.inputs import expected_incident_result, processed_logs
 
 
 class CalculateIncidentsTest(unittest.TestCase):
@@ -13,9 +13,9 @@ class CalculateIncidentsTest(unittest.TestCase):
         es = ElasticsearchService("scheme", "host", 9201, "user", "password")
         es.connect = MagicMock()
         es._connect = MagicMock()
-        es.get_all_logs_for_index = MagicMock(return_value=processed_logs, side_effect=processed_logs)
+        es.get_all_logs_for_index = MagicMock(return_value=processed_logs, side_effect=[processed_logs])
         job = CalculateIncidentJob(IndexInterval("incidents", datetime.min, datetime.max))
         job.load_templates = MagicMock(return_value=[])
         result = job._calculate(es.get_all_logs_for_index("test"))
 
-        self.assertEqual(None, result)
+        self.assertEqual(expected_incident_result, result)

@@ -5,12 +5,24 @@ import pytest
 
 from results.common.factory import JobDispatcherFactory
 from results.persistence.dto import IndexInterval
+from results.persistence.timestamp_storage import PostgresTimestampStorage
 from tests.utils import random_times
 
 
 @pytest.fixture
-def job_dispatcher():
-    return JobDispatcherFactory.get_log_agg_dispatcher(2, 10)
+def db():
+    db = PostgresTimestampStorage("table", "host", "9000", "username", "password", "db_name")
+    db.connect = MagicMock()
+    db.update_timestamps = MagicMock()
+    db.close = MagicMock()
+    return db
+
+
+@pytest.fixture
+def job_dispatcher(db):
+    job_dispatcher = JobDispatcherFactory.get_log_agg_dispatcher(2, 10)
+    job_dispatcher.storage = db
+    return job_dispatcher
 
 
 def get_index_intervals(n_intervals):
@@ -37,9 +49,8 @@ def test_sync_index(job_dispatcher):
     current = index_intervals[2:]
     idx = set(index_intervals).difference(set(current))
 
-    job_dispatcher.storage = MagicMock()
     job_dispatcher.storage.update_timestamps = MagicMock()
-    job_dispatcher.storage.select_all_application_index = MagicMock(side_effect=[index_intervals])
+    job_dispatcher.storage.select_all_user_index = MagicMock(side_effect=[index_intervals])
     job_dispatcher.storage.select_all_index = MagicMock(side_effect=[current])
 
     job_dispatcher.sync_index()

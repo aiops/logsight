@@ -11,4 +11,9 @@ GET_ALL_TEMPLATES = {
         "fields": [{"field": "ingest_timestamp", "format": "date_time"}], "script_fields": {}, "stored_fields": ["*"],
         "runtime_mappings": {}, "_source": {"excludes": []}, "query": {"bool": {"filter": [
             {"range": {
-                "ingest_timestamp": {"format": "strict_date_optional_time", "gt": "now-1y", "lte": "$end_time"}}}]}}}}
+                "ingest_timestamp": {"format": "strict_date_optional_time", "gt": "now-15y", "lte": "now"}}}]}}}}
+
+GET_ALL_LOGS_INGEST = {
+    "index": "$index", "body": {"query": {"bool": {"must": [
+        {"range": {"ingest_timestamp": {"format": "strict_date_optional_time", "gt": "$start_time"}}}],
+        "filter": [{"match_all": {}}]}}}}

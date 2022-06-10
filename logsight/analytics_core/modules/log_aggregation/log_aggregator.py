@@ -20,7 +20,7 @@ class LogAggregator:
                                                        count=('level', 'count'))
         result = []
         for tpl in grouped.itertuples():
-            result_dict = defaultdict()
+            result_dict = dict()
             result_dict["log_levels"] = tpl.level
             result_dict["prediction"] = tpl.prediction
             result_dict["count"] = tpl.count

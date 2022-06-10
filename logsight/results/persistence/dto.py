@@ -5,9 +5,9 @@ from dataclasses import dataclass
 @dataclass
 class IndexInterval:
     index: str
-    start_date: datetime.datetime
-    end_date: datetime.datetime
+    latest_ingest_time: datetime.datetime
+    latest_processed_time: datetime.datetime
 
     def __repr__(self):
         return (f'{self.__class__.__name__}'
-                f'(start_date={str(self.start_date)}, end_date={str(self.end_date)})')
+                f'(latest_ingest_time={str(self.latest_ingest_time)}, latest_processed_time={str(self.latest_processed_time)})')
