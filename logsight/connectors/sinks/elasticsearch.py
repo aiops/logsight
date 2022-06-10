@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 from elasticsearch import Elasticsearch, helpers
-from elasticsearch._sync.client import IngestClient
+from elasticsearch.client import IngestClient
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from configs.global_vars import RETRY_ATTEMPTS, RETRY_TIMEOUT, ES_PIPELINE_ID_INGEST_TIMESTAMP
@@ -58,4 +58,3 @@ class ElasticsearchSink(ConnectableSink):
         ):
             logger.warning(f"Failed to send data to elasticsearch. Retrying...")
             raise ElasticsearchException()
-

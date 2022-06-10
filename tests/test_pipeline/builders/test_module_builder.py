@@ -24,10 +24,10 @@ def test_build_module(valid_module_cfg):
 def test_build_module_with_connector():
     module_builder = ModuleBuilder()
     module = module_builder.build(
-        ModuleConfig(classname="DataStoreModule",
+        ModuleConfig(classname="LogStoreModule",
                      args={
                          "connector": {"classname": "KafkaSink", "connection": "kafka", "params": {"topic": "topic"}}}))
 
-    assert module.__class__.__name__ == "DataStoreModule"
+    assert module.__class__.__name__ == "LogStoreModule"
     assert isinstance(module, ConnectableModule) is True
     assert isinstance(module.connector, Connector) is True

@@ -4,7 +4,6 @@ from typing import Type
 
 from common.patterns.job_manager import JobManager
 from pipeline.modules.core.timer import NamedTimer
-from results.common.helpers import update_status
 from results.common.index_job import IndexJob
 from results.persistence.dto import IndexInterval
 from results.persistence.timestamp_storage import TimestampStorage
@@ -34,7 +33,7 @@ class PeriodicJobDispatcher:
         self.sync_index()
         index_intervals = self.storage.get_all()
         for it in index_intervals:
-            job = self.job(index_interval=it, error_callback=logger.error, done_callback=update_status,
+            job = self.job(index_interval=it, error_callback=logger.error, done_callback=logger.info,
                            table_name=self.storage.__table__)
             self.manager.submit_job(job)
         self.timer.reset_timer()
@@ -48,14 +47,14 @@ class PeriodicJobDispatcher:
 
         """
         # find new indices
-        available_idx = set(self.storage.select_all_application_index())
+        available_idx = set(self.storage.select_all_user_index())
         current_idx = set(self.storage.select_all_index())
         indices = available_idx.difference(current_idx)
 
         if len(indices):
             logger.debug(f"Creating new index intervals {indices}")
             for idx in indices:
-                it = IndexInterval(idx, start_date=datetime.min, end_date=datetime.now())
+                it = IndexInterval(idx, latest_ingest_time=datetime.min, latest_processed_time=datetime.min)
                 self.storage.update_timestamps(it)
 
     def start(self):

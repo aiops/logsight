@@ -45,10 +45,10 @@ class MaskLogParser(Parser):
         This method will parse the templates via masking and extract parameters if parameter extraction is enabled.
         Parallel execution of this method via worker threads is assumed.
         """
-        template = self.masker.mask(log.event.message)
+        template = self.masker.mask(log.message)
         log.metadata[self.template_key] = template
         if self.enable_parameter_extraction:
-            parameters = self._extract_parameters(template, log.event.message)
+            parameters = self._extract_parameters(template, log.message)
             log.metadata[self.parameters_key] = parameters
         return log
 

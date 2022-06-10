@@ -52,10 +52,10 @@ class Database:
             sqlalchemy driver for connecting to the database
     """
 
-    def __init__(self, host, port, username, password, db_name, driver="postgresql+psycopg2"):
+    def __init__(self, host, port, username, password, db_name, driver=""):
 
         self.db_name = db_name
-        self.driver = driver
+        self.driver = driver if len(driver) > 0 else "postgresql+psycopg2"
         self.username = username or ''
         self.password = password or ''
         self.host = host or ''
