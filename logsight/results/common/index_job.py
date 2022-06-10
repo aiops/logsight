@@ -9,6 +9,7 @@ from elasticsearch import NotFoundError
 from common.patterns.job import Job
 from configs.global_vars import PIPELINE_INDEX_EXT
 from results.persistence.dto import IndexInterval
+from results.persistence.timestamp_storage import TimestampStorageProvider
 from services.service_provider import ServiceProvider
 
 logger = logging.getLogger("logsight")
@@ -39,6 +40,8 @@ class IndexJob(Job, ABC):
         logger.info(f"[x] Executing {self.__class__.__name__}-{self.name} for index interval {self.index_interval}.")
         while self._perform_aggregation():
             continue
+        with TimestampStorageProvider.provide_timestamp_storage(self.table_name) as db:
+            db.update_timestamps(self.index_interval)
         return IndexJobResult(self.index_interval, self.table_name)
 
     def _perform_aggregation(self) -> bool:
@@ -52,8 +55,9 @@ class IndexJob(Job, ABC):
             True if the aggregation was successful
         """
         logger.debug(
-            f"Performing aggregation on {self.index_interval.index} for the interval [{str(self.index_interval.start_date)} - {str(self.index_interval.end_date)}]")
-        data = self._load_data(self.index_interval.index, self.index_interval.start_date, self.index_interval.end_date)
+            f"Performing aggregation on {self.index_interval.index} for the interval [{str(self.index_interval.latest_ingest_time)} - {str(self.index_interval.latest_ingest_time)}]")
+        data = self._load_data(self.index_interval.index, self.index_interval.latest_ingest_time,
+                               self.index_interval.latest_processed_time)
         if not len(data):
             return False
         # calculate
@@ -62,41 +66,36 @@ class IndexJob(Job, ABC):
         self._store_results(results, "_".join([self.index_interval.index, self.index_ext]))
         logger.debug(f"Stored {len(results)} results")
         # ES Might not read all the messages in the specified period
-        self._update_index_interval(dateutil.parser.isoparse(data[-1]['timestamp']) + timedelta(milliseconds=1))
+        self._update_index_interval(dateutil.parser.isoparse(data[-1]['timestamp']),
+                                    dateutil.parser.isoparse(data[-1]['ingest_timestamp']))
         return True
 
-    def _update_index_interval(self, last_date):
-        """
-        Updates the index interval to start at the last date of
-        the previous index.
-
-        Args:
-            last_date: Set the start_date of the index interval
-
-        Returns:
-            The start date of the index interval
-
-        """
-        self.index_interval.start_date = last_date
-        self.index_interval.end_date = datetime.now()
+    def _update_index_interval(self, last_processed_datetime, last_ingest_datetime):
+        self.index_interval.latest_processed_time = last_processed_datetime + timedelta(milliseconds=1)
+        self.index_interval.latest_ingest_time = last_ingest_datetime + timedelta(milliseconds=1)
 
     @staticmethod
-    def _load_data(index, start_date, end_date):
+    def _load_data(index, latest_ingest_time, latest_processed_time):
         """
         Load the data from elasticsearch
         Args:
             index: elasticsearch index
-            start_date: starting date for query
-            end_date: end date for query
+            latest_ingest_time: ingest time of the entries
+            latest_processed_time: last date of processed logs
 
         Returns:
 
         """
+        index = "_".join([index, PIPELINE_INDEX_EXT])
         with ServiceProvider.provide_elasticsearch() as es:
             try:
-                return es.get_all_logs_for_index("_".join([index, PIPELINE_INDEX_EXT]),
-                                                 str(start_date.isoformat()),
-                                                 str(end_date.isoformat()))
+                logs = es.get_all_logs_after_ingest(index, str(latest_ingest_time.isoformat()))
+                if len(logs) == 0:
+                    return logs
+                if datetime.fromisoformat(logs[0]['timestamp']) > latest_processed_time:
+                    return logs
+                else:
+                    return es.get_all_logs_for_index(index, logs[0]['timestamp'], logs[-1]['timestamp'])
             except NotFoundError:
                 logger.warning(f"Data is not yet processed for index {'_'.join([index, PIPELINE_INDEX_EXT])}")
                 return []
@@ -104,6 +103,7 @@ class IndexJob(Job, ABC):
     @staticmethod
     def _store_results(results: List, index: str):
         with ServiceProvider.provide_elasticsearch() as es:
+            es.delete_logs_for_index(index, results[0]['timestamp'], results[-1]['timestamp'])
             es.save(results, index)
 
     @abstractmethod

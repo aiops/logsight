@@ -1,6 +1,4 @@
-import json
 import logging.config
-import os
 import platform
 from multiprocessing import set_start_method
 
@@ -24,12 +22,9 @@ def run():
     builder = PipelineBuilder()
     pipeline = builder.build(pipeline_cfg)
 
-    # Run incidents
+    # # Run incidents
     incidents = JobDispatcherFactory.get_incident_dispatcher(PARALLEL_JOBS, JOB_INTERVAL)
     incidents.start()
-    # Run log agg
-    log_agg = JobDispatcherFactory.get_log_agg_dispatcher(PARALLEL_JOBS, JOB_INTERVAL)
-    log_agg.start()
 
     pipeline.run()
 

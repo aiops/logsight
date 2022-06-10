@@ -30,7 +30,7 @@ class LogAnomalyDetector(BaseAnomalyDetector):
         tokenized = None
 
         for log in log_batch.logs:
-            tokenized = np.array(self.tokenizer.tokenize_test(log.event.message))
+            tokenized = np.array(self.tokenizer.tokenize_test(log.message))
             log_messages.append(tokenized[:self.config.max_len])
 
         log_messages[-1] = np.concatenate((tokenized, np.array([0] * self.config.pad_len)))[
