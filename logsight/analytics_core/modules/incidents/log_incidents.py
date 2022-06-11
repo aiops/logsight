@@ -19,14 +19,22 @@ def calculate_risk(data):
     percentage = int(len(data) * 0.3)
     top_k = data.head(percentage)
     risk = top_k['risk_score'].max()
-
+    top_k_message = None
     if len(top_k['risk_score']) > 0:
+        top_k_message = top_k.loc[top_k['risk_score'] == top_k['risk_score'].max()].iloc[0:1]
         risk = risk + min(
             [int(top_k['risk_score'].sum() / len(top_k['risk_score'])), 100 - top_k['risk_score'].max()])
     else:
         risk = 0
 
-    return risk
+    return risk, top_k_message
+
+
+def level_as_binary(level):
+    if str(level).upper() in ["ERROR", "ERR", "CRITICAL", "FAULT"]:
+        return 1
+    else:
+        return 0
 
 
 class IncidentDetector:
@@ -38,18 +46,28 @@ class IncidentDetector:
         df['tag_string'] = df.tags.astype(str)
         properties_list = []
         for (interval, tags), grp in df.groupby([pd.Grouper(freq='1Min'), 'tag_string']):
-            if not len(grp):
+            len_df = len(grp)
+            if not len_df:
                 continue
             start_time = interval
             end_time = interval + timedelta(minutes=1)
-            risk = calculate_risk(grp)
-            data_json_list = [[element] for element in
+            risk, message = calculate_risk(grp)
+            grp['risk_severity'] = ((grp['risk_score'] + 0.01)/34).apply(lambda x: math.ceil(x))
+            data_json_list = [element for element in
                               grp.dropna(axis='columns').reset_index().to_dict('records')]
             tags = json.loads(tags.replace('\'', "\""))
+            templates = grp.drop_duplicates(subset=['template'])
             if risk > 0:
+                grp['level_binary'] = grp['level'].apply(lambda x: level_as_binary(x))
                 properties = {"timestamp": end_time,
                               "risk": risk,
+                              "count_messages": len_df,
+                              "count_states": len(templates),
                               "status": IncidentsStatus.RAISED,
+                              "message": message.dropna(axis='columns').reset_index().to_dict('records')[0],
+                              "added_states": grp['added_state'].sum(),
+                              "level_faults": grp['level_binary'].sum(),
+                              "semantic_anomalies": grp["prediction"].sum(),
                               # severity is mapped from range [0, 100] to [1,3]. 34 is chosen because if not,
                               # we need to use 33.33(3)
                               # the formula bellow takes care of for example:

@@ -11,6 +11,6 @@ RETRY_ATTEMPTS = int(os.environ.get('RETRY_ATTEMPTS', 6))
 RETRY_TIMEOUT = int(os.environ.get('RETRY_TIMEOUT', 10))
 
 PARALLEL_JOBS = int(os.environ.get('PARALLEL_JOBS', 2))
-JOB_INTERVAL = int(os.environ.get('JOB_INTERVAL', 60))
+JOB_INTERVAL = int(os.environ.get('JOB_INTERVAL', 10))
 
 ES_PIPELINE_ID_INGEST_TIMESTAMP = "ingest_timestamp"

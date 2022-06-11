@@ -57,7 +57,7 @@ class ElasticsearchService(ElasticsearchConnector):
     def _parse_query(query, index, start_date=None, end_date=None):
         query = str(query).replace("$index", index)
         if start_date:
-            query = query.replace("$start_date", start_date)
+            query = query.replace("$start_time", start_date)
         if end_date:
-            query = query.replace("$end_date", end_date)
+            query = query.replace("$end_time", end_date)
         return eval(query)

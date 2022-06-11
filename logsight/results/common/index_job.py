@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import List, Optional
 import dateutil.parser
-from elasticsearch import NotFoundError
+from elasticsearch import NotFoundError, ConflictError
 
 from common.patterns.job import Job
 from configs.global_vars import PIPELINE_INDEX_EXT
@@ -37,7 +37,7 @@ class IndexJob(Job, ABC):
            IncidentTimestamps
 
         """
-        logger.info(f"[x] Executing {self.__class__.__name__}-{self.name} for index interval {self.index_interval}.")
+        logger.debug(f"[x] Executing {self.__class__.__name__}-{self.name} for index interval {self.index_interval}.")
         while self._perform_aggregation():
             continue
         with TimestampStorageProvider.provide_timestamp_storage(self.table_name) as db:
@@ -95,7 +95,8 @@ class IndexJob(Job, ABC):
                 if datetime.fromisoformat(logs[0]['timestamp']) > latest_processed_time:
                     return logs
                 else:
-                    return es.get_all_logs_for_index(index, logs[0]['timestamp'], logs[-1]['timestamp'])
+                    a = es.get_all_logs_for_index(index, logs[0]['timestamp'], logs[-1]['timestamp'])
+                    return a
             except NotFoundError:
                 logger.warning(f"Data is not yet processed for index {'_'.join([index, PIPELINE_INDEX_EXT])}")
                 return []
@@ -103,7 +104,14 @@ class IndexJob(Job, ABC):
     @staticmethod
     def _store_results(results: List, index: str):
         with ServiceProvider.provide_elasticsearch() as es:
-            es.delete_logs_for_index(index, results[0]['timestamp'], results[-1]['timestamp'])
+            try:
+                if len(results) > 0:
+                    es.delete_logs_for_index(index, results[0]['timestamp'].isoformat(),
+                                             results[-1]['timestamp'].isoformat())
+            except NotFoundError:
+                logger.warning(f"Index {'_'.join([index, PIPELINE_INDEX_EXT])} is empty and data cannot be deleted")
+            except ConflictError:
+                logger.warning(f"Data on index {'_'.join([index, PIPELINE_INDEX_EXT])} is already deleted.")
             es.save(results, index)
 
     @abstractmethod
