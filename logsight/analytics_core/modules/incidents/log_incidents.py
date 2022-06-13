@@ -19,15 +19,13 @@ def calculate_risk(data):
     percentage = int(len(data) * 0.3)
     top_k = data.head(percentage)
     risk = top_k['risk_score'].max()
-    top_k_message = None
     if len(top_k['risk_score']) > 0:
-        top_k_message = top_k.loc[top_k['risk_score'] == top_k['risk_score'].max()].iloc[0:1]
         risk = risk + min(
             [int(top_k['risk_score'].sum() / len(top_k['risk_score'])), 100 - top_k['risk_score'].max()])
     else:
         risk = 0
 
-    return risk, top_k_message
+    return risk
 
 
 def level_as_binary(level):
@@ -51,7 +49,7 @@ class IncidentDetector:
                 continue
             start_time = interval
             end_time = interval + timedelta(minutes=1)
-            risk, message = calculate_risk(grp)
+            risk = calculate_risk(grp)
             grp['risk_severity'] = ((grp['risk_score'] + 0.01)/34).apply(lambda x: math.ceil(x))
             data_json_list = [element for element in
                               grp.dropna(axis='columns').reset_index().to_dict('records')]
@@ -64,7 +62,6 @@ class IncidentDetector:
                               "count_messages": len_df,
                               "count_states": len(templates),
                               "status": IncidentsStatus.RAISED,
-                              "message": message.dropna(axis='columns').reset_index().to_dict('records')[0],
                               "added_states": grp['added_state'].sum(),
                               "level_faults": grp['level_binary'].sum(),
                               "semantic_anomalies": grp["prediction"].sum(),
@@ -81,5 +78,5 @@ class IncidentDetector:
                               "timestamp_end": end_time,
                               "data": data_json_list}
                 properties_list.append(properties)
-
+        print(properties_list)
         return properties_list
