@@ -122,14 +122,6 @@ class IndexJob(Job, ABC):
     @staticmethod
     def _store_results(results: List, index: str):
         with ServiceProvider.provide_elasticsearch() as es:
-            try:
-                if len(results) > 0:
-                    es.delete_logs_for_index(index, results[0]['timestamp'].isoformat(),
-                                             results[-1]['timestamp'].isoformat())
-            except NotFoundError:
-                logger.warning(f"Index {'_'.join([index, PIPELINE_INDEX_EXT])} is empty and data cannot be deleted")
-            except ConflictError:
-                logger.warning(f"Data on index {'_'.join([index, PIPELINE_INDEX_EXT])} is already deleted.")
             es.save(results, index)
 
     @abstractmethod

@@ -43,7 +43,7 @@ def test__execute(index_job, db):
 
 def test__perform_aggregation(index_job):
     index_job._load_data = MagicMock()
-    index_job._load_data.side_effect = (processed_logs, [],)
+    index_job._load_data.side_effect = ((processed_logs, False), ([], False),)
     index_job._calculate = MagicMock()
     index_job._store_results = MagicMock()
     index_job._update_index_interval = MagicMock()
@@ -77,9 +77,10 @@ def test__load_data_new_entries(index_job):
     es.get_all_logs_for_index = MagicMock(return_value=processed_logs[:5])
     es.get_all_logs_after_ingest = MagicMock(return_value=processed_logs[:5])
     ServiceProvider.provide_elasticsearch = MagicMock(return_value=es)
-    result = index_job._load_data('index', index_job.index_interval.latest_ingest_time,
-                                  index_job.index_interval.latest_processed_time)
+    result, historical_entries = index_job._load_data('index', index_job.index_interval.latest_ingest_time,
+                                                      index_job.index_interval.latest_processed_time)
     assert result == processed_logs[:5]
+    assert historical_entries == False
 
 
 def update_timestamp(log):
@@ -109,7 +110,7 @@ def test__load_data_historical_entries(index_job):
     lpt = index_job.index_interval.latest_processed_time
 
     # when
-    result = index_job._load_data(index, lit, lpt)
+    result, historical_logs = index_job._load_data(index, lit, lpt)
 
     # then
     index_res = "_".join([index, PIPELINE_INDEX_EXT])
@@ -126,5 +127,6 @@ def test__store_results(index_job):
     es.save = MagicMock()
     es.delete_logs_for_index = MagicMock()
     ServiceProvider.provide_elasticsearch = MagicMock(return_value=es)
-    index_job._store_results(processed_logs[:4], "index")
+    results = processed_logs[:4]
+    index_job._store_results(results, "index")
     es.save.assert_called_once()
