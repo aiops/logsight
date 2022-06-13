@@ -56,14 +56,19 @@ class IndexJob(Job, ABC):
         """
         logger.debug(
             f"Performing aggregation on {self.index_interval.index} for the interval [{str(self.index_interval.latest_ingest_time)} - {str(self.index_interval.latest_ingest_time)}]")
-        data = self._load_data(self.index_interval.index, self.index_interval.latest_ingest_time,
-                               self.index_interval.latest_processed_time)
+        data, historical_logs = self._load_data(self.index_interval.index, self.index_interval.latest_ingest_time,
+                                                self.index_interval.latest_processed_time)
         if not len(data):
             return False
         # calculate
         results = self._calculate(data)
+
+        index = "_".join([self.index_interval.index, self.index_ext])
+        # delete historical
+        if historical_logs:
+            self._delete_historical_incidents(index, results[0]['timestamp'], results[-1]['timestamp'])
         # store
-        self._store_results(results, "_".join([self.index_interval.index, self.index_ext]))
+        self._store_results(results, index)
         logger.debug(f"Stored {len(results)} results")
         # ES Might not read all the messages in the specified period
         self._update_index_interval(dateutil.parser.isoparse(data[-1]['timestamp']),
@@ -87,19 +92,32 @@ class IndexJob(Job, ABC):
 
         """
         index = "_".join([index, PIPELINE_INDEX_EXT])
+        historical_logs = False
         with ServiceProvider.provide_elasticsearch() as es:
             try:
                 logs = es.get_all_logs_after_ingest(index, str(latest_ingest_time.isoformat()))
                 if len(logs) == 0:
-                    return logs
+                    return logs, historical_logs
                 if datetime.fromisoformat(logs[0]['timestamp']) > latest_processed_time:
-                    return logs
+                    return logs, historical_logs
                 else:
                     a = es.get_all_logs_for_index(index, logs[0]['timestamp'], logs[-1]['timestamp'])
-                    return a
+                    historical_logs = True
+                    return a, historical_logs
             except NotFoundError:
                 logger.warning(f"Data is not yet processed for index {'_'.join([index, PIPELINE_INDEX_EXT])}")
                 return []
+
+    @staticmethod
+    def _delete_historical_incidents(index: str, start_time, end_time):
+        with ServiceProvider.provide_elasticsearch() as es:
+            try:
+                es.delete_logs_for_index(index, start_time.isoformat(),
+                                         end_time.isoformat())
+            except NotFoundError:
+                logger.warning(f"Index {'_'.join([index, PIPELINE_INDEX_EXT])} is empty and data cannot be deleted")
+            except ConflictError:
+                logger.warning(f"Data on index {'_'.join([index, PIPELINE_INDEX_EXT])} is already deleted.")
 
     @staticmethod
     def _store_results(results: List, index: str):
