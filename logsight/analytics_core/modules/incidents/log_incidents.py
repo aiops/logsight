@@ -78,5 +78,4 @@ class IncidentDetector:
                               "timestamp_end": end_time,
                               "data": data_json_list}
                 properties_list.append(properties)
-        print(properties_list)
         return properties_list

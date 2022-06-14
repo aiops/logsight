@@ -55,12 +55,13 @@ class IndexJob(Job, ABC):
             True if the aggregation was successful
         """
         logger.debug(
-            f"Performing aggregation on {self.index_interval.index} for the interval [{str(self.index_interval.latest_ingest_time)} - {str(self.index_interval.latest_ingest_time)}]")
+            f"Performing aggregation on {self.index_interval.index} for the interval [{str(self.index_interval.latest_ingest_time)} - {str(self.index_interval.latest_processed_time)}]")
         data, historical_logs = self._load_data(self.index_interval.index, self.index_interval.latest_ingest_time,
                                                 self.index_interval.latest_processed_time)
         if not len(data):
             return False
         # calculate
+        logger.debug(f"Calculating incidents for {str(data[0]['ingest_timestamp'])} - {str(data[-1]['ingest_timestamp'])}.")
         results = self._calculate(data)
 
         index = "_".join([self.index_interval.index, self.index_ext])
@@ -105,8 +106,8 @@ class IndexJob(Job, ABC):
                     historical_logs = True
                     return a, historical_logs
             except NotFoundError:
-                logger.warning(f"Data is not yet processed for index {'_'.join([index, PIPELINE_INDEX_EXT])}")
-                return []
+                logger.warning(f"Data is not yet processed for index {index}")
+                return [], historical_logs
 
     @staticmethod
     def _delete_historical_incidents(index: str, start_time, end_time):
@@ -115,9 +116,9 @@ class IndexJob(Job, ABC):
                 es.delete_logs_for_index(index, start_time.isoformat(),
                                          end_time.isoformat())
             except NotFoundError:
-                logger.warning(f"Index {'_'.join([index, PIPELINE_INDEX_EXT])} is empty and data cannot be deleted")
+                logger.warning(f"Index {index} is empty and data cannot be deleted")
             except ConflictError:
-                logger.warning(f"Data on index {'_'.join([index, PIPELINE_INDEX_EXT])} is already deleted.")
+                logger.warning(f"Data on index {index} is already deleted.")
 
     @staticmethod
     def _store_results(results: List, index: str):
