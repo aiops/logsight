@@ -1,6 +1,6 @@
 from services import ConnectionConfig
 from services.database.postgres.db import PostgresDBConnection
-from services.elasticsearch.elasticsearch_service import ElasticsearchService
+from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 
 
 class ServiceProvider:

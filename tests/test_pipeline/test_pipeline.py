@@ -1,13 +1,15 @@
+import threading
 from unittest.mock import MagicMock, Mock
 
 import pytest
 
+from common.logsight_classes.configs import ConnectionConfigProperties
 from pipeline import PipelineBuilder
 from pipeline.modules.core import ConnectableModule
 from services import ModulePipelineConfig
 from elasticsearch import helpers
 
-from services.elasticsearch.elasticsearch_service import ElasticsearchService
+from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 from services.service_provider import ServiceProvider
 
 
@@ -19,7 +21,21 @@ def pipeline():
     yield pipeline
 
 
+@pytest.fixture
+def pipeline_with_control():
+    pipeline_cfg = ModulePipelineConfig().pipeline_config
+    pipeline_cfg.connectors.control_source = ConnectionConfigProperties(classname="StdinSource", connection="stdin")
+    # Add control source
+
+    builder = PipelineBuilder()
+    pipeline = builder.build(pipeline_cfg)
+    yield pipeline
+
+
 def test_run(pipeline):
+    pipeline.control_source = MagicMock()
+    threading.Thread = MagicMock()
+    threading.Thread.start = MagicMock()
     pipeline.data_source._receive_message = MagicMock(
         return_value="""{"logs": [{"timestamp": "2020-01-01", "message": "Hello World", "level": "INFO"}],
                       "index": "test_index"}""".encode('utf-8')
@@ -28,7 +44,7 @@ def test_run(pipeline):
         pipeline.modules['log_ad'].ad.model.predict = MagicMock(return_value=[0], side_effect=[[0]])
     for module_name in pipeline.modules:
         if isinstance(pipeline.modules[module_name], ConnectableModule):
-            pipeline.modules[module_name].connector = MagicMock()
+            pipeline.modules[module_name].connector = MagicMock(sepc=pipeline.modules[module_name].connector)
             pipeline.modules[module_name].connector.connect = MagicMock()
             pipeline.modules[module_name].connector.send = MagicMock()
 

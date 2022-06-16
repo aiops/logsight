@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Union
+from typing import Dict, Optional, Union
 
+from analytics_core.logs import LogBatch
 from connectors.base.connector import Connector
 from connectors.serializers import DictSerializer, Serializer
 
@@ -21,7 +22,7 @@ class Source:
         """
         raise NotImplementedError
 
-    def receive_message(self):
+    def receive_message(self) -> Union[Dict, LogBatch]:
         """
         This function receives a message from the source and transforms it
         :return: The transformed message
