@@ -26,31 +26,15 @@ class LogTokenizer:
             self.index2word[self.n_words] = word
             self.n_words += 1
 
+    def _perform_actions(self, token):
+        lower = token.lower()
+        if token.isalpha() and lower not in self.stop_words:
+            return self.word2index.get(lower, None)
+
     def tokenize(self, message):
-        message = self._preprocess(message)
-        for w in range(len(message)):
-            self.add_word(message[w])
-            message[w] = self.word2index[message[w]]
-
-        return message
-
-    def _preprocess(self, message):
         message = self.regex_tokenizer.tokenize(message)
-        message = [w.lower() for w in message if w.isalpha() and w.lower() not in self.stop_words]
-        message = [word for word in message if word.isalpha()]
-        message = [w for w in message if w not in self.stop_words]
-        message = ['[CLS]'] + message
-        return message
-
-    def tokenize_test(self, message):
-        message = self._preprocess(message)
-        i = 0
-        for _ in range(len(message)):
-            if message[i] in self.word2index.keys():
-                message[i] = self.word2index[message[i]]
-                i += 1
-            else:
-                message.pop(i)
+        message = list(filter(lambda x: x is not None, map(self._perform_actions, message)))
+        message = [self.word2index['[CLS]']] + message
         return message
 
     @staticmethod

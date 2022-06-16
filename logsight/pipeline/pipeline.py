@@ -6,6 +6,7 @@ from typing import Dict, Optional, Union
 
 from connectors import Connector, Source
 from connectors.sources.source import ConnectableSource
+from services.service_provider import ServiceProvider
 from .modules.core import Module
 from .modules.core.module import ConnectableModule
 
@@ -23,6 +24,7 @@ class Pipeline:
         self.input_module = input_module
         self.modules = modules
         self.metadata = metadata
+        self.storage = ServiceProvider.provide_postgres()
 
     def run(self):
         """
@@ -61,14 +63,15 @@ class Pipeline:
         total = 0
         total_t = 0
         while self.data_source.has_next():
-            message = self.data_source.receive_message()
-            logger.info(f"Received Batch {message.id}")
+            log_batch = self.data_source.receive_message()
+            logger.info(f"Received Batch {log_batch.id}")
             t = time.perf_counter()
-            self.input_module.handle(message)
-            total += len(message.logs)
+            result = self.input_module.handle(log_batch)
+            total += len(log_batch.logs)
             total_t += time.perf_counter() - t
-            logger.debug(f"Processed {len(message.logs)} logs in {time.perf_counter() - t}")
-            logger.debug(f"Total:{total} time: {total_t}")
+            logger.info(f"Processed {len(log_batch.logs)} logs in {time.perf_counter() - t}")
+            logger.info(f"Total:{total} time: {total_t}")
+            self.storage.update_log_receipt(log_batch.id, len(result.logs))
 
     def _start_control_listener(self):
         """

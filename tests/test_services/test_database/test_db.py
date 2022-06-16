@@ -1,8 +1,11 @@
+from unittest import mock
 from unittest.mock import MagicMock
 
 import pytest
 
+from common.logsight_classes.enums import LogBatchStatus
 from services.database.exceptions import DatabaseException
+from services.database.postgres.sql_statements import UPDATE_LOG_RECEIPT
 from services.service_provider import ServiceProvider
 
 
@@ -34,3 +37,11 @@ def test__verify_database_exists_exception(database):
     pytest.raises(ConnectionError, database._verify_database_exists, database.conn)
 
     database.conn.execute.assert_called()
+
+
+def test_update_log_receipt(database):
+    database._execute_sql = MagicMock()
+    query = UPDATE_LOG_RECEIPT
+    database.update_log_receipt("random_uuid", 500)
+
+    database._execute_sql.assert_called_once_with(query, (500, LogBatchStatus.DONE.value, "random_uuid",))

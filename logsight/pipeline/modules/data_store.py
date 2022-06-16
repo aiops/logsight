@@ -53,3 +53,24 @@ class LogStoreModule(ConnectableModule):
         processed = [to_flat_dict(log) for log in batch.logs]
         self.connector.send(processed, target="_".join([batch.index, PIPELINE_INDEX_EXT]))
         return batch
+
+
+class TemplateStoreModule(ConnectableModule):
+    """
+    Module for storing the data using a connector.
+    """
+
+    def process(self, batch: LogBatch) -> LogBatch:
+        """
+        The process function is called for every batch of logs that is received.
+        Its purpose is to send the log data using a connector and store it in a format that can be
+        queried later.  The function should return the log batch if no errors are encountered.
+        Args:
+        data (LogBatch): Pass the log batch object to the process function
+        Returns:
+             LogBatch: The log batch, so we can use it in the next function
+        """
+        templates = {log.metadata.get('template', "") for log in batch.logs}
+        processed = [{"template": template} for template in templates]
+        self.connector.send(processed, target="_".join([batch.index, "templates"]))
+        return batch
