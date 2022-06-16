@@ -1,1 +1,1 @@
-from .postgres.db import PostgresDBConnection
+from .postgres.db import PostgresDBService

@@ -4,7 +4,7 @@ from ..base import Database
 from ..exceptions import DatabaseException
 
 
-class PostgresDBConnection(Database):
+class PostgresDBService(Database):
 
     def __init__(self, host, port, username, password, db_name, driver=""):
         self.__doc__ = super().__init__.__doc__

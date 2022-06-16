@@ -9,6 +9,7 @@ from pipeline.modules.core import ConnectableModule
 from services import ModulePipelineConfig
 from elasticsearch import helpers
 
+from services.database.postgres.db import PostgresDBService
 from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 from services.service_provider import ServiceProvider
 
@@ -56,6 +57,7 @@ def test_run(pipeline):
     pipeline.data_source.has_next = Mock(side_effect=[True, False])
     helpers.bulk = MagicMock()
     pipeline.data_source.connect = MagicMock()
+    pipeline.storage = MagicMock()
 
     pipeline.run()
 

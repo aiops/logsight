@@ -8,7 +8,7 @@ from jobs.persistence import sql_statements as statements
 from jobs.persistence.dto import IndexInterval
 from services import ConnectionConfig
 from services.database.base import Database
-from services.database.postgres.db import PostgresDBConnection
+from services.database.postgres.db import PostgresDBService
 
 logger = logging.getLogger("logsight")
 
@@ -43,7 +43,7 @@ class TimestampStorage(ABC):
         raise NotImplementedError
 
 
-class PostgresTimestampStorage(TimestampStorage, PostgresDBConnection):
+class PostgresTimestampStorage(TimestampStorage, PostgresDBService):
     def __init__(self, table, host, port, username, password, db_name, driver=""):
         Database.__init__(self, host, port, username, password, db_name, driver)
         TimestampStorage.__init__(self, table)
