@@ -49,12 +49,18 @@ class ElasticsearchSink(ConnectableSink):
     def send(self, data, target: Optional[str] = None):
         if not isinstance(data, list):
             data = [data]
-        if not helpers.bulk(
-                self.es,
-                data,
-                pipeline=ES_PIPELINE_ID_INGEST_TIMESTAMP,
-                index=target,
-                stats_only=True
-        ):
-            logger.warning(f"Failed to send data to elasticsearch. Retrying...")
-            raise ElasticsearchException()
+        for success, info in helpers.parallel_bulk(self.es, self.insert_data(data, target),
+                                                   pipeline=ES_PIPELINE_ID_INGEST_TIMESTAMP,
+                                                   thread_count=8):
+            if not success:
+                logger.info(f"Failed to send data to elasticsearch. Retrying...")
+                raise ElasticsearchException()
+
+    @staticmethod
+    def insert_data(documents, index):
+        for document in documents:
+            yield {
+                '_op_type': 'index',
+                '_index': index,
+                '_source': document
+            }

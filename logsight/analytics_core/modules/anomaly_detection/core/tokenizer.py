@@ -18,7 +18,6 @@ class LogTokenizer:
         except LookupError:
             nltk.download('stopwords')
             self.stop_words = set(stopwords.words('english'))
-        self.regex_tokenizer = nltk.RegexpTokenizer(r' ', gaps=True)
 
     def add_word(self, word):
         if word not in self.word2index:
@@ -32,8 +31,7 @@ class LogTokenizer:
             return self.word2index.get(lower, None)
 
     def tokenize(self, message):
-        message = self.regex_tokenizer.tokenize(message)
-        message = list(filter(lambda x: x is not None, map(self._perform_actions, message)))
+        message = list(filter(lambda x: x is not None, map(self._perform_actions, message.split(" "))))
         message = [self.word2index['[CLS]']] + message
         return message
 
