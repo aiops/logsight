@@ -3,6 +3,7 @@ from dataclasses import asdict
 from unittest.mock import MagicMock
 
 import pytest
+import ujson
 
 from analytics_core.logs import LogBatch, LogsightLog
 from connectors.serializers import DictSerializer, LogBatchSerializer
@@ -42,6 +43,6 @@ def test_deserialize_log_batch(log_batch_s, log_batch):
 
 
 def test_serialize_log_batch(log_batch_s, log_batch):
-    expected = json.dumps(asdict(log_batch)).encode('utf-8')
+    expected = ujson.dumps(asdict(log_batch)).encode('utf-8')
     result = log_batch_s.serialize(log_batch)
     assert expected == result
