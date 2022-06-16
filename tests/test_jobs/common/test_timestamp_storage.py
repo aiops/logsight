@@ -4,11 +4,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from results.persistence.dto import IndexInterval
-from results.persistence.sql_statements import CREATE_TABLE, SELECT_ALL, SELECT_ALL_USER_INDEX, SELECT_ALL_INDEX, \
+from jobs.persistence.dto import IndexInterval
+from jobs.persistence.sql_statements import CREATE_TABLE, SELECT_ALL, SELECT_ALL_USER_INDEX, SELECT_ALL_INDEX, \
     SELECT_FOR_INDEX, \
     SELECT_TABLE, UPDATE_TIMESTAMPS
-from results.persistence.timestamp_storage import PostgresTimestampStorage
+from jobs.persistence.timestamp_storage import PostgresTimestampStorage
 from tests.utils import random_times
 
 
@@ -18,7 +18,7 @@ def db_timestamps() -> PostgresTimestampStorage:
 
 
 def get_index_intervals(n_intervals):
-    return [asdict(IndexInterval("index", *random_times("2020-01-01 00:00:00", "2022-01-01 00:00:00", 2))) for _ in
+    return [asdict(IndexInterval("index", *random_times("2020-01-01 00:00:00", "2022-01-01 00:00:00", 1))) for _ in
             range(n_intervals)]
 
 
@@ -73,12 +73,12 @@ def test_update_timestamps(db_timestamps):
     result = db_timestamps.update_timestamps(interval)
     db_timestamps._execute_sql.assert_called_once_with(
         UPDATE_TIMESTAMPS % (
-            db_timestamps.__table__, interval.index, interval.latest_ingest_time, interval.latest_processed_time))
+            db_timestamps.__table__, interval.index, interval.latest_ingest_time))
     assert isinstance(result, IndexInterval)
 
 
 def test__verify_database_exists(db_timestamps):
-    with mock.patch('results.persistence.timestamp_storage.super') as mock_super:
+    with mock.patch('jobs.persistence.timestamp_storage.super') as mock_super:
         mock_super.side_effect = None
         db_timestamps.conn = MagicMock()
         db_timestamps.conn.execute = MagicMock()

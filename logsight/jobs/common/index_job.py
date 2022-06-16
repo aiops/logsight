@@ -8,8 +8,8 @@ from elasticsearch import NotFoundError, ConflictError
 
 from common.patterns.job import Job
 from configs.global_vars import PIPELINE_INDEX_EXT
-from results.persistence.dto import IndexInterval
-from results.persistence.timestamp_storage import TimestampStorageProvider
+from jobs.persistence.dto import IndexInterval
+from jobs.persistence.timestamp_storage import TimestampStorageProvider
 from services.service_provider import ServiceProvider
 
 logger = logging.getLogger("logsight")
@@ -54,60 +54,52 @@ class IndexJob(Job, ABC):
         Returns:
             True if the aggregation was successful
         """
+        now = datetime.utcnow().replace(second=0, microsecond=0) - timedelta(minutes=1)
         logger.debug(
-            f"Performing aggregation on {self.index_interval.index} for the interval [{str(self.index_interval.latest_ingest_time)} - {str(self.index_interval.latest_processed_time)}]")
-        data, historical_logs = self._load_data(self.index_interval.index, self.index_interval.latest_ingest_time,
-                                                self.index_interval.latest_processed_time)
+            f"Performing aggregation on {self.index_interval.index} for the interval [{str(self.index_interval.latest_ingest_time)}-{now}]")
+        data = self._load_data(self.index_interval.index, self.index_interval.latest_ingest_time)
         if not len(data):
             return False
         # calculate
-        logger.debug(f"Calculating incidents for {str(data[0]['ingest_timestamp'])} - {str(data[-1]['ingest_timestamp'])}.")
+        min_ingest = min([x['ingest_timestamp'] for x in data])
+        max_ingest = max([x['ingest_timestamp'] for x in data])
+        logger.debug(
+            f"Calculating incidents for {str(min_ingest)} - {str(max_ingest)}.")
         results = self._calculate(data)
 
         index = "_".join([self.index_interval.index, self.index_ext])
-        # delete historical
-        if historical_logs:
-            self._delete_historical_incidents(index, results[0]['timestamp'], results[-1]['timestamp'])
+
         # store
         self._store_results(results, index)
         logger.debug(f"Stored {len(results)} results")
         # ES Might not read all the messages in the specified period
-        self._update_index_interval(dateutil.parser.isoparse(data[-1]['timestamp']),
-                                    dateutil.parser.isoparse(data[-1]['ingest_timestamp']))
+
+        self._update_index_interval(dateutil.parser.isoparse(max_ingest))
         return True
 
-    def _update_index_interval(self, last_processed_datetime, last_ingest_datetime):
-        self.index_interval.latest_processed_time = last_processed_datetime + timedelta(milliseconds=1)
+    def _update_index_interval(self, last_ingest_datetime):
         self.index_interval.latest_ingest_time = last_ingest_datetime + timedelta(milliseconds=1)
 
     @staticmethod
-    def _load_data(index, latest_ingest_time, latest_processed_time):
+    def _load_data(index, latest_ingest_time):
         """
         Load the data from elasticsearch
         Args:
             index: elasticsearch index
             latest_ingest_time: ingest time of the entries
-            latest_processed_time: last date of processed logs
 
         Returns:
 
         """
         index = "_".join([index, PIPELINE_INDEX_EXT])
-        historical_logs = False
         with ServiceProvider.provide_elasticsearch() as es:
             try:
-                logs = es.get_all_logs_after_ingest(index, str(latest_ingest_time.isoformat()))
-                if len(logs) == 0:
-                    return logs, historical_logs
-                if datetime.fromisoformat(logs[0]['timestamp']) > latest_processed_time:
-                    return logs, historical_logs
-                else:
-                    a = es.get_all_logs_for_index(index, logs[0]['timestamp'], logs[-1]['timestamp'])
-                    historical_logs = True
-                    return a, historical_logs
+                now = datetime.utcnow().replace(second=0, microsecond=0) - timedelta(minutes=1)
+
+                return es.get_all_logs_after_ingest(index, str(latest_ingest_time.isoformat()), str(now.isoformat()))
             except NotFoundError:
                 logger.warning(f"Data is not yet processed for index {index}")
-                return [], historical_logs
+                return []
 
     @staticmethod
     def _delete_historical_incidents(index: str, start_time, end_time):

@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 import pytest
 
-from results.common.index_job import IndexJobResult
-from results.persistence.dto import IndexInterval
+from jobs.common.index_job import IndexJobResult
+from jobs.persistence.dto import IndexInterval
 
 
 @pytest.fixture

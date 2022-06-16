@@ -4,8 +4,8 @@ from typing import List
 
 from analytics_core.modules.incidents import IncidentDetector
 from configs.global_vars import PIPELINE_INDEX_EXT
-from results.common.index_job import IndexJob
-from results.persistence.dto import IndexInterval
+from jobs.common.index_job import IndexJob
+from jobs.persistence.dto import IndexInterval
 from services.service_provider import ServiceProvider
 
 logger = logging.getLogger("logsight." + __name__)

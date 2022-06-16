@@ -3,9 +3,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from results.common.factory import JobDispatcherFactory
-from results.persistence.dto import IndexInterval
-from results.persistence.timestamp_storage import PostgresTimestampStorage
+from jobs.common.factory import JobDispatcherFactory
+from jobs.persistence.dto import IndexInterval
+from jobs.persistence.timestamp_storage import PostgresTimestampStorage
 from tests.utils import random_times
 
 
@@ -26,7 +26,7 @@ def job_dispatcher(db):
 
 
 def get_index_intervals(n_intervals):
-    return [IndexInterval("index", *random_times("2020-01-01 00:00:00", "2022-01-01 00:00:00", 2)) for _ in
+    return [IndexInterval("index", *random_times("2020-01-01 00:00:00", "2022-01-01 00:00:00", 1)) for _ in
             range(n_intervals)]
 
 
@@ -60,5 +60,5 @@ def test_sync_index(job_dispatcher):
 
 def test_start(job_dispatcher):
     job_dispatcher.timer.start = MagicMock()
-    job_dispatcher.start()
+    job_dispatcher.run()
     job_dispatcher.timer.start.assert_called()

@@ -1,6 +1,8 @@
-from results.common.factory import JobDispatcherFactory
-from results.common.job_dispatcher import PeriodicJobDispatcher
-from results.persistence.timestamp_storage import PostgresTimestampStorage
+from configs.global_vars import ES_CLEANUP_AGE
+from jobs.common.factory import JobDispatcherFactory
+from jobs.common.job_dispatcher import PeriodicJobDispatcher, TimedJobDispatcher
+from jobs.jobs.delete_es_data_job import DeleteESDataJob
+from jobs.persistence.timestamp_storage import PostgresTimestampStorage
 
 
 def test_get_incident_dispatcher():
@@ -21,3 +23,10 @@ def test_get_log_agg_dispatcher():
     assert isinstance(dispatcher.storage, PostgresTimestampStorage)
     assert dispatcher.timer.name == "CalculateLogAgg_timer"
     assert dispatcher.storage.__table__ == "log_agg"
+
+
+def test_get_es_delete_idx_dispatcher():
+    dispatcher = JobDispatcherFactory.get_es_delete_idx_dispatcher(timeout_period=10)
+    assert isinstance(dispatcher.job, DeleteESDataJob)
+    assert isinstance(dispatcher, TimedJobDispatcher)
+    assert dispatcher.job.cleanup_age == ES_CLEANUP_AGE

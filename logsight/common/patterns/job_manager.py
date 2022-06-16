@@ -9,10 +9,6 @@ logger = logging.getLogger("logsight." + __name__)
 
 class JobManager(ABC):
 
-    @staticmethod
-    def done_callback(future):
-        raise NotImplementedError("A callback function not provided")
-
     def __init__(self, max_workers=5):
         """ Orchestrates different jobs in a pool of threads
         Attributes

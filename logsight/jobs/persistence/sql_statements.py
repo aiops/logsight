@@ -5,7 +5,6 @@ SELECT_TABLE = """SELECT table_name FROM information_schema.tables
 CREATE_TABLE = """CREATE TABLE %s(
                 index varchar(512) NOT NULL,
                 latest_ingest_time timestamp,
-                latest_processed_time timestamp,
                 PRIMARY KEY (index),
                 CONSTRAINT fk_index FOREIGN KEY (index)
                   REFERENCES users (key)
@@ -15,11 +14,10 @@ CREATE_TABLE = """CREATE TABLE %s(
 # noinspection SqlResolve
 UPDATE_TIMESTAMPS = """
 
-INSERT INTO %s(index, latest_ingest_time, latest_processed_time) 
-                        VALUES ('%s','%s','%s')
+INSERT INTO %s(index, latest_ingest_time) 
+                        VALUES ('%s','%s')
                         ON CONFLICT (index) DO UPDATE 
-                          SET latest_ingest_time = excluded.latest_ingest_time, 
-                              latest_processed_time = excluded.latest_processed_time RETURNING *;"""
+                          SET latest_ingest_time = excluded.latest_ingest_time RETURNING *;"""
 # noinspection SqlResolve
 SELECT_ALL_INDEX = """SELECT index FROM %s"""
 

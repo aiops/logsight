@@ -20,17 +20,30 @@ GET_ALL_TEMPLATES = {
         "sort": [
             {"timestamp": {"order": "asc"}}
         ], "query": {"bool": {"filter": [
-            {"range": {"ingest_timestamp": {"format": "strict_date_optional_time", "gt": "now-15y", "lte": "now"}}}]}}}}
+            {"range": {"ingest_timestamp": {"format": "strict_date_optional_time", "gt": "now-1s", "lte": "now"}}}]}}}}
 
 GET_ALL_LOGS_INGEST = {"index": _index_placeholder, "body": {
     "sort": [
         {"timestamp": {"order": "asc"}}
     ], "query": {"bool": {
         "must": [
-            {"range": {"ingest_timestamp": {"format": "strict_date_optional_time", "gt": _start_time_placeholder}}}],
+            {"range": {"ingest_timestamp": {"format": "strict_date_optional_time", "gt": _start_time_placeholder,
+                                            "lt": _end_time_placeholder
+                                            }}}],
         "filter": [{"match_all": {}}]}}}}
 
 DELETE_BY_QUERY = {"index": '$index', "body": {
-     "query": {"bool": {"must": [{"range": {
+    "query": {"bool": {"must": [{"range": {
         "timestamp": {"format": "strict_date_optional_time", "gte": _start_time_placeholder,
                       "lte": _end_time_placeholder}}}], "filter": [{"match_all": {}}]}}}}
+
+DELETE_BY_INGEST_TS_QUERY = {"index": '$index',
+                             "body": {"query": {
+                                 "range": {
+                                     "timestamp": {
+                                         "format": "strict_date_optional_time",
+                                         "gte": _start_time_placeholder,
+                                         "lte": _end_time_placeholder
+                                     }
+                                 }
+                             }}}

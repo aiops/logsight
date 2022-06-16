@@ -1,10 +1,12 @@
+from unittest import mock
 from unittest.mock import MagicMock, patch
 
 import pytest
 from elasticsearch import helpers
 
 from connectors.sinks.elasticsearch import ElasticsearchException
-from services.elasticsearch.elasticsearch_service import ElasticsearchService
+from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
+from services.elasticsearch_service.queries import DELETE_BY_INGEST_TS_QUERY, DELETE_BY_QUERY
 from tests.inputs import processed_logs
 
 
@@ -44,7 +46,7 @@ def test_all_templates_for_index(es):
 
 def test_get_all_logs_after_ingest(es):
     es.es.search = MagicMock(return_value=get_es_res(processed_logs))
-    result = es.get_all_logs_after_ingest("index", "end_time")
+    result = es.get_all_logs_after_ingest("index", "start_time", "end_time")
     assert result == processed_logs
 
 
@@ -58,6 +60,18 @@ def test_get_all_indices(es):
 
 def test_save(es):
     es.save(processed_logs, "index")
+
+
+def test_delete_by_ingest_timestamp(es):
+    es.es.delete_by_query = MagicMock()
+    es.delete_by_ingest_timestamp("index", "now-15m", "now")
+    es.es.delete_by_query.assert_called_once()
+
+
+def test_delete_logs_for_index(es):
+    es.es.delete_by_query = MagicMock()
+    es.delete_logs_for_index("index", "now-15m", "now")
+    es.es.delete_by_query.assert_called_once()
 
 
 def test_save_string(es):

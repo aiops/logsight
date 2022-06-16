@@ -4,8 +4,8 @@ from typing import List
 
 from dacite import from_dict
 
-from results.persistence import sql_statements as statements
-from results.persistence.dto import IndexInterval
+from jobs.persistence import sql_statements as statements
+from jobs.persistence.dto import IndexInterval
 from services import ConnectionConfig
 from services.database.base import Database
 from services.database.postgres.db import PostgresDBConnection
@@ -71,7 +71,7 @@ class PostgresTimestampStorage(TimestampStorage, PostgresDBConnection):
     def update_timestamps(self, timestamps: IndexInterval):
         sql = statements.UPDATE_TIMESTAMPS
         row = self._execute_sql(
-            sql % (self.__table__, timestamps.index, timestamps.latest_ingest_time, timestamps.latest_processed_time))
+            sql % (self.__table__, timestamps.index, timestamps.latest_ingest_time))
         return from_dict(data_class=IndexInterval, data=row)
 
     def _verify_database_exists(self, conn):
