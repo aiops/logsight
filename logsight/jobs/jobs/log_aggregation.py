@@ -2,8 +2,8 @@ import logging.config
 from typing import List
 
 from analytics_core.modules.log_aggregation import LogAggregator
-from results.common.index_job import IndexJob
-from results.persistence.dto import IndexInterval
+from jobs.common.index_job import IndexJob
+from jobs.persistence.dto import IndexInterval
 
 logger = logging.getLogger("logsight." + __name__)
 
