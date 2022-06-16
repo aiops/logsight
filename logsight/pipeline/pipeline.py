@@ -64,14 +64,15 @@ class Pipeline:
         total_t = 0
         while self.data_source.has_next():
             log_batch = self.data_source.receive_message()
+            log_count = len(log_batch.logs)
             logger.info(f"Received Batch {log_batch.id}")
             t = time.perf_counter()
-            result = self.input_module.handle(log_batch)
-            total += len(log_batch.logs)
+            self.input_module.handle(log_batch)
+            total += log_count
             total_t += time.perf_counter() - t
-            logger.info(f"Processed {len(log_batch.logs)} logs in {time.perf_counter() - t}")
+            logger.info(f"Processed {log_count} logs in {time.perf_counter() - t}")
             logger.info(f"Total:{total} time: {total_t}")
-            self.storage.update_log_receipt(log_batch.id, len(result.logs))
+            self.storage.update_log_receipt(log_batch.id, log_count)
 
     def _start_control_listener(self):
         """
