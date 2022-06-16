@@ -57,6 +57,7 @@ class Pipeline:
         """
         if self.control_source:
             internal = threading.Thread(name=str(self), target=self._start_control_listener, daemon=True)
+            internal.setDaemon(True)
             internal.start()
         total = 0
         total_t = 0
@@ -72,7 +73,6 @@ class Pipeline:
             logger.info(f"Total:{total} time: {total_t}")
             self.storage.update_log_receipt(log_batch.id, log_count)
         self._close()
-        assert False
 
     def _close(self):
         """
