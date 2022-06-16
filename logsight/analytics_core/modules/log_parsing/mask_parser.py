@@ -37,6 +37,9 @@ class MaskLogParser(Parser):
     def __setstate__(self, state):
         self.__dict__.update(state)
 
+    def close(self):
+        self.worker_pool.close()
+
     def parse(self, logs: List[LogsightLog]) -> List[LogsightLog]:
         return self.worker_pool.map(self._run_parse, logs)
 

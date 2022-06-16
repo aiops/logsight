@@ -56,9 +56,7 @@ class Pipeline:
         passing them to the input module
         """
         if self.control_source:
-            internal = threading.Thread(
-                name=str(self), target=self._start_control_listener, daemon=True
-            )
+            internal = threading.Thread(name=str(self), target=self._start_control_listener, daemon=True)
             internal.start()
         total = 0
         total_t = 0
@@ -73,6 +71,15 @@ class Pipeline:
             logger.info(f"Processed {log_count} logs in {time.perf_counter() - t}")
             logger.info(f"Total:{total} time: {total_t}")
             self.storage.update_log_receipt(log_batch.id, log_count)
+        self._close()
+        assert False
+
+    def _close(self):
+        """
+        The function calls close on every module
+        """
+        for module in self.modules.values():
+            module.close()
 
     def _start_control_listener(self):
         """

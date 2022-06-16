@@ -41,6 +41,7 @@ def test_run(pipeline):
         return_value="""{"logs": [{"timestamp": "2020-01-01", "message": "Hello World", "level": "INFO"}],
                       "index": "test_index"}""".encode('utf-8')
     )
+    pipeline.data_source.has_next = MagicMock(side_effect=[True, False])
     if 'log_ad' in pipeline.modules:
         pipeline.modules['log_ad'].ad.model.predict = MagicMock(return_value=[0], side_effect=[[0]])
     for module_name in pipeline.modules:
