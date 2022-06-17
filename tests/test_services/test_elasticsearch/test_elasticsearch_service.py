@@ -4,9 +4,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from elasticsearch import helpers
 
-from connectors.sinks.elasticsearch import ElasticsearchException
+from connectors.base.elasticsearch import ElasticsearchException
 from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
-from services.elasticsearch_service.queries import DELETE_BY_INGEST_TS_QUERY, DELETE_BY_QUERY
 from tests.inputs import processed_logs
 
 
@@ -76,7 +75,7 @@ def test_delete_logs_for_index(es):
 
 def test_save_string(es):
     helpers.bulk = MagicMock()
-    es.save("string", "index")
+    es.save("string", "index", False)
     helpers.bulk.assert_called_once()
 
 
@@ -86,6 +85,7 @@ def test_es_raises_exc(es_exception):
 
 def test_enter_exit(es):
     es.es.ping = MagicMock(return_value=True)
+    es.ingest_client.get_pipeline = MagicMock(return_value=True)
     es.es.close = MagicMock()
     with es as e:
         assert e.es.ping() is True

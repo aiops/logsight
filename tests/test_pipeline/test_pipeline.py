@@ -56,7 +56,7 @@ def test_run(pipeline):
     ServiceProvider.provide_elasticsearch = MagicMock(return_value=es)
 
     pipeline.data_source.has_next = Mock(side_effect=[True, False])
-    helpers.bulk = MagicMock()
+    helpers.parallel_bulk = MagicMock()
     pipeline.data_source.connect = MagicMock()
     pipeline.storage = MagicMock()
 

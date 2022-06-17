@@ -48,17 +48,8 @@ class ElasticsearchService(ElasticsearchConnector):
     def get_all_indices(self, extension):
         return list(self.es.indices.get(index=f"*{extension}").keys())
 
-    def save(self, data, index: str):
-        if not isinstance(data, list):
-            data = [data]
-        try:
-            helpers.bulk(self.es,
-                         data,
-                         index=index,
-                         request_timeout=200)
-        except Exception as e:
-            logger.warning(f"Failed to send data to elasticsearch. Reason: {e}. Retrying...")
-            raise e
+    def save(self, data, index: str, pipeline: bool = False):
+        return self.bulk(data, index, pipeline)
 
     @staticmethod
     def _parse_query(query, index, start_time=None, end_time=None):
