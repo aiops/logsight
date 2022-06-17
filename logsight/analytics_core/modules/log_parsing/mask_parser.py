@@ -32,7 +32,6 @@ class MaskLogParser(Parser):
     # See: https://stackoverflow.com/questions/25382455/python-notimplementederror-pool-objects-cannot-be-passed-between-processes
     def __getstate__(self):
         self_dict = self.__dict__.copy()
-        self_dict['worker_pool'].close()
         del self_dict['worker_pool']
         return self_dict
 
