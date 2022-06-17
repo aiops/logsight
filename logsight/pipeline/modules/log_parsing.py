@@ -18,3 +18,6 @@ class LogParserModule(TransformModule):
     def transform(self, data: LogBatch) -> LogBatch:
         data.logs = self.parser.parse(data.logs)
         return data
+
+    def close(self):
+        self.parser.close()

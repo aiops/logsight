@@ -11,7 +11,6 @@ class LogAggregator:
 
     @staticmethod
     def aggregate_logs(logs: List[Dict]) -> List:
-        logger.info(f"Logs to be aggregated: {len(logs)}")
         df = pd.DataFrame(logs).set_index('timestamp')
         df.index = pd.to_datetime(df.index)
         grouped = df.groupby(pd.Grouper(freq='T')).agg(prediction=('prediction', 'sum'),
