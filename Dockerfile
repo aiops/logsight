@@ -1,20 +1,18 @@
 # docker build -t logsight/logsight .
 
 # set base image (host OS)
-FROM python:3.7
+FROM python:3.8
 
-RUN apt-get update
-RUN apt-get -y install libc-bin
-#RUN apt-get -y install python3-numpy
-#RUN apt-get -y install python3-sklearn
-#RUN apt-get -y install python3-pandas
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends libc-bin && \
+    rm -r /var/lib/apt/lists/*
 
 # set the working directory in the container
 WORKDIR /code
 
 COPY requirements.txt .
 # install dependencies
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # copy code
 COPY logsight/ logsight
