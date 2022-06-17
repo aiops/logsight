@@ -4,8 +4,8 @@
 FROM python:3.8
 
 RUN apt-get update && \
-    apt-get -y install --no-install-recommends libc-bin=2.23-0ubuntu11.3 && \
-    rm /var/lib/apt/lists/*
+    apt-get -y install --no-install-recommends libc-bin && \
+    rm -r /var/lib/apt/lists/*
 
 # set the working directory in the container
 WORKDIR /code
