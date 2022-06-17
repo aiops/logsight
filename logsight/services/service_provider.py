@@ -1,12 +1,12 @@
 from services import ConnectionConfig
-from services.database.postgres.db import PostgresDBConnection
-from services.elasticsearch.elasticsearch_service import ElasticsearchService
+from services.database.postgres.db import PostgresDBService
+from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 
 
 class ServiceProvider:
     @staticmethod
     def provide_postgres():
-        return PostgresDBConnection(**ConnectionConfig().get_postgres_params())
+        return PostgresDBService(**ConnectionConfig().get_postgres_params())
 
     @staticmethod
     def provide_elasticsearch() -> ElasticsearchService:

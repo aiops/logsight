@@ -52,7 +52,7 @@ class LogBatchSerializer(Serializer):
         Returns:
             A bytes object
         """
-        return json.dumps(asdict(data)).encode('utf-8')
+        return ujson.dumps(asdict(data)).encode('utf-8')
 
     def deserialize(self, data: bytes) -> LogBatch:
         """

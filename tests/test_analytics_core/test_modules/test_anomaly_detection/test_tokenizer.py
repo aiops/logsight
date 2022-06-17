@@ -41,17 +41,6 @@ def test_tokenize(message):
     assert result == [1, 52, 2378, 28, 5]
 
 
-def test__preprocess(message):
-    tokenizer = LogTokenizer()
-    result = tokenizer._preprocess(message)
-    num_valid = len(message.split(" ")) - 2  # two invalid words
-    assert len(result) == num_valid + 1  # two invalid dropped + special token
-    assert result[0] == "[CLS]"
-    assert any(x.isupper() for x in "".join(result[1:])) is False  # no uppercase
-    assert any(x.isdigit() for x in "".join(result[1:])) is False  # no numbers
-    assert all(x.isalpha() for x in "".join(result[1:])) is True  # all alphabet
-
-
 def test_load_from_pickle():
     tokenizer = LogTokenizer.load_from_pickle()
     assert isinstance(tokenizer, LogTokenizer)

@@ -9,7 +9,7 @@ from .core.base import BaseAnomalyDetector
 from .core.config import AnomalyDetectionConfig
 from .core.tokenizer import LogTokenizer
 from .models.onnx_model import OnnxModel
-from .utils import get_padded_data
+from .utils import pad_sequences
 from ...logs import LogBatch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "core"))
@@ -26,17 +26,10 @@ class LogAnomalyDetector(BaseAnomalyDetector):
         logger.debug("LogAnomalyDetector initialized successfully.")
 
     def predict(self, log_batch: LogBatch) -> LogBatch:
-        log_messages = []
-        tokenized = None
 
-        for log in log_batch.logs:
-            tokenized = np.array(self.tokenizer.tokenize_test(log.message))
-            log_messages.append(tokenized[:self.config.max_len])
+        tokenized = [self.tokenizer.tokenize(log.message) for log in log_batch.logs]
 
-        log_messages[-1] = np.concatenate((tokenized, np.array([0] * self.config.pad_len)))[
-                           :self.config.pad_len]
-
-        padded = get_padded_data(log_messages, self.config.pad_len)
+        padded = pad_sequences(tokenized, maxlen=self.config.pad_len)
         prediction = self.model.predict(padded)
         for i, log in enumerate(log_batch.logs):
             try:

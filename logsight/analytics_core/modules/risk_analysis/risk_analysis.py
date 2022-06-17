@@ -24,9 +24,8 @@ class RiskAnalysis:
     def level_as_binary(level):
         return int(str(level).upper() in ["ERROR", "ERR", "CRITICAL", "FAULT"])
 
-    def calculate_risk(self, log: LogsightLog, templates: List[str]):
-        log.metadata['added_state'] = int(log.metadata['template'] in templates)
-
+    def calculate_risk(self, log: LogsightLog):
+        log.metadata['added_state'] = 0
         log.metadata['risk_score'] = self.states[
             (log.metadata['added_state'], int(log.metadata['prediction']), (self.level_as_binary(log.level)))]
         return log
