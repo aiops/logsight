@@ -66,7 +66,8 @@ class ElasticsearchConnector(Connector):
             data = [data]
         for success, info in helpers.parallel_bulk(self.es, self.insert_data(data, index),
                                                    pipeline=ingest_pipeline,
-                                                   thread_count=8):
+                                                   thread_count=8,
+                                                   request_timeout=200):
             if not success:
                 logger.info(f"Failed to send data to elasticsearch. Retrying...")
                 raise ElasticsearchException()
