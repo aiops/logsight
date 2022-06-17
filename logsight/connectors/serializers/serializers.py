@@ -1,47 +1,17 @@
-import json
 from dataclasses import asdict
-from typing import Dict
 
 import ujson
 
 from analytics_core.logs import LogBatch, LogsightLog
-from connectors.serializers import Serializer
+from connectors.serializers.base import LogBatchSerializer
 
 
-class DictSerializer(Serializer):
-    """
-    This class transforms a string or a dictionary and returns a dictionary
-    """
-
-    def deserialize(self, data: bytes) -> Dict:
-        """
-        The deserialize function takes a bytes object and returns a dictionary.
-        Args:
-            data:bytes: Deserialize the data into a dictionary
-
-        Returns:
-            A dictionary
-        """
-        return json.loads(data.decode('utf-8'))
-
-    def serialize(self, data: Dict) -> bytes:
-        """
-        The serialize function takes a dictionary of data and returns a byte string.
-        Args:
-            data:Dict: Pass the data that is to be serialized
-
-        Returns:
-            A bytes object
-        """
-        return json.dumps(data).encode('utf-8')
-
-
-class LogBatchSerializer(Serializer):
+class JSONSerializer(LogBatchSerializer):
     """
     Transformer class for transforming data to LogBatch
     """
 
-    def serialize(self, data: LogBatch) -> bytes:
+    def serialize(self, data: LogBatch) -> str:
         """
         The serialize function takes a LogBatch object and returns a byte string.
         The byte string is the serialized representation of the LogBatch object.
@@ -52,9 +22,9 @@ class LogBatchSerializer(Serializer):
         Returns:
             A bytes object
         """
-        return ujson.dumps(asdict(data)).encode('utf-8')
+        return ujson.dumps(asdict(data))
 
-    def deserialize(self, data: bytes) -> LogBatch:
+    def deserialize(self, data: str) -> LogBatch:
         """
         The deserialize function takes a byte string and returns an instance of the LogBatch class.
 
@@ -64,6 +34,6 @@ class LogBatchSerializer(Serializer):
         Returns:
             A LogBatch object
         """
-        d = ujson.loads(data.decode('utf-8'))
+        d = ujson.loads(data)
         return LogBatch(id=d.get('id'), index=d.get('index'), logs=[LogsightLog(**log) for log in d['logs']],
                         metadata=d.get('metadata', dict()))
