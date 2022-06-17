@@ -1,7 +1,7 @@
 from datetime import datetime
 import random
 from analytics_core.modules.log_parsing.mask_parser import ExtractedParameter
-from logsight.analytics_core.logs import LogsightLog, LogBatch
+from analytics_core.logs import LogsightLog, LogBatch
 
 
 class TestInputConfig:

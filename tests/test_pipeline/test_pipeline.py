@@ -1,4 +1,5 @@
 import threading
+from unittest import mock
 from unittest.mock import MagicMock, Mock
 
 import pytest
@@ -33,10 +34,9 @@ def pipeline_with_control():
     yield pipeline
 
 
+@mock.patch("threading.Thread")
 def test_run(pipeline):
     pipeline.control_source = MagicMock()
-    threading.Thread = MagicMock()
-    threading.Thread.start = MagicMock()
     pipeline.data_source._receive_message = MagicMock(
         return_value="""{"logs": [{"timestamp": "2020-01-01", "message": "Hello World", "level": "INFO"}],
                       "index": "test_index"}""".encode('utf-8')
