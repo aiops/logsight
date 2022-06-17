@@ -24,7 +24,8 @@ class MaskLogParser(Parser):
         self.enable_parameter_extraction = config.enable_parameter_extraction
         self.parameter_extraction_cache = LRUCache(config.parameter_extraction_cache_capacity)
 
-        self.worker_pool = Pool(multiprocessing.cpu_count() - 1)
+        cpu_count = multiprocessing.cpu_count()
+        self.worker_pool = Pool(cpu_count - 1) if (cpu_count - 1) else Pool(cpu_count)
 
     # The Pool.map method applies pickle do IPC with python objects. It cannot pickle the pool itself.
     # We Exclude the worker_pool from pickle to prevent Pool.map raise an exception
