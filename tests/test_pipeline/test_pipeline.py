@@ -10,7 +10,6 @@ from pipeline.modules.core import ConnectableModule
 from services import ModulePipelineConfig
 from elasticsearch import helpers
 
-from services.database.postgres.db import PostgresDBService
 from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 from services.service_provider import ServiceProvider
 
