@@ -6,8 +6,8 @@ from typing import Optional
 # noinspection PyPackageRequirements,PyProtectedMember
 from kafka import KafkaConsumer as Consumer, TopicPartition
 
-from connectors.serializers import Serializer
-from connectors.sources.source import ConnectableSource
+from connectors.serializers.base import LogBatchSerializer
+from connectors.sources.source import LogBatchConnectableSource
 
 logger = logging.getLogger("logsight." + __name__)
 

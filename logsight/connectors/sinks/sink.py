@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from connectors.base.connector import Connector
 from connectors.serializers import JSONSerializer
-from connectors.serializers import LogBatchSerializer
+from connectors.serializers.base import LogBatchSerializer
 
 
 class Sink:

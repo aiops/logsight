@@ -5,12 +5,12 @@ import pytest
 import ujson
 
 from analytics_core.logs import LogBatch, LogsightLog
-from connectors.serializers import LogBatchSerializer
+from connectors.serializers import JSONSerializer
 
 
 @pytest.fixture
 def log_batch_s():
-    yield LogBatchSerializer()
+    yield JSONSerializer()
 
 
 @pytest.fixture
