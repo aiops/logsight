@@ -35,10 +35,6 @@ class TimestampStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def select_all_user_index(self) -> List[str]:
-        raise NotImplementedError
-
-    @abstractmethod
     def select_all_index(self) -> List[str]:
         raise NotImplementedError
 
@@ -47,11 +43,6 @@ class PostgresTimestampStorage(TimestampStorage, PostgresDBService):
     def __init__(self, table, host, port, username, password, db_name, driver=""):
         Database.__init__(self, host, port, username, password, db_name, driver)
         TimestampStorage.__init__(self, table)
-
-    def select_all_user_index(self) -> List[str]:
-        sql = statements.SELECT_ALL_USER_INDEX
-        rows = [row['key'] for row in self._read_many(sql)]
-        return rows
 
     def select_all_index(self) -> List[str]:
         sql = statements.SELECT_ALL_INDEX

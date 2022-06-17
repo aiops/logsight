@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from jobs.persistence.dto import IndexInterval
-from jobs.persistence.sql_statements import CREATE_TABLE, SELECT_ALL, SELECT_ALL_USER_INDEX, SELECT_ALL_INDEX, \
+from jobs.persistence.sql_statements import CREATE_TABLE, SELECT_ALL, SELECT_ALL_INDEX, \
     SELECT_FOR_INDEX, \
     SELECT_TABLE, UPDATE_TIMESTAMPS
 from jobs.persistence.timestamp_storage import PostgresTimestampStorage
@@ -20,17 +20,6 @@ def db_timestamps() -> PostgresTimestampStorage:
 def get_index_intervals(n_intervals):
     return [asdict(IndexInterval("index", *random_times("2020-01-01 00:00:00", "2022-01-01 00:00:00", 1))) for _ in
             range(n_intervals)]
-
-
-def test_select_all_user_index(db_timestamps):
-    n_rows = 4
-    entries = get_index_intervals(n_rows)
-    entries = [{'key': x['index']} for x in entries]
-    db_timestamps._read_many = MagicMock(side_effect=[entries])
-    result = db_timestamps.select_all_user_index()
-    db_timestamps._read_many.assert_called_once_with(SELECT_ALL_USER_INDEX)
-    assert [e['key'] for e in entries] == result
-    assert len(result) == n_rows
 
 
 def test_select_all_index(db_timestamps):

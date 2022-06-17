@@ -56,7 +56,7 @@ def run_scheduled_jobs():
 
 def run():
     verify_services()
-    # run_scheduled_jobs()
+    run_scheduled_jobs()
     run_pipeline()
 
 

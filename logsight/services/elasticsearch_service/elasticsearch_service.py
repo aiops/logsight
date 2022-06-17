@@ -46,7 +46,7 @@ class ElasticsearchService(ElasticsearchConnector):
         self.es.delete_by_query(**query, wait_for_completion=True)
 
     def get_all_indices(self, extension):
-        return list(self.es.indices.get(f"*{extension}").keys())
+        return list(self.es.indices.get(index=f"*{extension}").keys())
 
     def save(self, data, index: str):
         if not isinstance(data, list):

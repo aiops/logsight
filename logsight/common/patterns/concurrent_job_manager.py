@@ -1,8 +1,6 @@
 import functools
 import logging
-from abc import ABC
 from collections import defaultdict
-from concurrent.futures import ProcessPoolExecutor
 
 from .job import Job
 from .job_manager import JobManager
@@ -10,7 +8,7 @@ from .job_manager import JobManager
 logger = logging.getLogger("logsight." + __name__)
 
 
-class NewJobManager(JobManager):
+class QueueableJobManager(JobManager):
 
     def __init__(self, max_workers=5):
         """ Orchestrates different jobs in a pool of threads

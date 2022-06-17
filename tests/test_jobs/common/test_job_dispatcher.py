@@ -50,7 +50,7 @@ def test_sync_index(job_dispatcher):
     idx = set(index_intervals).difference(set(current))
 
     job_dispatcher.storage.update_timestamps = MagicMock()
-    job_dispatcher.storage.select_all_user_index = MagicMock(side_effect=[index_intervals])
+    job_dispatcher.select_all_es_index = MagicMock(side_effect=[index_intervals])
     job_dispatcher.storage.select_all_index = MagicMock(side_effect=[current])
 
     job_dispatcher.sync_index()

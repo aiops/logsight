@@ -1,4 +1,4 @@
-from common.patterns.concurrent_job_manager import NewJobManager
+from common.patterns.concurrent_job_manager import QueueableJobManager
 from common.patterns.job_manager import JobManager
 from configs.global_vars import ES_CLEANUP_AGE
 from jobs.common.job_dispatcher import PeriodicJobDispatcher, TimedJobDispatcher
@@ -11,7 +11,7 @@ from jobs.persistence.timestamp_storage import TimestampStorageProvider
 class JobDispatcherFactory:
     @staticmethod
     def get_incident_dispatcher(n_jobs: int, timeout_period: int) -> PeriodicJobDispatcher:
-        manager = NewJobManager(n_jobs)
+        manager = QueueableJobManager(n_jobs)
         storage = TimestampStorageProvider.provide_timestamp_storage('incidents')
         return PeriodicJobDispatcher(job=CalculateIncidentJob,
                                      job_manager=manager,
@@ -21,7 +21,7 @@ class JobDispatcherFactory:
 
     @staticmethod
     def get_log_agg_dispatcher(n_jobs: int, timeout_period: int) -> PeriodicJobDispatcher:
-        manager = NewJobManager(n_jobs)
+        manager = QueueableJobManager(n_jobs)
         storage = TimestampStorageProvider.provide_timestamp_storage('log_agg')
         return PeriodicJobDispatcher(job=CalculateLogAggregationJob,
                                      job_manager=manager,

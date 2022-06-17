@@ -3,13 +3,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from common.patterns.concurrent_job_manager import NewJobManager
+from common.patterns.concurrent_job_manager import QueueableJobManager
 from common.patterns.job import Job
 
 
 @pytest.fixture
 def job_manager():
-    return NewJobManager()
+    return QueueableJobManager()
 
 
 @pytest.fixture

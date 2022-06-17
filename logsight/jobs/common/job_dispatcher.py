@@ -9,6 +9,7 @@ from pipeline.modules.core.timer import NamedTimer
 from jobs.common.index_job import IndexJob
 from jobs.persistence.dto import IndexInterval
 from jobs.persistence.timestamp_storage import TimestampStorage
+from services.service_provider import ServiceProvider
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -59,7 +60,7 @@ class PeriodicJobDispatcher(JobDispatcher):
 
         """
         # find new indices
-        available_idx = set(self.storage.select_all_user_index())
+        available_idx = set(self.select_all_es_index())
         current_idx = set(self.storage.select_all_index())
         indices = available_idx.difference(current_idx)
 
@@ -68,6 +69,11 @@ class PeriodicJobDispatcher(JobDispatcher):
             for idx in indices:
                 it = IndexInterval(idx, latest_ingest_time=datetime.min)
                 self.storage.update_timestamps(it)
+
+    @staticmethod
+    def select_all_es_index():
+        with ServiceProvider.provide_elasticsearch() as es:
+            return set([x.split("_")[0] for x in es.get_all_indices("") if x[0] != "."])
 
     def run(self):
         """Start the timer"""
