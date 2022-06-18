@@ -8,7 +8,7 @@ def softmax(x):
     return f_x
 
 
-def pad_sequences(sequences, maxlen=None, dtype='int32',
+def pad_sequences(sequences, maxlen=None, dtype='int64',
                   padding='post', truncating='post', value=0):
     if not hasattr(sequences, '__len__'):
         raise ValueError('`sequences` must be iterable.')
