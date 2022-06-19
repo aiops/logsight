@@ -15,7 +15,7 @@ PARALLEL_JOBS = int(os.environ.get('PARALLEL_JOBS', 2))
 JOB_INTERVAL = int(os.environ.get('JOB_INTERVAL', 60))
 
 ES_PIPELINE_ID_INGEST_TIMESTAMP = "ingest_timestamp"
-ES_CLEANUP_AGE = str(os.environ.get('ES_CLEANUP_AGE', "now-2m"))
+ES_CLEANUP_AGE = str(os.environ.get('ES_CLEANUP_AGE', "now-1y"))
 ES_CLEANUP_JOB_INTERVAL = int(os.environ.get('ES_CLEANUP_JOB_INTERVAL', 60 * 60))
 
 FILTER_NORMAL = bool(os.environ.get('FILTER_NORMAL', True))
