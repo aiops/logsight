@@ -23,15 +23,18 @@ def verify_services():
     # Verify elasticsearch connection
     es = ServiceProvider.provide_elasticsearch()
     es.connect()
+    logger.info("Elasticsearch service available.")
 
     # Verify db connection
     db = ServiceProvider.provide_postgres()
     db.connect()
+    logger.info("Postgres database service available.")
 
     # Verify db connection for incidents
     if INCIDENT_JOBS:
         ts = TimestampStorageProvider.provide_timestamp_storage("incidents")
         ts.connect()
+        logger.info("Postgres database service available for scheduled jobs.")
 
 
 def run_pipeline():
