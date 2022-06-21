@@ -5,7 +5,7 @@ from typing import Type
 
 from common.patterns.job import Job
 from common.patterns.job_manager import JobManager
-from pipeline.modules.core.timer import NamedTimer
+from common.patterns.timer import NamedTimer
 from jobs.common.index_job import IndexJob
 from jobs.persistence.dto import IndexInterval
 from jobs.persistence.timestamp_storage import TimestampStorage
