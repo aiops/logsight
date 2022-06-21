@@ -1,19 +1,19 @@
 from typing import List, Optional, Union
 
-from .source import Source
+from .source import LogBatchSource
 from ..serializers import Serializer
 
 
-class StdinSource(Source):
+class StdinSource(LogBatchSource):
     def _receive_message(self) -> str:
         txt = input("[SOURCE] Enter message: ")
         return txt
 
 
-class FileSource(Source):
+class FileSource(LogBatchSource):
 
     def __init__(self, path: Union[str, List[str]], batch_size=None, serializer: Optional[Serializer] = None):
-        super().__init__(serializer)
+        super().__init__()
         self.files_list = path if isinstance(path, list) else [path]
         self.i = self.cnt = 0
         self.batch_size = batch_size

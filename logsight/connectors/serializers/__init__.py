@@ -1,2 +1,3 @@
 from .base import Serializer
-from .serializers import DictSerializer, LogBatchSerializer
+from .serializers import LogBatchSerializer
+from .serializers import JSONStringSerializer
