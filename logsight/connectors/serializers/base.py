@@ -17,16 +17,3 @@ class Serializer(ABC):
     def deserialize(self, data: str) -> Any:
         raise NotImplementedError
 
-
-class LogBatchSerializer(Serializer):
-    """
-    Interface for serialization of LogBatch objects.
-    """
-
-    @abstractmethod
-    def serialize(self, data: LogBatch) -> Any:
-        raise NotImplementedError
-
-    @abstractmethod
-    def deserialize(self, data: Any) -> LogBatch:
-        raise NotImplementedError

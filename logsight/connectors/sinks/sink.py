@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 from connectors.base.connector import Connector
-from connectors.serializers import JSONSerializer
+from connectors.serializers import JSONStringSerializer
 from connectors.serializers.base import LogBatchSerializer
 
 
@@ -11,7 +11,7 @@ class Sink:
         and processing messages."""
 
     def __init__(self, serializer: Optional[LogBatchSerializer] = None):
-        self.serializer = serializer or JSONSerializer()
+        self.serializer = serializer or JSONStringSerializer()
 
     @abstractmethod
     def send(self, data: Any, target: Optional[str] = None):

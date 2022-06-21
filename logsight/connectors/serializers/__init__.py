@@ -1,2 +1,2 @@
 from .base import Serializer
-from .serializers import JSONSerializer
+from .serializers import JSONStringSerializer

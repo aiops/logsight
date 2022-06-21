@@ -1,12 +1,28 @@
+from abc import abstractmethod
 from dataclasses import asdict
+from typing import Any
 
 import ujson
 
 from analytics_core.logs import LogBatch, LogsightLog
-from connectors.serializers.base import LogBatchSerializer
+from connectors.serializers import Serializer
 
 
-class JSONSerializer(LogBatchSerializer):
+class LogBatchSerializer(Serializer):
+    """
+    Interface for serialization of LogBatch objects.
+    """
+
+    @abstractmethod
+    def serialize(self, data: LogBatch) -> Any:
+        raise NotImplementedError
+
+    @abstractmethod
+    def deserialize(self, data: Any) -> LogBatch:
+        raise NotImplementedError
+
+
+class JSONStringSerializer(LogBatchSerializer):
     """
     Serializer class for transforming JSON strings to LogBatch
     """
