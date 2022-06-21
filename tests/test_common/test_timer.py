@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from pipeline.modules.core.timer import NamedTimer
+from common.patterns.timer import NamedTimer
 
 
 @pytest.fixture
