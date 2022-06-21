@@ -4,7 +4,7 @@ import zmq
 
 from common.logsight_classes.mixins import DictMixin
 from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
-from connectors.serializers import JSONSerializer
+from connectors.serializers import JSONStringSerializer
 from connectors.sources.source import LogBatchConnectableSource
 
 logger = logging.getLogger("logsight." + __name__)
@@ -12,7 +12,7 @@ logger = logging.getLogger("logsight." + __name__)
 
 class ZeroMQSubSource(ConnectableSource, ZeroMQConnector):
     def __init__(self, endpoint: str, topic: str = None, connection_type: ConnectionTypes = ConnectionTypes.CONNECT,
-                 serializer=JSONSerializer()):
+                 serializer=JSONStringSerializer()):
         LogBatchConnectableSource.__init__(self, serializer)
         ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.SUB, connection_type=connection_type)
 
