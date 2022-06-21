@@ -1,5 +1,4 @@
 from common.patterns.concurrent_job_manager import QueueableJobManager
-from common.patterns.job_manager import JobManager
 from configs.global_vars import ES_CLEANUP_AGE
 from jobs.common.job_dispatcher import PeriodicJobDispatcher, TimedJobDispatcher
 from jobs.jobs.delete_es_data_job import DeleteESDataJob

@@ -68,9 +68,6 @@ class AbstractHandler(Handler):
     def next_handler(self):
         return self._next_handler
 
-    def close(self):
-        pass
-
 
 class ForkHandler(AbstractHandler, ABC):
     """This class allows multiple handlers to be attached simultaneously."""
