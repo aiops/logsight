@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from analytics_core.logs import LogBatch
 from connectors.base.connector import Connector
-from connectors.serializers import JSONStringSerializer
+from connectors.serializers import JSONSerializer, Serializer
 from connectors.serializers import LogBatchSerializer
 
 
@@ -36,11 +36,12 @@ class ConnectableSource(Source, Connector, ABC):
     """Interface for Source that is also able to connect to endpoint."""
 
 
-class LogBatchSource(Source, ABC):
+class LogBatchSource(Source, Connector, ABC):
     """Interface for Sources of LogBatch objects that is also able to connect to endpoint."""
 
     def __init__(self, serializer: Optional[LogBatchSerializer] = None):
-        self.serializer = serializer or JSONStringSerializer()
+        serializer = serializer or LogBatchSerializer()
+        super().__init__(serializer)
 
     def receive_message(self) -> LogBatch:
         """
