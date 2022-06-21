@@ -5,7 +5,6 @@ import pytest
 from common.logsight_classes.configs import ConnectionConfigProperties
 from connectors import Connector, Sink, Source
 from connectors.connection_builder import ConnectionBuilder
-from connectors.serializers import DictSerializer
 
 
 @pytest.fixture(params=['name1', 'name2', 'name3'])
@@ -45,7 +44,6 @@ def test_build_valid_sources(valid_source):
     builder = ConnectionBuilder()
     connection = builder.build(valid_source)
     assert connection.__class__.__name__ == valid_source.classname
-    assert isinstance(connection.serializer, DictSerializer)
     assert isinstance(connection, Source)
     if hasattr(connection, 'connect') and hasattr(connection, 'close'):
         assert isinstance(connection, Connector)

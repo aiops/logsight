@@ -8,9 +8,9 @@ class Serializer(ABC):
     """
 
     @abstractmethod
-    def serialize(self, data: Any) -> bytes:
+    def serialize(self, data: Any) -> str:
         raise NotImplementedError
 
     @abstractmethod
-    def deserialize(self, data: bytes) -> Any:
+    def deserialize(self, data: str) -> Any:
         raise NotImplementedError

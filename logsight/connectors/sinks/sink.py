@@ -2,15 +2,16 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 from connectors.base.connector import Connector
-from connectors.serializers import DictSerializer, Serializer
+from connectors.serializers import JSONStringSerializer
+from connectors.serializers import LogBatchSerializer
 
 
 class Sink:
     """Abstract class depicting source of data. Every data source should implement a method for receiving
         and processing messages."""
 
-    def __init__(self, serializer: Optional[Serializer] = None):
-        self.serializer = serializer or DictSerializer()
+    def __init__(self, serializer: Optional[LogBatchSerializer] = None):
+        self.serializer = serializer or JSONStringSerializer()
 
     @abstractmethod
     def send(self, data: Any, target: Optional[str] = None):
