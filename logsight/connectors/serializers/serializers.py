@@ -1,6 +1,6 @@
-import json
+from abc import abstractmethod
 from dataclasses import asdict
-from typing import Dict
+from typing import Any
 
 import ujson
 
@@ -8,62 +8,48 @@ from analytics_core.logs import LogBatch, LogsightLog
 from connectors.serializers import Serializer
 
 
-class DictSerializer(Serializer):
-    """
-    This class transforms a string or a dictionary and returns a dictionary
-    """
-
-    def deserialize(self, data: bytes) -> Dict:
-        """
-        The deserialize function takes a bytes object and returns a dictionary.
-        Args:
-            data:bytes: Deserialize the data into a dictionary
-
-        Returns:
-            A dictionary
-        """
-        return json.loads(data.decode('utf-8'))
-
-    def serialize(self, data: Dict) -> bytes:
-        """
-        The serialize function takes a dictionary of data and returns a byte string.
-        Args:
-            data:Dict: Pass the data that is to be serialized
-
-        Returns:
-            A bytes object
-        """
-        return json.dumps(data).encode('utf-8')
-
-
 class LogBatchSerializer(Serializer):
     """
-    Transformer class for transforming data to LogBatch
+    Interface for serialization of LogBatch objects.
     """
 
-    def serialize(self, data: LogBatch) -> bytes:
+    @abstractmethod
+    def serialize(self, data: LogBatch) -> Any:
+        raise NotImplementedError
+
+    @abstractmethod
+    def deserialize(self, data: Any) -> LogBatch:
+        raise NotImplementedError
+
+
+class JSONStringSerializer(LogBatchSerializer):
+    """
+    Serializer class for transforming JSON strings to LogBatch
+    """
+
+    def serialize(self, data: LogBatch) -> str:
         """
-        The serialize function takes a LogBatch object and returns a byte string.
-        The byte string is the serialized representation of the LogBatch object.
+        The serialize function takes a LogBatch object and returns a JSON string.
+        The JSON string is the serialized representation of the LogBatch object.
 
         Args:
             data:LogBatch: Pass the data to be serialized
 
         Returns:
-            A bytes object
+            A JSON string
         """
-        return ujson.dumps(asdict(data)).encode('utf-8')
+        return ujson.dumps(asdict(data))
 
-    def deserialize(self, data: bytes) -> LogBatch:
+    def deserialize(self, data: str) -> LogBatch:
         """
-        The deserialize function takes a byte string and returns an instance of the LogBatch class.
+        The deserialize function takes a JSON string and returns an instance of the LogBatch class.
 
         Args:
-            data:bytes: Pass the data to be deserialized
+            data:string: Pass the data to be deserialized
 
         Returns:
             A LogBatch object
         """
-        d = ujson.loads(data.decode('utf-8'))
+        d = ujson.loads(data)
         return LogBatch(id=d.get('id'), index=d.get('index'), logs=[LogsightLog(**log) for log in d['logs']],
                         metadata=d.get('metadata', dict()))

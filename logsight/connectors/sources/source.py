@@ -1,38 +1,55 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Union
+from typing import Optional
 
 from analytics_core.logs import LogBatch
 from connectors.base.connector import Connector
-from connectors.serializers import DictSerializer, Serializer
+from connectors.serializers import JSONStringSerializer
+from connectors.serializers import LogBatchSerializer
 
 
-class Source:
+class Source(ABC):
     """Abstract class depicting source of data. Every data source should implement a method for receiving messages."""
 
-    def __init__(self, serializer: Optional[Serializer] = None):
-        self.serializer = serializer or DictSerializer()
-
-    def has_next(self):
+    def has_next(self) -> bool:
         """Whether the source has a next message."""
         return True
 
-    def _receive_message(self) -> Union[str, bytes]:
+    @abstractmethod
+    def _receive_message(self) -> str:
         """
         This function receives a message from the source
         """
         raise NotImplementedError
 
-    def receive_message(self) -> Union[Dict, LogBatch]:
+    def receive_message(self) -> str:
         """
         This function receives a message from the source and transforms it
         :return: The transformed message
         """
-        msg = self._receive_message()
-        return self.serializer.deserialize(msg)
+        return self._receive_message()
 
 
 class ConnectableSource(Source, Connector, ABC):
     """Interface for Source that is also able to connect to endpoint."""
+
+
+class LogBatchSource(Source, ABC):
+    """Interface for Sources of LogBatch objects."""
+
+    def __init__(self, serializer: Optional[LogBatchSerializer] = None):
+        self.serializer = serializer or JSONStringSerializer()
+
+    def receive_message(self) -> LogBatch:
+        """
+        This function receives a message from the source and deserializes a LogBatch out of it
+        :return: deserialized LogBatch
+        """
+        msg = super().receive_message()
+        return self.serializer.deserialize(msg)
+
+
+class LogBatchConnectableSource(LogBatchSource, Connector, ABC):
+    """Interface for Sources of LogBatch objects that is also able to connect to endpoint."""
 
 
 class StreamSource(Source):
