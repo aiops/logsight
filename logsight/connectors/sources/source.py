@@ -36,7 +36,7 @@ class ConnectableSource(Source, Connector, ABC):
     """Interface for Source that is also able to connect to endpoint."""
 
 
-class LogBatchSource(Source, Connector, ABC):
+class LogBatchSource(Source, ABC):
     """Interface for Sources of LogBatch objects that is also able to connect to endpoint."""
 
     def __init__(self, serializer: Optional[LogBatchSerializer] = None):
