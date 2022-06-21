@@ -4,7 +4,7 @@ from typing import Any, Optional
 from analytics_core.logs import LogBatch
 from connectors.base.connector import Connector
 from connectors.serializers import JSONStringSerializer
-from connectors.serializers.base import LogBatchSerializer
+from connectors.serializers import LogBatchSerializer
 
 
 class Source(ABC):
