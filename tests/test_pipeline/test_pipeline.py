@@ -1,10 +1,9 @@
-import threading
 from unittest import mock
 from unittest.mock import MagicMock, Mock
 
 import pytest
 
-from common.logsight_classes.configs import ConnectionConfigProperties
+from common.logsight_classes.configs import AdapterConfigProperties, ConnectorConfigProperties
 from pipeline import PipelineBuilder
 from pipeline.modules.core import ConnectableModule
 from services import ModulePipelineConfig
@@ -25,7 +24,8 @@ def pipeline():
 @pytest.fixture
 def pipeline_with_control():
     pipeline_cfg = ModulePipelineConfig().pipeline_config
-    pipeline_cfg.connectors.control_source = ConnectionConfigProperties(classname="StdinSource", connection="stdin")
+    pipeline_cfg.connectors.control_source = AdapterConfigProperties(
+        connector=ConnectorConfigProperties("source", "stdin"))
     # Add control source
 
     builder = PipelineBuilder()

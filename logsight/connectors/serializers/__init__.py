@@ -1,3 +1,3 @@
-from .base import Serializer
-from .serializers import LogBatchSerializer
-from .serializers import JSONSerializer
+from .json import JSONSerializer
+from .default import DefaultSerializer
+from .log_batch import LogBatchSerializer

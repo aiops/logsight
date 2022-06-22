@@ -5,7 +5,7 @@ from typing import Optional
 import zmq
 from zmq import Socket, Context
 
-from connectors.base.connector import Connector
+from connectors.base.mixins import ConnectableConnector
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -15,7 +15,7 @@ class ConnectionTypes(Enum):
     CONNECT = 2
 
 
-class ZeroMQConnector(Connector):
+class ZeroMQConnector(ConnectableConnector):
     name = "zeromq"
 
     def __init__(self, endpoint: str, socket_type: zmq.constants,

@@ -4,7 +4,7 @@ from typing import Union
 from analytics_core.logs import LogBatch
 from common.utils.helpers import to_flat_dict
 from configs.global_vars import PIPELINE_INDEX_EXT
-from connectors import Connector, Sink, Source
+from connectors import ConnectableConnector, Sink, Source
 from pipeline.modules.core.module import ConnectableModule
 
 logger = logging.getLogger("logsight." + __name__)
@@ -15,7 +15,8 @@ class BatchMetadataStoreModule(ConnectableModule):
     Module for storing the data using a connector.
     """
 
-    def __init__(self, connector: Union[Source, Sink, Connector], index_ext: str = "log_agg", field: str = None):
+    def __init__(self, connector: Union[Source, Sink, ConnectableConnector], index_ext: str = "log_agg",
+                 field: str = None):
         super().__init__(connector)
         self.index_ext = index_ext
         self.field = field

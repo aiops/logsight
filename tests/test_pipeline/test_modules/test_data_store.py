@@ -6,7 +6,7 @@ from dacite import from_dict
 from analytics_core.logs import LogBatch
 from common.utils.helpers import to_flat_dict
 from configs.global_vars import PIPELINE_INDEX_EXT
-from connectors import PrintSink
+from connectors.sinks import PrintSink
 from pipeline.modules.data_store import LogStoreModule, BatchMetadataStoreModule
 
 

@@ -1,9 +1,7 @@
-from datetime import datetime
-
 import pytest
 from dacite import from_dict
 
-from analytics_core.logs import LogBatch, LogsightLog
+from analytics_core.logs import LogBatch
 from pipeline.modules.filter import FilterModule
 
 

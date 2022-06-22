@@ -4,11 +4,11 @@ import time
 import uuid
 from typing import Dict, Optional, Union
 
-from connectors import Connector
-from connectors.sources.source import ConnectableSource, LogBatchSource
+from connectors.base.connectable import Connectable
 from services.service_provider import ServiceProvider
 from .modules.core import Module
 from .modules.core.module import ConnectableModule
+from .ports.pipeline_adapters import PipelineSourceAdapter
 
 logger = logging.getLogger("logsight." + __name__)
 
@@ -18,8 +18,9 @@ class Pipeline:
     _id = uuid.uuid4()
 
     def __init__(self, modules: Dict[str, Union[Module, ConnectableModule]], input_module: Module,
-                 data_source: LogBatchSource,
-                 control_source: Optional[ConnectableSource] = None, metadata: Optional[Dict] = None):
+                 data_source: PipelineSourceAdapter,
+                 control_source: Optional[PipelineSourceAdapter] = None,
+                 metadata: Optional[Dict] = None):
         self.control_source = control_source
         self.data_source = data_source
         self.input_module = input_module
@@ -40,7 +41,7 @@ class Pipeline:
         The function connects the data source, control source, and modules
         """
         # connect data source
-        if isinstance(self.data_source, Connector):
+        if isinstance(self.data_source, Connectable):
             self.data_source.connect()
         # connect control source
         if self.control_source:
@@ -48,7 +49,7 @@ class Pipeline:
         # connect modules
         for module in self.modules.values():
             if isinstance(module, ConnectableModule):
-                if isinstance(module.connector, Connector):
+                if isinstance(module.connector, Connectable):
                     module.connector.connect()
 
     def _start_receiving(self):
@@ -81,7 +82,7 @@ class Pipeline:
         """
         for module in self.modules.values():
             if isinstance(module, ConnectableModule):
-                if isinstance(module.connector, Connector):
+                if isinstance(module.connector, Connectable):
                     module.connector.close()
 
     def _start_control_listener(self):

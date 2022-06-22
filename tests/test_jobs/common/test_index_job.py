@@ -1,11 +1,9 @@
-import copy
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import dateutil.parser
 import pytest
 
-from configs.global_vars import PIPELINE_INDEX_EXT
 from jobs.common.index_job import IndexJob, IndexJobResult
 from jobs.persistence.dto import IndexInterval
 from jobs.persistence.timestamp_storage import PostgresTimestampStorage, TimestampStorageProvider
