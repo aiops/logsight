@@ -1,7 +1,5 @@
 import logging
 
-from elasticsearch import helpers
-
 from connectors.base.elasticsearch import ElasticsearchConnector
 from services.elasticsearch_service.queries import DELETE_BY_INGEST_TS_QUERY, DELETE_BY_QUERY, GET_ALL_AD, \
     GET_ALL_LOGS_INGEST, \

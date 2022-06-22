@@ -1,5 +1,3 @@
-from typing import List
-
 from analytics_core.logs import LogsightLog
 from analytics_core.modules.risk_analysis.vars import RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_FAULT, \
     RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_REPORT, \

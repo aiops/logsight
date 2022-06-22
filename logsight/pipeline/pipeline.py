@@ -4,8 +4,8 @@ import time
 import uuid
 from typing import Dict, Optional, Union
 
-from connectors import Connector, Source
-from connectors.sources.source import ConnectableSource
+from connectors import Connector
+from connectors.sources.source import ConnectableSource, LogBatchSource
 from services.service_provider import ServiceProvider
 from .modules.core import Module
 from .modules.core.module import ConnectableModule
@@ -17,7 +17,8 @@ class Pipeline:
     """ A pipeline is a collection of modules that are connected together..."""
     _id = uuid.uuid4()
 
-    def __init__(self, modules: Dict[str, Union[Module, ConnectableModule]], input_module: Module, data_source: Source,
+    def __init__(self, modules: Dict[str, Union[Module, ConnectableModule]], input_module: Module,
+                 data_source: LogBatchSource,
                  control_source: Optional[ConnectableSource] = None, metadata: Optional[Dict] = None):
         self.control_source = control_source
         self.data_source = data_source
@@ -79,7 +80,9 @@ class Pipeline:
         The function calls close on every module
         """
         for module in self.modules.values():
-            module.close()
+            if isinstance(module, ConnectableModule):
+                if isinstance(module.connector, Connector):
+                    module.connector.close()
 
     def _start_control_listener(self):
         """

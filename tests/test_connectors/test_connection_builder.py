@@ -4,7 +4,8 @@ import pytest
 
 from common.logsight_classes.configs import ConnectionConfigProperties
 from connectors import Connector, Sink, Source
-from connectors.connection_builder import ConnectionBuilder
+from connectors.connection_builder import ConnectionBuilder, PipelineConnectionBuilder
+from connectors.sources.source import LogBatchConnectableSource, LogBatchSource
 
 
 @pytest.fixture(params=['name1', 'name2', 'name3'])
@@ -55,5 +56,15 @@ def test_build_valid_sinks(valid_sink):
     connection = builder.build(valid_sink)
     assert connection.__class__.__name__ == valid_sink.classname
     assert isinstance(connection, Sink)
+    if hasattr(connection, 'connect') and hasattr(connection, 'close'):
+        assert isinstance(connection, Connector)
+
+
+def test_build_pipeline_source(valid_source):
+    builder = PipelineConnectionBuilder()
+    connection = builder.build(valid_source)
+
+    assert connection.__class__.__name__ == valid_source.classname
+    assert isinstance(connection, LogBatchConnectableSource) or isinstance(connection, LogBatchSource)
     if hasattr(connection, 'connect') and hasattr(connection, 'close'):
         assert isinstance(connection, Connector)

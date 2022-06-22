@@ -6,17 +6,17 @@ from typing import Optional
 # noinspection PyPackageRequirements,PyProtectedMember
 from kafka import KafkaConsumer as Consumer, TopicPartition
 
-from connectors.serializers import LogBatchSerializer
-from connectors.sources.source import LogBatchConnectableSource
+from connectors.serializers import Serializer
+from connectors.sources.source import ConnectableSource
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class KafkaSource(LogBatchConnectableSource):
+class KafkaSource(ConnectableSource):
     """Data source - a wrapper around a Kafka consumer that allows us to receive messages from a Kafka topic"""
 
     def __init__(self, host: str, port: int, topic: str, group_id: int = None, offset: str = 'earliest',
-                 serializer: Optional[LogBatchSerializer] = None):
+                 serializer: Optional[Serializer] = None):
         """
         Args:
             host:str: Specify the host of the kafka server
