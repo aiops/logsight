@@ -1,16 +1,16 @@
 from typing import List, Optional, Union
 
-from .source import LogBatchSource
+from .source import Source
 from ..serializers import Serializer
 
 
-class StdinSource(LogBatchSource):
+class StdinSource(Source):
     def _receive_message(self) -> str:
         txt = input("[SOURCE] Enter message: ")
         return txt
 
 
-class FileSource(LogBatchSource):
+class FileSource(Source):
 
     def __init__(self, path: Union[str, List[str]], batch_size=None, serializer: Optional[Serializer] = None):
         super().__init__()

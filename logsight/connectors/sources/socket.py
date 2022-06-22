@@ -1,10 +1,10 @@
 import json
 import socket
 
-from .source import LogBatchConnectableSource
+from .source import ConnectableSource
 
 
-class SocketSource(LogBatchConnectableSource):
+class SocketSource(ConnectableSource):
 
     def __init__(self, host, port, **kwargs):
         super().__init__(**kwargs)

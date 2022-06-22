@@ -1,16 +1,19 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Any, Optional
 
 from analytics_core.logs import LogBatch
 from connectors.base.connector import Connector
-from connectors.serializers import JSONStringSerializer
+from connectors.serializers import JSONSerializer, Serializer
 from connectors.serializers import LogBatchSerializer
 
 
 class Source(ABC):
     """Abstract class depicting source of data. Every data source should implement a method for receiving messages."""
 
-    def has_next(self) -> bool:
+    def __init__(self, serializer: Optional[Serializer] = None):
+        self.serializer = serializer or JSONSerializer()
+
+    def has_next(self):
         """Whether the source has a next message."""
         return True
 
@@ -21,12 +24,12 @@ class Source(ABC):
         """
         raise NotImplementedError
 
-    def receive_message(self) -> str:
+    def receive_message(self) -> Any:
         """
         This function receives a message from the source and transforms it
         :return: The transformed message
         """
-        return self._receive_message()
+        return self.serializer.deserialize(self._receive_message())
 
 
 class ConnectableSource(Source, Connector, ABC):
@@ -34,10 +37,11 @@ class ConnectableSource(Source, Connector, ABC):
 
 
 class LogBatchSource(Source, ABC):
-    """Interface for Sources of LogBatch objects."""
+    """Interface for Sources of LogBatch objects that is also able to connect to endpoint."""
 
     def __init__(self, serializer: Optional[LogBatchSerializer] = None):
-        self.serializer = serializer or JSONStringSerializer()
+        serializer = serializer or LogBatchSerializer()
+        super().__init__(serializer)
 
     def receive_message(self) -> LogBatch:
         """

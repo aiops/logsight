@@ -1,5 +1,5 @@
 import logging
-from typing import List, Union
+from typing import Union
 
 from analytics_core.logs import LogBatch
 from common.utils.helpers import to_flat_dict

@@ -3,8 +3,6 @@ import os
 import sys
 from typing import Optional
 
-import numpy as np
-
 from .core.base import BaseAnomalyDetector
 from .core.config import AnomalyDetectionConfig
 from .core.tokenizer import LogTokenizer
@@ -19,11 +17,9 @@ logger = logging.getLogger("logsight." + __name__)
 class LogAnomalyDetector(BaseAnomalyDetector):
     def __init__(self, config: Optional[AnomalyDetectionConfig] = None):
         super().__init__()
-        logger.debug("Initializing LogAnomalyDetector.")
         self.config = config or AnomalyDetectionConfig()
         self.model = OnnxModel(self.config.prediction_threshold).load_model()
         self.tokenizer = LogTokenizer.load_from_pickle()
-        logger.debug("LogAnomalyDetector initialized successfully.")
 
     def predict(self, log_batch: LogBatch) -> LogBatch:
 
