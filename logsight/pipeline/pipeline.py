@@ -41,8 +41,8 @@ class Pipeline:
         The function connects the data source, control source, and modules
         """
         # connect data source
-        if isinstance(self.data_source, Connectable):
-            self.data_source.connect()
+        if isinstance(self.data_source.connector, Connectable):
+            self.data_source.connector.connect()
         # connect control source
         if self.control_source and isinstance(self.control_source.connector, Connectable):
             self.control_source.connector.connect()

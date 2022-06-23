@@ -25,6 +25,7 @@ class ElasticsearchConnector(ConnectableConnector):
         self._create_timestamp_pipeline()
 
     def _verify_connection(self):
+        logger.info(self.es.ping())
         if not self.es.ping():
             msg = f"Elasticsearch endpoint {self.host}:{self.port} is unreachable."
             logger.error(msg)
@@ -33,25 +34,25 @@ class ElasticsearchConnector(ConnectableConnector):
     def _create_timestamp_pipeline(self):
         if not self.ingest_timestamp:
             return
-        with IngestClient(self.es) as client:
-            try:
-                client.get_pipeline(id=ES_PIPELINE_ID_INGEST_TIMESTAMP, summary=True)
-            except NotFoundError:
-                resp = client.put_pipeline(
-                    id=ES_PIPELINE_ID_INGEST_TIMESTAMP,
-                    description="insert ingest timestamp field to documents",
-                    processors=[
-                        {
-                            "set": {
-                                "field": "ingest_timestamp",
-                                "value": "{{_ingest.timestamp}}"
-                            }
+        client = IngestClient(self.es)
+        try:
+            client.get_pipeline(id=ES_PIPELINE_ID_INGEST_TIMESTAMP, summary=True)
+        except NotFoundError:
+            resp = client.put_pipeline(
+                id=ES_PIPELINE_ID_INGEST_TIMESTAMP,
+                description="insert ingest timestamp field to documents",
+                processors=[
+                    {
+                        "set": {
+                            "field": "ingest_timestamp",
+                            "value": "{{_ingest.timestamp}}"
                         }
-                    ]
-                )
-                if not resp.body["acknowledged"]:
-                    raise ElasticsearchException(f"Failed to create ingest timestamp pipeline. "
-                                                 f"Elasticsearch reply: {resp}")
+                    }
+                ]
+            )
+            if not resp.body["acknowledged"]:
+                raise ElasticsearchException(f"Failed to create ingest timestamp pipeline. "
+                                             f"Elasticsearch reply: {resp}")
 
     def bulk(self, data, index: str, pipeline: bool = False):
         ingest_pipeline = ES_PIPELINE_ID_INGEST_TIMESTAMP if pipeline else None
