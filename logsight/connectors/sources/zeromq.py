@@ -3,19 +3,16 @@ import logging
 import zmq
 
 from common.logsight_classes.mixins import DictMixin
-from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
+from connectors.base.mixins import ConnectableSource
+from connectors.connectors.zeromq import ConnectionTypes, ZeroMQConnector
 from connectors.serializers import JSONSerializer
-from connectors.sources.source import ConnectableSource
 
 logger = logging.getLogger("logsight." + __name__)
 
 
 class ZeroMQSubSource(ConnectableSource, ZeroMQConnector):
-    def __init__(self, endpoint: str, topic: str = None, connection_type: ConnectionTypes = ConnectionTypes.CONNECT,
-                 serializer=JSONSerializer()):
-        super(ZeroMQSubSource, self).__init__(serializer)
-        ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.SUB, connection_type=connection_type)
-
+    def __init__(self, endpoint: str, topic: str = None, connection_type: ConnectionTypes = ConnectionTypes.CONNECT):
+        super(ZeroMQSubSource, self).__init__(endpoint=endpoint, socket_type=zmq.SUB, connection_type=connection_type)
         self.topic = topic
 
     def _connect(self):
@@ -25,7 +22,7 @@ class ZeroMQSubSource(ConnectableSource, ZeroMQConnector):
         topic_filter = self.topic.encode('utf8')
         self.socket.subscribe(topic_filter)
 
-    def _receive_message(self) -> str:
+    def receive_message(self) -> str:
         if not self.socket:
             raise ConnectionError("Socket is not connected. Please call connect() first.")
         try:
@@ -37,11 +34,9 @@ class ZeroMQSubSource(ConnectableSource, ZeroMQConnector):
             logger.error(e)
 
 
-class ZeroMQRepSource(ZeroMQConnector, ConnectableSource, DictMixin):
+class ZeroMQRepSource(ZeroMQConnector, ConnectableSource):
     def __init__(self, endpoint: str):
-        ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.REP,
-                                 connection_type=ConnectionTypes.BIND)
+        ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.REP, connection_type=ConnectionTypes.BIND)
 
-    # noinspection PyUnresolvedReferences
-    def _receive_message(self) -> str:
-        return self.socket.recv().decode("utf-8")
+    def receive_message(self) -> str:
+        return bytes(self.socket.recv()).decode("utf-8")

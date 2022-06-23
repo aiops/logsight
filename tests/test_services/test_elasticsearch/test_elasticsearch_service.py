@@ -1,10 +1,9 @@
-from unittest import mock
 from unittest.mock import MagicMock, patch
 
 import pytest
 from elasticsearch import helpers
 
-from connectors.base.elasticsearch import ElasticsearchException
+from connectors.connectors.elasticsearch import ElasticsearchException
 from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 from tests.inputs import processed_logs
 
@@ -85,9 +84,10 @@ def test_es_raises_exc(es_exception):
 
 def test_enter_exit(es):
     es.es.ping = MagicMock(return_value=True)
-    es.ingest_client.get_pipeline = MagicMock(return_value=True)
+    es._create_timestamp_pipeline = MagicMock(return_value=True)
     es.es.close = MagicMock()
     with es as e:
         assert e.es.ping() is True
 
     e.es.close.assert_called_once()
+    es._create_timestamp_pipeline.assert_called_once()

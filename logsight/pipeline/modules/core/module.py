@@ -5,7 +5,7 @@ from typing import Callable, Union
 
 from analytics_core.logs import LogBatch, LogsightLog
 from common.patterns.chain_of_responsibility import AbstractHandler
-from connectors import Connector, Sink, Source
+from connectors import ConnectableConnector, Sink, Source
 from pipeline.modules.core.transformer import DataTransformer
 
 
@@ -48,6 +48,6 @@ class TransformModule(Module, DataTransformer, ABC):
 
 
 class ConnectableModule(Module, ABC):
-    def __init__(self, connector: Union[Source, Sink, Connector]):
+    def __init__(self, connector: Union[Source, Sink, ConnectableConnector]):
         super().__init__()
         self.connector = connector
