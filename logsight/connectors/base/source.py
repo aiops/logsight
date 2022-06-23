@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
 
-from connectors.base import Connector
+from connectors.base.connector import Connector
 
 
-class Source(Connector, ABC):
-    """Abstract class depicting source of data. Every data source should implement a method for receiving messages."""
-
+class HasNextMixin:
     def has_next(self):
         """Whether the source has a next message."""
         return True
+
+
+class Source(Connector, HasNextMixin, ABC):
+    """Abstract class depicting source of data. Every data source should implement a method for receiving messages."""
 
     @abstractmethod
     def receive_message(self) -> str:

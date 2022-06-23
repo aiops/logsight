@@ -3,11 +3,11 @@ from typing import Optional
 
 from common.logsight_classes.configs import AdapterConfigProperties
 from common.patterns.builder import Builder
-from connectors.base import Adapter, Source
-from connectors.base.connectable import Connectable
+from connectors.base import Source
+from connectors.base.adapter import SinkAdapter
 from connectors.builders.cls_dict import cls_conn
+from connectors.serializers import LogBatchSerializer
 from pipeline.ports import pipeline_adapters as adapters
-from pipeline.ports.log_batch_serializer import LogBatchSerializer
 from pipeline.ports.pipeline_adapters import PipelineSourceAdapter
 from services.configurator.config_manager import ConnectionConfig
 from connectors import serializers
@@ -37,10 +37,6 @@ class PipelineAdapterBuilder(Builder):
     @staticmethod
     def _get_adapter(connector):
         if isinstance(connector, Source):
-            if isinstance(connector, Connectable):
-                return adapters.PipelineConnectableSourceAdapter
             return adapters.PipelineSourceAdapter
         else:
-            if isinstance(connector, Connectable):
-                return adapters.PipelineConnectableSinkAdapter
-            return adapters.PipelineSinkAdapter
+            return SinkAdapter

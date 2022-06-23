@@ -5,7 +5,7 @@ from typing import Callable, Union
 
 from analytics_core.logs import LogBatch, LogsightLog
 from common.patterns.chain_of_responsibility import AbstractHandler
-from connectors import Connectable, Sink, Source
+from connectors import ConnectableConnector, Sink, Source
 from pipeline.modules.core.transformer import DataTransformer
 
 

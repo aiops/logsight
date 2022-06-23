@@ -4,12 +4,12 @@ from typing import Optional, Type
 from common.logsight_classes.configs import AdapterConfigProperties
 from common.patterns.builder import Builder
 from connectors.base import Adapter, Source
+from connectors.base.adapter import SinkAdapter, SourceAdapter
 from connectors.base.connectable import Connectable
-from connectors.base.mixins import ConnectableSinkAdapter, ConnectableSourceAdapter, SinkAdapter, SourceAdapter
 from connectors.builders.cls_dict import cls_conn
 from connectors.serializers import DefaultSerializer
 from services.configurator.config_manager import ConnectionConfig
-from connectors import serializers
+from connectors import Sink, serializers
 
 
 class AdapterBuilder(Builder):
@@ -36,10 +36,8 @@ class AdapterBuilder(Builder):
     @staticmethod
     def _get_adapter(connector):
         if isinstance(connector, Source):
-            if isinstance(connector, Connectable):
-                return ConnectableSourceAdapter
             return SourceAdapter
-        else:
-            if isinstance(connector, Connectable):
-                return ConnectableSinkAdapter
+        elif isinstance(connector, Sink):
             return SinkAdapter
+        else:
+            return Adapter

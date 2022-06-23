@@ -27,14 +27,10 @@ def test_build_module_with_connector():
         ModuleConfig(classname="LogStoreModule",
                      args={
                          "connector": {
-                             "connector": {
-                                 "connection": "elasticsearch",
-                                 "connector_type": "sink",
-                                 "params": {}
-                             },
-                             "serializer": "LogBatchSerializer"
-                         }
-                     }))
+                             "connection": "elasticsearch",
+                             "connector_type": "sink",
+                             "params": {}
+                         }}))
     assert module.__class__.__name__ == "LogStoreModule"
     assert isinstance(module, ConnectableModule) is True
     assert isinstance(module.connector, ConnectableConnector) is True

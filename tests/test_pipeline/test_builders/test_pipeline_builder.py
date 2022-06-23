@@ -12,7 +12,7 @@ from pipeline.modules import AnomalyDetectionModule, LogStoreModule, LogParserMo
 def valid_pipeline_cfg():
     ad_config = ModuleConfig("AnomalyDetectionModule", next_module="sink")
     parse_config = ModuleConfig("LogParserModule", next_module="ad")
-    sink_config = ModuleConfig("LogStoreModule", args={"connector": {"connection": "print", "classname": "PrintSink"}})
+    sink_config = ModuleConfig("LogStoreModule", args={"connector": {"connection": "stdout", "connector_type": "sink"}})
     yield PipelineConfig(
         connectors=PipelineConnectors(
             AdapterConfigProperties(ConnectorConfigProperties(connector_type="source", connection="stdin"))),
@@ -22,29 +22,27 @@ def valid_pipeline_cfg():
 @pytest.fixture
 def module_not_connected_cfg():
     ad_config = ModuleConfig("AnomalyDetectionModule", next_module="sink")
-    parse_config = ModuleConfig("LogParserModule", next_module="ad")
+    parse_config = ModuleConfig("LogParserModule")
     sink_config = ModuleConfig(classname="LogStoreModule",
                                args={
                                    "connector": {
-                                       "connector": {
-                                           "connection": "stdout",
-                                           "connector_type": "sink",
-                                           "params": {}
-                                       },
-                                       "serializer": "LogBatchSerializer"
-                                   }
-                               })
+                                       "connection": "stdout",
+                                       "connector_type": "sink",
+                                       "params": {}
+                                   }})
     yield PipelineConfig(
-        connectors=PipelineConnectors(data_source=
-        AdapterConfigProperties(
-            ConnectorConfigProperties(connector_type="source", connection="file"))),
+        connectors=PipelineConnectors(
+            data_source=AdapterConfigProperties(
+                ConnectorConfigProperties(
+                    connector_type="source",
+                    connection="file"))),
         modules={"ad": ad_config, "sink": sink_config, "parse": parse_config})
 
 
 def test_build(valid_pipeline_cfg):
     builder = PipelineBuilder()
     pipeline = builder.build(valid_pipeline_cfg)
-    assert isinstance(pipeline.data_source, StdinSource)
+    assert isinstance(pipeline.data_source.connector, StdinSource)
     assert len(pipeline.modules) == 3
     assert isinstance(pipeline.modules['ad'], AnomalyDetectionModule)
     assert isinstance(pipeline.modules['parse'], LogParserModule)

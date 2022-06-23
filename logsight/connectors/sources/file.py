@@ -1,9 +1,15 @@
 from typing import List, Union
 
-from connectors.base import Source
+from connectors.base.mixins import ConnectableSource
 
 
-class FileSource(Source):
+class FileSource(ConnectableSource):
+
+    def _connect(self):
+        self.file = open(self.files_list[self.i], 'r')
+
+    def close(self):
+        self.file.close()
 
     def __init__(self, path: Union[str, List[str]], batch_size=None):
         """
@@ -14,7 +20,7 @@ class FileSource(Source):
         self.files_list = path if isinstance(path, list) else [path]
         self.i = self.cnt = 0
         self.batch_size = batch_size
-        self.file = open(self.files_list[self.i], 'r')
+        self.file = None
         self.eof = False
 
     def receive_message(self) -> Union[str, List[str]]:

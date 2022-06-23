@@ -65,13 +65,13 @@ def test_run(pipeline):
 def test_start_control_listener(pipeline):
     pipeline.control_source = MagicMock()
     pipeline.control_source.has_next = MagicMock(side_effect=[True, False])
-    pipeline.control_source.receive_message = MagicMock(return_value="Control message")
+    pipeline.control_source.receive = MagicMock(return_value="Control message")
 
     pipeline._start_control_listener()
 
     pipeline.control_source.has_next.assert_called()
     assert pipeline.control_source.has_next.call_count == 2
-    assert pipeline.control_source.receive_message.call_count == 1
+    assert pipeline.control_source.receive.call_count == 1
 
 
 def test__process_control_message(pipeline):

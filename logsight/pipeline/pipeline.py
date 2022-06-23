@@ -44,13 +44,12 @@ class Pipeline:
         if isinstance(self.data_source, Connectable):
             self.data_source.connect()
         # connect control source
-        if self.control_source:
-            self.control_source.connect()
+        if self.control_source and isinstance(self.control_source.connector, Connectable):
+            self.control_source.connector.connect()
         # connect modules
         for module in self.modules.values():
-            if isinstance(module, ConnectableModule):
-                if isinstance(module.connector, Connectable):
-                    module.connector.connect()
+            if isinstance(module, ConnectableModule) and isinstance(module.connector, Connectable):
+                module.connector.connect()
 
     def _start_receiving(self):
         """
@@ -64,7 +63,7 @@ class Pipeline:
         total = 0
         total_t = 0
         while self.data_source.has_next():
-            log_batch = self.data_source.receive_message()
+            log_batch = self.data_source.receive()
             log_count = len(log_batch.logs)
             logger.debug(f"Received Batch {log_batch.id}")
             t = time.perf_counter()
@@ -91,7 +90,7 @@ class Pipeline:
         """
         logger.info("Pipeline is ready to receive control messages.")
         while self.control_source.has_next():
-            msg = self.control_source.receive_message()
+            msg = self.control_source.receive()
             logger.debug(f"Pipeline received control message: {msg}")
             self._process_control_message(msg)
         logger.debug("Control message receiving thread terminated.")

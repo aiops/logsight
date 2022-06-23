@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
-from connectors.base import Connector
+from .connector import Connector
 
 
 class Sink(Connector, ABC):

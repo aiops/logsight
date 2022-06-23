@@ -5,7 +5,7 @@ from connectors.base import Serializer
 
 class DefaultSerializer(Serializer):
     def serialize(self, data: Any) -> str:
-        return data
+        return str(data)
 
-    def deserialize(self, data: str) -> Any:
+    def deserialize(self, data: str) -> str:
         return data

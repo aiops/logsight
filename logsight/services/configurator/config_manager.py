@@ -4,9 +4,9 @@ from config import Config
 from dacite import from_dict
 
 import configs.global_vars
-from common.logsight_classes.configs import ModuleConfig, PipelineConfig, ConnectorConfigProperties, \
-    AdapterConfigProperties
-from configs.global_vars import CONNECTIONS_PATH, DEBUG, PIPELINE_PATH, LOGS_CONFIG_PATH, FILTER_NORMAL
+from common.logsight_classes.configs import ModuleConfig, PipelineConfig
+from configs.global_vars import CONNECTIONS_PATH, DEBUG, PIPELINE_PATH, LOGS_CONFIG_PATH, FILTER_NORMAL, \
+    PIPELINE_CONNECTION
 
 
 class LogConfig:
@@ -52,6 +52,8 @@ class ModulePipelineConfig:
             }, next_module="risk_score")
             self.pipeline_config.modules['filter_normal'] = filter_normal_config
             self.pipeline_config.modules['log_ad'].next_module = "filter_normal"
+
+        self.pipeline_config.connectors.data_source.connector.connection = PIPELINE_CONNECTION
 
     def get_module(self, module):
         return self.pipeline_config.modules[module]
