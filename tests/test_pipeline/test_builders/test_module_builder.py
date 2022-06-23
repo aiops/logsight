@@ -1,7 +1,7 @@
 import pytest
 
 from common.logsight_classes.configs import ModuleConfig
-from connectors import Connector
+from connectors import ConnectableConnector
 from pipeline.builders.module_builder import ModuleBuilder
 from pipeline.modules.core import ConnectableModule
 
@@ -26,8 +26,11 @@ def test_build_module_with_connector():
     module = module_builder.build(
         ModuleConfig(classname="LogStoreModule",
                      args={
-                         "connector": {"classname": "KafkaSink", "connection": "kafka", "params": {"topic": "topic"}}}))
-
+                         "connector": {
+                             "connection": "elasticsearch",
+                             "connector_type": "sink",
+                             "params": {}
+                         }}))
     assert module.__class__.__name__ == "LogStoreModule"
     assert isinstance(module, ConnectableModule) is True
-    assert isinstance(module.connector, Connector) is True
+    assert isinstance(module.connector, ConnectableConnector) is True

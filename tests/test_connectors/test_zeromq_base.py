@@ -1,10 +1,9 @@
 import unittest
 
 import zmq
-from tenacity import RetryError
 from zmq import ZMQError
 
-from connectors.base.zeromq import ConnectionTypes, ZeroMQConnector
+from connectors.connectors.zeromq import ConnectionTypes, ZeroMQConnector
 
 
 class TestZeroMQBase(unittest.TestCase):

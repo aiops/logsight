@@ -6,7 +6,7 @@ from dacite import from_dict
 from analytics_core.logs import LogBatch
 from common.utils.helpers import to_flat_dict
 from configs.global_vars import PIPELINE_INDEX_EXT
-from connectors import PrintSink
+from connectors.sinks import PrintSink
 from pipeline.modules.data_store import LogStoreModule, BatchMetadataStoreModule
 
 
@@ -29,7 +29,7 @@ def test_process(log_batch):
 def test_process_batch(log_batch):
     store = BatchMetadataStoreModule(PrintSink(), index_ext="test")
     store.connector.send = MagicMock()
-    processed = [to_flat_dict(log) for log in log_batch.logs]
+    _ = [to_flat_dict(log) for log in log_batch.logs]
 
     store.process(log_batch)
 

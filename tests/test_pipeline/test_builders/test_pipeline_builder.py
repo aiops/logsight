@@ -1,8 +1,9 @@
 import pytest
 
-from common.logsight_classes.configs import ConnectionConfigProperties, ModuleConfig, PipelineConfig, PipelineConnectors
+from common.logsight_classes.configs import AdapterConfigProperties, ConnectorConfigProperties, ModuleConfig, \
+    PipelineConfig, PipelineConnectors
 from common.patterns.builder import BuilderException
-from connectors import StdinSource
+from connectors.sources import StdinSource
 from pipeline import PipelineBuilder
 from pipeline.modules import AnomalyDetectionModule, LogStoreModule, LogParserModule
 
@@ -11,26 +12,37 @@ from pipeline.modules import AnomalyDetectionModule, LogStoreModule, LogParserMo
 def valid_pipeline_cfg():
     ad_config = ModuleConfig("AnomalyDetectionModule", next_module="sink")
     parse_config = ModuleConfig("LogParserModule", next_module="ad")
-    sink_config = ModuleConfig("LogStoreModule", args={"connector": {"connection": "print", "classname": "PrintSink"}})
+    sink_config = ModuleConfig("LogStoreModule", args={"connector": {"connection": "stdout", "connector_type": "sink"}})
     yield PipelineConfig(
-        connectors=PipelineConnectors(ConnectionConfigProperties(classname="StdinSource", connection="d")),
+        connectors=PipelineConnectors(
+            AdapterConfigProperties(ConnectorConfigProperties(connector_type="source", connection="stdin"))),
         modules={"ad": ad_config, "sink": sink_config, "parse": parse_config})
 
 
 @pytest.fixture
 def module_not_connected_cfg():
-    ad_config = ModuleConfig("AnomalyDetectionModule")
-    parse_config = ModuleConfig("LogParserModule", next_module="ad")
-    sink_config = ModuleConfig("LogStoreModule", args={"connector": {"connection": "print", "classname": "PrintSink"}})
+    ad_config = ModuleConfig("AnomalyDetectionModule", next_module="sink")
+    parse_config = ModuleConfig("LogParserModule")
+    sink_config = ModuleConfig(classname="LogStoreModule",
+                               args={
+                                   "connector": {
+                                       "connection": "stdout",
+                                       "connector_type": "sink",
+                                       "params": {}
+                                   }})
     yield PipelineConfig(
-        connectors=PipelineConnectors(ConnectionConfigProperties(classname="FileSource", connection="file")),
+        connectors=PipelineConnectors(
+            data_source=AdapterConfigProperties(
+                ConnectorConfigProperties(
+                    connector_type="source",
+                    connection="file"))),
         modules={"ad": ad_config, "sink": sink_config, "parse": parse_config})
 
 
 def test_build(valid_pipeline_cfg):
     builder = PipelineBuilder()
     pipeline = builder.build(valid_pipeline_cfg)
-    assert isinstance(pipeline.data_source, StdinSource)
+    assert isinstance(pipeline.data_source.connector, StdinSource)
     assert len(pipeline.modules) == 3
     assert isinstance(pipeline.modules['ad'], AnomalyDetectionModule)
     assert isinstance(pipeline.modules['parse'], LogParserModule)

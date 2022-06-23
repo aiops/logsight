@@ -2,12 +2,11 @@ from typing import Dict, Optional, Tuple
 
 from common.logsight_classes.configs import ModuleConfig, PipelineConfig, PipelineConnectors
 from common.patterns.builder import Builder, BuilderException
-from connectors.connection_builder import PipelineConnectionBuilder
-from connectors.sources import ConnectableSource, Source
-from connectors.sources.source import LogBatchSource
+from pipeline.builders.adapter_builder import PipelineAdapterBuilder
 from pipeline.builders.module_builder import ModuleBuilder
 from pipeline.modules.core import Module
 from pipeline.pipeline import Pipeline
+from pipeline.ports.pipeline_adapters import PipelineSourceAdapter
 
 
 class PipelineBuilder(Builder):
@@ -17,7 +16,7 @@ class PipelineBuilder(Builder):
 
     def __init__(self):
         self.module_builder = ModuleBuilder()
-        self.connection_builder = PipelineConnectionBuilder()
+        self.connection_builder = PipelineAdapterBuilder()
 
     def build(self, pipeline_config: PipelineConfig) -> Pipeline:
         """
@@ -35,7 +34,8 @@ class PipelineBuilder(Builder):
                         input_module=module_objects[input_module_name],
                         metadata=pipeline_config.metadata)
 
-    def _build_connectors(self, connectors: PipelineConnectors) -> Tuple[LogBatchSource, Optional[ConnectableSource]]:
+    def _build_connectors(self, connectors: PipelineConnectors) -> Tuple[PipelineSourceAdapter,
+                                                                         Optional[PipelineSourceAdapter]]:
         """
         Builds connections for data and control channel of pipeline using given configuration object.
 
@@ -44,7 +44,7 @@ class PipelineBuilder(Builder):
         Returns:
             Tuple[Source, Source] : Source objects for data and control channels
         """
-        data_source: LogBatchSource = self.connection_builder.build(connectors.data_source)
+        data_source: PipelineSourceAdapter = self.connection_builder.build(connectors.data_source)
         control_source = None
         if connectors.control_source:
             control_source = self.connection_builder.build(connectors.control_source)

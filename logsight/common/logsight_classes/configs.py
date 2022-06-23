@@ -16,17 +16,26 @@ class ModuleConfig:
 
 
 @dataclass
-class ConnectionConfigProperties:
-    classname: str
+class ConnectorConfigProperties:
+    connector_type: str
     connection: str
     params: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if self.connector_type not in ['source', 'sink']:
+            raise ValueError("Field 'connector_type' must be one of 'sink','source'.")
+
+
+@dataclass
+class AdapterConfigProperties:
+    connector: ConnectorConfigProperties
     serializer: Optional[str] = None
 
 
 @dataclass
 class PipelineConnectors:
-    data_source: ConnectionConfigProperties
-    control_source: Optional[ConnectionConfigProperties] = None
+    data_source: AdapterConfigProperties
+    control_source: Optional[AdapterConfigProperties] = None
 
 
 @dataclass
