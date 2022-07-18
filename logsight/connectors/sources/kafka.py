@@ -48,6 +48,7 @@ class KafkaSource(ConnectableSource):
                 bootstrap_servers=[self.address],
                 auto_offset_reset=self.offset,
                 group_id=self.topic,
+                api_version=(2, 0, 2),
                 enable_auto_commit=True,
                 value_deserializer=lambda x: x.decode('utf-8'),
                 auto_commit_interval_ms=1000,

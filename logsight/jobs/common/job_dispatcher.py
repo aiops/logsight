@@ -91,4 +91,5 @@ class TimedJobDispatcher(JobDispatcher):
 
     def run(self):
         """Start the timer"""
+        self.timer.daemon = True
         self.timer.start()
