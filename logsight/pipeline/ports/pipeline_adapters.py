@@ -1,5 +1,5 @@
 from analytics_core.logs import LogBatch
-from connectors.base.adapter import SourceAdapter
+from connectors.base.adapter import AdapterError, SourceAdapter
 
 
 class PipelineSourceAdapter(SourceAdapter):
