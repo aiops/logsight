@@ -44,20 +44,15 @@ class KafkaSource(ConnectableSource):
                     f"with offset policy '{self.offset}'.")
         try:
             self.kafka_source = Consumer(
-                self.topic,
-                bootstrap_servers=[self.address],
-                auto_offset_reset=self.offset,
-                group_id=self.topic,
-                api_version=(2, 0, 2),
-                enable_auto_commit=True,
-                value_deserializer=lambda x: x.decode('utf-8'),
+                "pipeline",
+                bootstrap_servers=self.address,
                 auto_commit_interval_ms=1000,
                 max_partition_fetch_bytes=5 * 1024 * 1024
             )
         except Exception as e:
             logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")
             raise e
-        self._log_current_offset()
+        # self._log_current_offset()
 
     def close(self):
         """ Close the connection."""
