@@ -52,6 +52,7 @@ class KafkaSource(ConnectableSource):
         except Exception as e:
             logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")
             raise e
+        logger.info(f"Connected to kafka on {self.address}")
         # self._log_current_offset()
 
     def close(self):
@@ -80,5 +81,5 @@ class KafkaSource(ConnectableSource):
     def receive_message(self) -> str:
         if self._first_message:
             self._first_message = False
-            self._log_current_offset()
+            # self._log_current_offset()
         return next(self.kafka_source).value
