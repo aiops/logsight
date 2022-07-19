@@ -44,7 +44,7 @@ class KafkaSource(ConnectableSource):
                     f"with offset policy '{self.offset}'.")
         try:
             self.kafka_source = Consumer(
-                "pipeline",
+                self.topic,
                 bootstrap_servers=self.address,
                 auto_commit_interval_ms=1000,
                 max_partition_fetch_bytes=5 * 1024 * 1024,
