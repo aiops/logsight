@@ -1,10 +1,9 @@
 import json
 import unittest
 
-from tenacity import RetryError
 from zmq import ZMQError
 
-from connectors.base.zeromq import ConnectionTypes
+from connectors.connectors.zeromq import ConnectionTypes
 from connectors.sinks import ZeroMQPubSink
 
 

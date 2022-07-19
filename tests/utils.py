@@ -1,7 +1,7 @@
 from datetime import datetime
 import random
 from analytics_core.modules.log_parsing.mask_parser import ExtractedParameter
-from logsight.analytics_core.logs import LogsightLog, LogEvent, LogBatch
+from analytics_core.logs import LogsightLog, LogBatch
 
 
 class TestInputConfig:
@@ -10,8 +10,7 @@ class TestInputConfig:
     default_parameter = ExtractedParameter("123", "NUM")
     default_timestamp = "2021-03-23T01:02:51.007"
     default_level = "INFO"
-    log_event = LogEvent(default_msg, default_timestamp, default_level)
-    logsight_log = LogsightLog(log_event)
+    logsight_log = LogsightLog(default_msg, default_timestamp, default_level)
 
     default_index = "test_index"
     default_num_logs = 100

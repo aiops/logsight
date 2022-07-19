@@ -1,5 +1,3 @@
-import dataclasses
-import json
 from typing import Dict
 
 from analytics_core.logs import LogsightLog
@@ -22,13 +20,6 @@ def unpack_singleton(x):
     return x
 
 
-class DataClassJSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if dataclasses.is_dataclass(o):
-            return dataclasses.asdict(o)
-        return super().default(o)
-
-
 def to_flat_dict(obj: LogsightLog) -> Dict:
-    return dict(id=obj.id, tags=obj.tags, **dataclasses.asdict(obj.event), **obj.metadata,
+    return dict(id=obj.id, tags=obj.tags, message=obj.message, timestamp=obj.timestamp, level=obj.level, **obj.metadata,
                 tag_keys=list(obj.tags.keys()))

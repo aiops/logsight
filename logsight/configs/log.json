@@ -3,15 +3,15 @@
   "disable_existing_loggers": true,
   "formatters": {
     "info": {
-      "format": "%(asctime)s |%(module)15s|%(levelname)7s| %(message)s",
+      "format": "%(asctime)s | %(module)-15s | %(levelname)-7s | %(message)s",
       "datefmt": "%Y-%m-%d %H:%M:%S"
     },
     "debug": {
-      "format": "%(asctime)s|%(threadName)15s|%(module)15s|%(funcName)25s|%(levelname)7s| %(message)s",
+      "format": "%(asctime)s | %(threadName)-15s| %(module)-22s| %(funcName)-15s| %(levelname)-7s| %(message)s",
       "datefmt": "%Y-%m-%d %H:%M:%S"
     },
     "warning": {
-      "format": "%(asctime)s|%(threadName)15s|%(module)15s|%(funcName)25s|%(levelname)7s| %(message)s",
+      "format": "%(asctime)s | %(threadName)-15s | %(module)-15s | %(funcName)-25s | %(levelname)-7s | %(message)s",
       "datefmt": "%Y-%m-%d %H:%M:%S"
     }
   },

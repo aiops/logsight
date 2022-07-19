@@ -52,10 +52,10 @@ class Database:
             sqlalchemy driver for connecting to the database
     """
 
-    def __init__(self, host, port, username, password, db_name, driver="postgresql+psycopg2"):
+    def __init__(self, host, port, username, password, db_name, driver=""):
 
         self.db_name = db_name
-        self.driver = driver
+        self.driver = driver if len(driver) > 0 else "postgresql+psycopg2"
         self.username = username or ''
         self.password = password or ''
         self.host = host or ''
@@ -80,10 +80,6 @@ class Database:
            wait=wait_fixed(RETRY_TIMEOUT))
     def connect(self):
         """Connect to the postgres database"""
-        n_attempt = self.connect.retry.statistics['attempt_number']
-        attempt_msg = f"Attempt: {n_attempt}/{RETRY_ATTEMPTS}" if n_attempt > 1 else ""
-        logger.debug(
-            f"Connecting to database {self.db_name} on {self.host}:{self.port}.{attempt_msg}")
         reason = ""
         try:
             self.conn = self.engine.connect()  # will return a valid object if connection success
@@ -93,7 +89,6 @@ class Database:
         if self.conn:
             try:
                 self._verify_database_exists(self.conn)
-                logger.debug(f"Connected to database {self.db_name}")
                 return self
             except DatabaseException as e:
                 reason = e
@@ -107,7 +102,6 @@ class Database:
 
     def close(self):
         """Close the postgres connection"""
-        logger.debug(f"Closing connection to database {self.db_name}")
         if self.conn and not self.conn.closed:
             self.conn.close()
         assert self.conn.closed

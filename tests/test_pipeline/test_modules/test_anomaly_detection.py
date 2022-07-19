@@ -10,7 +10,7 @@ from pipeline.modules import AnomalyDetectionModule
 
 @pytest.fixture(scope="module")
 def log_batch():
-    return from_dict(data={"logs": [{"event": {"timestamp": "2020-01-01", "message": "Hello World", "level": "INFO"}}],
+    return from_dict(data={"logs": [{"timestamp": "2020-01-01", "message": "Hello World", "level": "INFO"}],
                            "index": "test_index"}, data_class=LogBatch)
 
 

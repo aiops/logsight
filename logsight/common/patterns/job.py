@@ -12,8 +12,8 @@ def send_status(function):
         try:
             msg = function(cls)
             cls._send_done(msg)
-            logger.info(f"[x] Finished {cls.__class__.__name__}-{cls.name}.")
-
+            logger.debug(f"[x] Finished {cls.__class__.__name__}-{cls.name}.")
+            return msg
         except Exception as e:
             cls._send_error(f"<{e.__class__.__name__}> : {e}")
 
@@ -38,9 +38,12 @@ class Job(ABC):
         self._notification_callback = notification_callback
         self._done_callback = done_callback
         self._error_callback = error_callback
-        self.__job_name__ = str(uuid.uuid4())[:8]
-        if name:
-            self.__job_name__ += name
+        self.__job_name__ = name or str(uuid.uuid4())[:8]
+        self._id = str(uuid.uuid4())[:8]
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def name(self):
@@ -68,12 +71,12 @@ class Job(ABC):
 
     def _send_notification(self, message):
         if self._notification_callback is not None:
-            self._notification_callback(message)
+            return self._notification_callback(message)
 
     def _send_done(self, message):
         if self._done_callback is not None:
-            self._done_callback(message)
+            return self._done_callback(message)
 
     def _send_error(self, message):
         if self._error_callback is not None:
-            self._error_callback(message)
+            return self._error_callback(message)

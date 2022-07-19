@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from connectors.sinks.sink import Sink
+from connectors.base.sink import Sink
 
 
 class PrintSink(Sink):

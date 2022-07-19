@@ -1,3 +1,1 @@
-from .base import Connector
-from .sinks import *
-from .sources import *
+from .base import Connector, Source, Sink, Connectable, ConnectableConnector
