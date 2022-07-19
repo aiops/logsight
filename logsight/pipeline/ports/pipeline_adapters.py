@@ -6,7 +6,7 @@ class PipelineSourceAdapter(SourceAdapter):
     def receive(self) -> LogBatch:
         message = self.connector.receive_message()
         try:
-            deserialized = self.serializer.deserialize(message)
+            log_batch = self.serializer.deserialize(message)
         except KeyError:
             raise AdapterError("Cannot deserialize message $m")
-        return deserialized
+        return log_batch

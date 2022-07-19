@@ -3,7 +3,8 @@ import platform
 from multiprocessing import set_start_method
 
 # hello world
-from configs.global_vars import DELETE_ES_JOB, ES_CLEANUP_JOB_INTERVAL, INCIDENT_JOBS, JOB_INTERVAL, PARALLEL_JOBS
+from configs.global_vars import DELETE_ES_JOB, ES_CLEANUP_JOB_INTERVAL, INCIDENT_JOBS, JOB_INTERVAL, PARALLEL_JOBS, \
+    RUN_PIPELINE
 from pipeline import PipelineBuilder
 from jobs.common.factory import JobDispatcherFactory
 from jobs.persistence.timestamp_storage import TimestampStorageProvider
@@ -59,9 +60,10 @@ def run_scheduled_jobs():
 
 def run():
     verify_services()
-    run_scheduled_jobs()
     if RUN_PIPELINE is True:
         run_pipeline()
+    else:
+        run_scheduled_jobs()
 
 
 if __name__ == '__main__':
