@@ -47,7 +47,9 @@ class KafkaSource(ConnectableSource):
                 "pipeline",
                 bootstrap_servers=self.address,
                 auto_commit_interval_ms=1000,
-                max_partition_fetch_bytes=5 * 1024 * 1024
+                max_partition_fetch_bytes=5 * 1024 * 1024,
+                group_id=self.topic,
+                enable_auto_commit=True
             )
         except Exception as e:
             logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")
