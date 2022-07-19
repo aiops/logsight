@@ -44,8 +44,7 @@ class ConnectionConfig:
 class ModulePipelineConfig:
     def __init__(self, pipeline_config_path: str = PIPELINE_PATH):
         self.pipeline_config = from_dict(data=Config(pipeline_config_path).as_dict(), data_class=PipelineConfig)
-        # TODO: Filter normal has to be explicit true
-        if FILTER_NORMAL:
+        if FILTER_NORMAL is True:
             filter_normal_config = ModuleConfig(classname="FilterModule", args={
                 "key": "metadata.prediction",
                 "condition": "equals",
