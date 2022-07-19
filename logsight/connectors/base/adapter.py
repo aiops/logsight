@@ -23,3 +23,7 @@ class SourceAdapter(Adapter, HasNextMixin):
 class SinkAdapter(Adapter, HasNextMixin):
     def send(self, data: Any, target: Optional[Any] = None):
         self.connector.send(self.serializer.serialize(data), target)
+
+
+class AdapterError(Exception):
+    """General exception thrown by adapters"""

@@ -4,6 +4,7 @@ import time
 import uuid
 from typing import Dict, Optional, Union
 
+from connectors.base.adapter import AdapterError
 from connectors.base.connectable import Connectable
 from services.service_provider import ServiceProvider
 from .modules.core import Module
@@ -63,16 +64,19 @@ class Pipeline:
         total = 0
         total_t = 0
         while self.data_source.has_next():
-            log_batch = self.data_source.receive()
-            log_count = len(log_batch.logs)
-            logger.debug(f"Received Batch {log_batch.id}")
-            t = time.perf_counter()
-            self.input_module.handle(log_batch)
-            total += log_count
-            total_t += time.perf_counter() - t
-            logger.debug(f"Processed {log_count} logs in {time.perf_counter() - t}")
-            logger.debug(f"Total:{total} time: {total_t}")
-            self.storage.update_log_receipt(log_batch.id, log_count)
+            try:
+                log_batch = self.data_source.receive()
+                log_count = len(log_batch.logs)
+                logger.debug(f"Received Batch {log_batch.id}")
+                t = time.perf_counter()
+                self.input_module.handle(log_batch)
+                total += log_count
+                total_t += time.perf_counter() - t
+                logger.debug(f"Processed {log_count} logs in {time.perf_counter() - t}")
+                logger.debug(f"Total:{total} time: {total_t}")
+                self.storage.update_log_receipt(log_batch.id, log_count)
+            except AdapterError:
+                continue
         self._close()
 
     def _close(self):
