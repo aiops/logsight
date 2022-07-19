@@ -1,7 +1,5 @@
 import logging.config
-import os
 import platform
-import sys
 from multiprocessing import set_start_method
 
 # hello world
@@ -62,7 +60,8 @@ def run_scheduled_jobs():
 def run():
     verify_services()
     run_scheduled_jobs()
-    run_pipeline()
+    if RUN_PIPELINE is True:
+        run_pipeline()
 
 
 if __name__ == '__main__':

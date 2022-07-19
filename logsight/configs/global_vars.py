@@ -20,3 +20,5 @@ ES_CLEANUP_JOB_INTERVAL = int(os.environ.get('ES_CLEANUP_JOB_INTERVAL', 60 * 60)
 
 FILTER_NORMAL = bool(os.environ.get('FILTER_NORMAL', True))
 PIPELINE_CONNECTION = str(os.environ.get('PIPELINE_CONNECTION', "kafka"))
+
+RUN_PIPELINE = bool(os.environ.get('RUN_PIPELINE', True))
