@@ -1,30 +1,19 @@
 import json
 import logging
-import time
 from typing import Any, Optional
 
 from kafka import KafkaProducer
 
-from connectors.base.mixins import ConnectableSink
+from connectors import Sink
+from connectors.connectors.kafka import KafkaConnector, KafkaConfigProperties
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class KafkaSink(ConnectableSink):
+class KafkaSink(KafkaConnector, Sink):
 
-    def __init__(self, host: str, port: int, topic: str):
-        """
-        Init
-        :param host: The hostname of the Kafka broker
-        :type host: str
-        :param port: The port number of the Kafka broker
-        :type port: int
-        :param topic: The name of the topic to which the data will be consumed
-        :type topic: str
-        """
-        self.topic = topic
-        self.address = f"{host}:{port}"
-        self.kafka_sink = None
+    def __init__(self, config: KafkaConfigProperties):
+        KafkaConnector.__init__(self, config)
 
     def send(self, data: Any, target: Optional[Any] = None):
         """
@@ -41,15 +30,9 @@ class KafkaSink(ConnectableSink):
             data = [data]
         try:
             for d in data:
-                self.kafka_sink.send(topic=topic, value=json.dumps(d).encode('utf-8'))
+                self.conn.send(topic=topic, value=json.dumps(d).encode('utf-8'))
         except Exception as e:
             logger.error(e)
-
-    def close(self):
-        """
-        Close the Kafka connection.
-        """
-        self.kafka_sink.close()
 
     def _connect(self):
         """
@@ -61,7 +44,7 @@ class KafkaSink(ConnectableSink):
 
         """
         try:
-            self.kafka_sink = KafkaProducer(bootstrap_servers=self.address)
+            self.conn = KafkaProducer(bootstrap_servers=self.address)
 
         except Exception as e:
             logger.error(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")

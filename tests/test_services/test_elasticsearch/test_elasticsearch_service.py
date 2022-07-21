@@ -3,22 +3,29 @@ from unittest.mock import MagicMock, patch
 import pytest
 from elasticsearch import helpers
 
-from connectors.connectors.elasticsearch import ElasticsearchException
+from connectors.connectors.elasticsearch import ElasticsearchConfigProperties
+from connectors.connectors.elasticsearch.connector import ElasticsearchException
+from logsight.tests.inputs import processed_logs
 from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
-from tests.inputs import processed_logs
 
 
 @pytest.fixture
-def es():
+def es_config():
+    return ElasticsearchConfigProperties(scheme="scheme", host="host", port=9201, username="username",
+                                         password="password")
+
+
+@pytest.fixture
+def es(es_config):
     with patch('elasticsearch.helpers.bulk', return_value="Testing"):
-        result = ElasticsearchService("scheme", "host", 9201, "username", "password")
+        result = ElasticsearchService(es_config)
         yield result
 
 
 @pytest.fixture
-def es_exception():
+def es_exception(es_config):
     with patch('elasticsearch.helpers.bulk', side_effect=ElasticsearchException()):
-        result = ElasticsearchService("scheme", "host", 9201, "username", "password")
+        result = ElasticsearchService(es_config)
         yield result
 
 

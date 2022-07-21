@@ -1,6 +1,6 @@
 import logging
 
-from connectors.connectors.elasticsearch import ElasticsearchConnector
+from connectors.connectors.elasticsearch import ElasticsearchConnector, ElasticsearchConfigProperties
 from services.elasticsearch_service.queries import DELETE_BY_INGEST_TS_QUERY, DELETE_BY_QUERY, GET_ALL_AD, \
     GET_ALL_LOGS_INGEST, \
     GET_ALL_TEMPLATES
@@ -9,8 +9,9 @@ logger = logging.getLogger("logsight." + __name__)
 
 
 class ElasticsearchService(ElasticsearchConnector):
-    def __init__(self, scheme, host, port, username, password, **_kwargs):
-        super(ElasticsearchService, self).__init__(scheme, host, port, username, password, ingest_timestamp=False)
+    def __init__(self, config: ElasticsearchConfigProperties):
+        config.ingest_pipeline = None
+        super(ElasticsearchService, self).__init__(config)
 
     def __enter__(self):
         self.connect()

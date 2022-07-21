@@ -1,20 +1,18 @@
 from copy import deepcopy
 from typing import Optional, Type
 
-from common.logsight_classes.configs import AdapterConfigProperties
 from common.patterns.builder import Builder
 from connectors.base import Adapter, Source
 from connectors.base.adapter import SinkAdapter, SourceAdapter
-from connectors.base.connectable import Connectable
-from connectors.builders.cls_dict import cls_conn
+from connectors.builders.connector_builder import ConnectorBuilder
+from connectors.builders.properties import AdapterConfigProperties
 from connectors.serializers import DefaultSerializer
-from services.configurator.config_manager import ConnectionConfig
 from connectors import Sink, serializers
 
 
 class AdapterBuilder(Builder):
-    def __init__(self, config: Optional[ConnectionConfig] = None):
-        self.conn_config = config if config else ConnectionConfig()
+    def __init__(self):
+        self.connector_builder = ConnectorBuilder()
 
     def build(self, config: AdapterConfigProperties) -> Adapter:
         """
@@ -25,11 +23,8 @@ class AdapterBuilder(Builder):
           Returns:
             Type[ConnectableConnector]: A `Connector` object
       """
-        conn_params = deepcopy(self.conn_config.get_connection(config.connector.connection))
-        conn_params.update(config.connector.params)
-        c_name = cls_conn[config.connector.connector_type][config.connector.connection]
         serializer = getattr(serializers, config.serializer)() if config.serializer else DefaultSerializer()
-        connector = c_name(**conn_params)
+        connector = self.connector_builder.build(config.connector)
         adapter_cls = self._get_adapter(connector)
         return adapter_cls(connector, serializer)
 

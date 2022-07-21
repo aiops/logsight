@@ -4,7 +4,6 @@ from config import Config
 from dacite import from_dict
 
 import configs.global_vars
-from common.logsight_classes.configs import ModuleConfig, PipelineConfig
 from configs.global_vars import CONNECTIONS_PATH, DEBUG, PIPELINE_PATH, LOGS_CONFIG_PATH, FILTER_NORMAL, \
     PIPELINE_CONNECTION
 

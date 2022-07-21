@@ -10,12 +10,12 @@ RUN apt-get update && \
 # set the working directory in the container
 WORKDIR /code
 
-COPY requirements.txt .
+COPY ../requirements.txt .
 # install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # copy code
-COPY logsight/ logsight
+COPY ../logsight logsight
 # copy entrypoint.sh
 COPY entrypoint.sh .
 

@@ -2,12 +2,9 @@ import os
 
 import pytest
 
-from common.logsight_classes.configs import AdapterConfigProperties, ConnectorConfigProperties
+from connectors.builders.properties import ConnectorConfigProperties
 from connectors import ConnectableConnector, Sink, Source
-from connectors.builders.adapter_builder import AdapterBuilder
 from connectors.builders.connector_builder import ConnectorBuilder
-from pipeline.builders.adapter_builder import PipelineAdapterBuilder
-from pipeline.ports.pipeline_adapters import PipelineSourceAdapter
 
 
 @pytest.fixture(params=['name1', 'name2', 'name3'])
@@ -61,12 +58,3 @@ def test_build_valid_sinks(valid_sink):
     if hasattr(connection, 'connect') and hasattr(connection, 'close'):
         assert isinstance(connection, ConnectableConnector)
 
-
-def test_build_pipeline_source(valid_source):
-    adapter_config = AdapterConfigProperties(connector=valid_source)
-    builder = PipelineAdapterBuilder()
-    connection = builder.build(adapter_config)
-
-    assert isinstance(connection, PipelineSourceAdapter)
-    if hasattr(connection, 'connect') and hasattr(connection, 'close'):
-        assert isinstance(connection, ConnectableConnector)

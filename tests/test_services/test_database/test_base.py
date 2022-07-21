@@ -2,12 +2,14 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from services.database.base import Database
+from connectors.connectors.sql_db import DatabaseConfigProperties, DatabaseConnector
 
 
 @pytest.fixture
 def database():
-    return Database("localhost", 5432, "username", "password", "db_name")
+    database_config = DatabaseConfigProperties(host="localhost",
+                                               port=5432, username="username", password="password", db_name="db_name")
+    return DatabaseConnector(database_config)
 
 
 def test__create_engine(database):

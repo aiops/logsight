@@ -2,18 +2,18 @@ import logging
 
 import zmq
 
-from common.logsight_classes.mixins import DictMixin
 from connectors.base.mixins import ConnectableSource
-from connectors.connectors.zeromq import ConnectionTypes, ZeroMQConnector
-from connectors.serializers import JSONSerializer
+from connectors.connectors.zeromq import ZeroMQConfigProperties
+from connectors.connectors.zeromq.connector import ConnectionTypes, ZeroMQConnector
 
 logger = logging.getLogger("logsight." + __name__)
 
 
 class ZeroMQSubSource(ConnectableSource, ZeroMQConnector):
-    def __init__(self, endpoint: str, topic: str = None, connection_type: ConnectionTypes = ConnectionTypes.CONNECT):
-        super(ZeroMQSubSource, self).__init__(endpoint=endpoint, socket_type=zmq.SUB, connection_type=connection_type)
-        self.topic = topic
+    def __init__(self, config: ZeroMQConfigProperties):
+        config.socket_type = zmq.SUB
+        super(ZeroMQSubSource, self).__init__(config)
+        self.topic = config.topic
 
     def _connect(self):
         ZeroMQConnector._connect(self)
@@ -35,8 +35,10 @@ class ZeroMQSubSource(ConnectableSource, ZeroMQConnector):
 
 
 class ZeroMQRepSource(ZeroMQConnector, ConnectableSource):
-    def __init__(self, endpoint: str):
-        ZeroMQConnector.__init__(self, endpoint=endpoint, socket_type=zmq.REP, connection_type=ConnectionTypes.BIND)
+    def __init__(self, config: ZeroMQConfigProperties):
+        config.socket_type = zmq.REP
+        config.connection_type = ConnectionTypes.BIND
+        ZeroMQConnector.__init__(self, config)
 
     def receive_message(self) -> str:
         return bytes(self.socket.recv()).decode("utf-8")
