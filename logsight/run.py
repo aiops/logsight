@@ -60,10 +60,11 @@ def run_scheduled_jobs():
 
 def run():
     verify_services()
+    if INCIDENT_JOBS is True or DELETE_ES_JOB is True:
+        run_scheduled_jobs()
+
     if RUN_PIPELINE is True:
         run_pipeline()
-    else:
-        run_scheduled_jobs()
 
 
 if __name__ == '__main__':
