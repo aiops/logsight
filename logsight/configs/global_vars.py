@@ -9,7 +9,7 @@ CONNECTIONS_PATH = os.path.join(CONFIG_PATH, "connections.cfg")
 PIPELINE_INDEX_EXT = "pipeline"
 RETRY_ATTEMPTS = int(os.environ.get('RETRY_ATTEMPTS', 6))
 RETRY_TIMEOUT = int(os.environ.get('RETRY_TIMEOUT', 10))
-INCIDENT_JOBS = os.environ.get('INCIDENT_JOBS', "false").lower() in ('true', '1', 't')
+INCIDENT_JOBS = os.environ.get('INCIDENT_JOBS', "true").lower() in ('true', '1', 't')
 DELETE_ES_JOB = os.environ.get('DELETE_ES_JOB', "false").lower() in ('true', '1', 't')
 PARALLEL_JOBS = int(os.environ.get('PARALLEL_JOBS', 2))
 JOB_INTERVAL = int(os.environ.get('JOB_INTERVAL', 60))
@@ -18,7 +18,7 @@ ES_PIPELINE_ID_INGEST_TIMESTAMP = "ingest_timestamp"
 ES_CLEANUP_AGE = str(os.environ.get('ES_CLEANUP_AGE', "now-1y"))
 ES_CLEANUP_JOB_INTERVAL = int(os.environ.get('ES_CLEANUP_JOB_INTERVAL', 60 * 60))
 
-FILTER_NORMAL = os.environ.get('FILTER_NORMAL', "true").lower() in ('true', '1', 't')
-PIPELINE_CONNECTION = str(os.environ.get('PIPELINE_CONNECTION', "kafka"))
+FILTER_NORMAL = os.environ.get('FILTER_NORMAL', "").lower() in ('true', '1', 't')
+PIPELINE_CONNECTION = str(os.environ.get('PIPELINE_CONNECTION', "zeromq"))
 
 RUN_PIPELINE = os.environ.get('RUN_PIPELINE', "true").lower() in ('true', '1', 't')
