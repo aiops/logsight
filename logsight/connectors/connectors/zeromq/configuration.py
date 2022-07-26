@@ -13,7 +13,3 @@ class ZeroMQConfigProperties(BaseModel):
     connection_type: ConnectionTypes = ConnectionTypes.CONNECT
     topic: str = ""
 
-
-if __name__ == '__main__':
-    test = ZeroMQConfigProperties(socket_type=1, connection_type=ConnectionTypes.CONNECT)
-    print(test)

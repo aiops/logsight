@@ -1,5 +1,4 @@
 from connectors.builders.config_provider import ConnectorConfigProvider
-from services import ConnectionConfig
 from services.database.db import PostgresDBService
 from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 

@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='Logsight',
+    name='logsight',
     packages=['logsight'],
     description='Logsight core - internal library',
     version='1.3.0',

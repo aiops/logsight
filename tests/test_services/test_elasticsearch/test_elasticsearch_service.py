@@ -5,7 +5,7 @@ from elasticsearch import helpers
 
 from connectors.connectors.elasticsearch import ElasticsearchConfigProperties
 from connectors.connectors.elasticsearch.connector import ElasticsearchException
-from logsight.tests.inputs import processed_logs
+from ...inputs import processed_logs
 from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 
 

@@ -12,7 +12,8 @@ logger = logging.getLogger("logsight." + __name__)
 class ZeroMQSubSource(ConnectableSource, ZeroMQConnector):
     def __init__(self, config: ZeroMQConfigProperties):
         config.socket_type = zmq.SUB
-        super(ZeroMQSubSource, self).__init__(config)
+        config.connection_type = ConnectionTypes.CONNECT
+        ZeroMQConnector.__init__(self, config)
         self.topic = config.topic
 
     def _connect(self):

@@ -26,7 +26,6 @@ class ElasticsearchConnector(ConnectableConnector):
         self._create_timestamp_pipeline()
 
     def _verify_connection(self):
-        logger.info(self.es.ping())
         if not self.es.ping():
             msg = f"Elasticsearch endpoint {self.host}:{self.port} is unreachable."
             logger.error(msg)

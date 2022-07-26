@@ -58,3 +58,34 @@ class ElasticsearchService(ElasticsearchConnector):
         if end_time:
             query = query.replace("$end_time", end_time)
         return eval(query)
+
+    def get_all_logs_for_tag(self, index, ingest_start_time, ingest_end_time, tags):
+        query = self._parse_query(GET_ALL_LOGS_INGEST, index, start_time=ingest_start_time, end_time=ingest_end_time)
+
+        filter_query = [{"match_phrase": {f"tags.{tag_key}.keyword": tags[tag_key]}} for tag_key in tags]
+        query['body']['query']['bool']['filter'] = filter_query
+        
+        res = self.es.search(**query, size=10000)
+        return [row['_source'] for row in res['hits']['hits']]
+
+    def get_tags_jorge(self, index: str, tags):
+
+        filter_query = []
+        for tag_key in tags:
+            filter_query.append({"match_phrase": {f"tags.{tag_key}.keyword": tags[tag_key]}})
+        res = self.es.search(
+            index=index,
+            body={
+                "size": 10000,
+                "query": {
+                    "bool": {
+                        "must": [],
+                        "filter": filter_query,
+                        "should": [],
+                        "must_not": []
+                    }
+                }
+            }
+        )
+
+        return [r['_source'] for r in res['hits']['hits']]
