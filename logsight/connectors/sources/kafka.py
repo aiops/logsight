@@ -15,6 +15,7 @@ class KafkaSource(KafkaConnector, ConnectableSource):
 
     def __init__(self, config: KafkaConfigProperties):
         super().__init__(config)
+        self.config = config
         self.offset = config.offset
         self.group_id = config.group_id
         self.conn = None
@@ -38,10 +39,10 @@ class KafkaSource(KafkaConnector, ConnectableSource):
             self.conn = Consumer(
                 self.topic,
                 bootstrap_servers=self.address,
-                auto_commit_interval_ms=1000,
-                max_partition_fetch_bytes=5 * 1024 * 1024,
+                auto_commit_interval_ms=self.config.auto_commit_interval_ms,
+                max_partition_fetch_bytes=self.config.max_partition_fetch_bytes,
                 group_id=self.topic,
-                enable_auto_commit=True
+                enable_auto_commit=self.config.enable_auto_commit
             )
         except Exception as e:
             logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")

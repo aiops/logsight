@@ -5,9 +5,7 @@ from logsight.logger.properties import LoggerConfigProperties
 
 
 class LogConfig:
-    def __init__(self):
-        log_config = LoggerConfigProperties()
-        base_config = LogsightProperties()
+    def __init__(self, log_config=LoggerConfigProperties(), base_config=LogsightProperties()):
         self.config = json.load(open(log_config.config_path, 'r'))
         if base_config.debug:
             self.config['loggers']['logsight']['handlers'] = ["debug", "warning"]

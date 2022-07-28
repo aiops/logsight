@@ -14,7 +14,6 @@ class ZeroMQPubSink(Sink, ZeroMQConnector):
 
     def __init__(self, config: ZeroMQConfigProperties):
         config.socket_type = zmq.PUB
-        print(config)
 
         ZeroMQConnector.__init__(self, config)
         self.topic = config.topic

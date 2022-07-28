@@ -5,10 +5,10 @@ from typing import List, NamedTuple, Optional
 
 from cachetools import LRUCache, cachedmethod
 
-from .parser import Parser
-from .parsing_lib.mask_config import MaskParserConfig
-from .parsing_lib.masking import LogMasker
-from ...logs import LogsightLog
+from logsight.analytics_core.modules.log_parsing.parser import Parser
+from logsight.analytics_core.modules.log_parsing.parsing_lib.mask_config import MaskParserConfig
+from logsight.analytics_core.modules.log_parsing.parsing_lib.masking import LogMasker
+from logsight.analytics_core.logs import LogsightLog
 
 ExtractedParameter = NamedTuple("ExtractedParameter", [("value", str), ("mask_name", str)])
 

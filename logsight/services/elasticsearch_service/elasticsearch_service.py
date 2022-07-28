@@ -22,18 +22,18 @@ class ElasticsearchService(ElasticsearchConnector):
 
     def get_all_logs_for_index(self, index, start_time, end_time):
         query = self._parse_query(GET_ALL_AD, index, start_time, end_time)
-        res = self.es.search(**query, size=10000)
+        res = self.es.search(**query, size=self.max_fetch_size)
         return [row['_source'] for row in res['hits']['hits']]
 
     def get_all_logs_after_ingest(self, index, start_time, end_time):
         query = self._parse_query(GET_ALL_LOGS_INGEST, index, start_time=start_time, end_time=end_time)
 
-        res = self.es.search(**query, size=10000)
+        res = self.es.search(**query, size=self.max_fetch_size)
         return [row['_source'] for row in res['hits']['hits']]
 
     def get_all_templates_for_index(self, index):
         query = self._parse_query(GET_ALL_TEMPLATES, index)
-        res = self.es.search(**query, size=10000)
+        res = self.es.search(**query, size=self.max_fetch_size)
         return [row['key'] for row in res['aggregations']['aggregations']['buckets']]
 
     def delete_logs_for_index(self, index, start_time, end_time):
@@ -64,28 +64,6 @@ class ElasticsearchService(ElasticsearchConnector):
 
         filter_query = [{"match_phrase": {f"tags.{tag_key}.keyword": tags[tag_key]}} for tag_key in tags]
         query['body']['query']['bool']['filter'] = filter_query
-        
-        res = self.es.search(**query, size=10000)
+
+        res = self.es.search(**query, size=self.max_fetch_size)
         return [row['_source'] for row in res['hits']['hits']]
-
-    def get_tags_jorge(self, index: str, tags):
-
-        filter_query = []
-        for tag_key in tags:
-            filter_query.append({"match_phrase": {f"tags.{tag_key}.keyword": tags[tag_key]}})
-        res = self.es.search(
-            index=index,
-            body={
-                "size": 10000,
-                "query": {
-                    "bool": {
-                        "must": [],
-                        "filter": filter_query,
-                        "should": [],
-                        "must_not": []
-                    }
-                }
-            }
-        )
-
-        return [r['_source'] for r in res['hits']['hits']]

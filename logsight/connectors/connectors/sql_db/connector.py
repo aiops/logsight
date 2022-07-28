@@ -6,9 +6,10 @@ from sqlalchemy.exc import DatabaseError, OperationalError
 from sqlalchemy.pool import NullPool
 
 from logsight.common.helpers import unpack_singleton
-from .configuration import DatabaseConfigProperties
-from .exceptions import DatabaseException
-from ... import ConnectableConnector
+
+from logsight.connectors.connectors.sql_db.configuration import DatabaseConfigProperties
+from logsight.connectors.connectors.sql_db.exceptions import DatabaseException
+from logsight.connectors.base.mixins import ConnectableConnector
 
 logger = logging.getLogger("logsight." + __name__)
 

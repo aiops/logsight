@@ -1,10 +1,10 @@
-import os
+from os.path import join, split, realpath
 
 from pydantic import BaseModel
 
 from logsight.configs.properties import ConfigProperties
 
 
-@ConfigProperties(prefix="pipeline")
+@ConfigProperties(prefix="logger")
 class LoggerConfigProperties(BaseModel):
-    config_path: str = os.path.join(os.path.split(os.path.realpath(__file__))[0], "log.json")
+    config_path: str = join(split(realpath(__file__))[0], "log.json")

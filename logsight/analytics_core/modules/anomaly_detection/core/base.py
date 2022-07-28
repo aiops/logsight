@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from ....logs import LogBatch
+from logsight.analytics_core.logs import LogBatch
 
 
 class BaseAnomalyDetector:

@@ -2,7 +2,7 @@ import time
 import unittest
 
 from logsight.analytics_core.modules.log_parsing.mask_parser import MaskLogParser
-from ....utils import TestInputConfig
+from tests.utils import TestInputConfig
 
 
 class TestMaskLogParser(unittest.TestCase):

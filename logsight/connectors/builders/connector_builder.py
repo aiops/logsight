@@ -2,9 +2,9 @@ from typing import Type, Union
 
 from logsight.common.patterns.builder import Builder
 from logsight.connectors.builders.cls_dict import cls_conn
-from .config_provider import ConnectorConfigProvider
-from .properties import ConnectorConfigProperties
-from .. import Connectable, Sink, Source
+from logsight.connectors.builders.config_provider import ConnectorConfigProvider
+from logsight.connectors.builders.properties import ConnectorConfigProperties
+from logsight.connectors import Connectable, Sink, Source
 
 
 class ConnectorBuilder(Builder):

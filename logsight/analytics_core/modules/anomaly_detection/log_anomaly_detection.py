@@ -3,12 +3,12 @@ import os
 import sys
 from typing import Optional
 
-from .core.base import BaseAnomalyDetector
-from .core.config import AnomalyDetectionConfig
-from .core.tokenizer import LogTokenizer
-from .models.onnx_model import OnnxModel
-from .utils import pad_sequences
-from ...logs import LogBatch
+from logsight.analytics_core.modules.anomaly_detection.core.base import BaseAnomalyDetector
+from logsight.analytics_core.modules.anomaly_detection.core.config import AnomalyDetectionConfig
+from logsight.analytics_core.modules.anomaly_detection.core.tokenizer import LogTokenizer
+from logsight.analytics_core.modules.anomaly_detection.models.onnx_model import OnnxModel
+from logsight.analytics_core.modules.anomaly_detection.utils import pad_sequences
+from logsight.analytics_core.logs import LogBatch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "core"))
 logger = logging.getLogger("logsight." + __name__)

@@ -1,5 +1,5 @@
 from logsight.analytics_core.modules.log_aggregation import LogAggregator
-from ....inputs import agg_results, processed_logs
+from tests.inputs import agg_results, processed_logs
 
 
 def test_aggregate_logs():

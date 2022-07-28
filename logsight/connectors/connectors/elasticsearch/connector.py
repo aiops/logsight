@@ -20,7 +20,8 @@ class ElasticsearchConnector(ConnectableConnector):
         self.ingest_pipeline = config.ingest_pipeline
         self.host = config.host
         self.port = config.port
-
+        self.max_fetch_size = config.max_fetch_size
+        
     def _connect(self):
         self._verify_connection()
         self._create_timestamp_pipeline()

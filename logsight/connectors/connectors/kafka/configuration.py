@@ -12,3 +12,6 @@ class KafkaConfigProperties(BaseModel):
     topic: str
     offset: Optional[str] = 'latest'
     group_id: Optional[int]
+    auto_commit_interval_ms: Optional[int] = 1000
+    max_partition_fetch_bytes: Optional[int] = 5 * 1024 * 1024
+    enable_auto_commit: Optional[bool] = True

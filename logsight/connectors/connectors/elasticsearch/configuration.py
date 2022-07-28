@@ -13,8 +13,4 @@ class ElasticsearchConfigProperties(BaseModel):
     username: str
     password: str
     ingest_pipeline: Optional[str] = None
-
-
-if __name__ == '__main__':
-    es = ElasticsearchConfigProperties
-    print(es)
+    max_fetch_size: Optional[int] = 10000

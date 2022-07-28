@@ -6,7 +6,7 @@ from elasticsearch import helpers
 from logsight.connectors.connectors.elasticsearch import ElasticsearchConfigProperties
 from logsight.connectors.connectors.elasticsearch.connector import ElasticsearchException
 from logsight.services.elasticsearch_service.elasticsearch_service import ElasticsearchService
-from ...inputs import processed_logs
+from tests.inputs import processed_logs
 
 
 @pytest.fixture
@@ -77,6 +77,13 @@ def test_delete_logs_for_index(es):
     es.es.delete_by_query = MagicMock()
     es.delete_logs_for_index("index", "now-15m", "now")
     es.es.delete_by_query.assert_called_once()
+
+
+def test_get_all_logs_for_tag(es):
+    es.es.delete_by_query = MagicMock()
+    es.es.search = MagicMock(return_value=get_es_res(processed_logs))
+    result = es.get_all_logs_for_tag("index", "start_time", "end_time", {})
+    assert result == processed_logs
 
 
 def test_save_string(es):
