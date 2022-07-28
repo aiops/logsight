@@ -1,17 +1,16 @@
 import json
 import os
-from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, Optional
 
-from connectors.base.mixins import ConnectableSink
+from logsight.connectors import Sink
+from logsight.connectors.connectors.file import FileConfigProperties, FileConnector
 
 
-class FileSink(ConnectableSink):
+class FileSink(FileConnector, Sink):
     """Sink that writes to a file."""
 
-    def __init__(self, path: Union[str, List[str]], mode: str = "a+"):
-        self.path = Path(path)
-        self.mode = mode
+    def __init__(self, config: FileConfigProperties):
+        super().__init__(config)
         self.file = None
 
     def close(self):

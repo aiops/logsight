@@ -5,8 +5,8 @@ import sys
 import numpy as np
 import onnxruntime as ort
 
-from ..core.base import BaseModel
-from ..utils import softmax
+from logsight.analytics_core.modules.anomaly_detection.core.base import BaseModel
+from logsight.analytics_core.modules.anomaly_detection.utils import softmax
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../core"))
 logger = logging.getLogger("logsight." + __name__)

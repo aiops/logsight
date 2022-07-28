@@ -1,4 +1,4 @@
-from connectors import sources, sinks
+from logsight.connectors import sinks, sources
 
 cls_conn = {"source": {"kafka": sources.KafkaSource,
                        "socket": sources.SocketSource,

@@ -1,7 +1,7 @@
-from typing import List
 from functools import reduce
+from typing import List
 
-from analytics_core.logs import LogsightLog
+from logsight.analytics_core.logs import LogsightLog
 
 conditions = {
     "contains": lambda target, value: value in target,

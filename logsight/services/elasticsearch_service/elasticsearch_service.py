@@ -1,7 +1,7 @@
 import logging
 
-from connectors.connectors.elasticsearch import ElasticsearchConnector
-from services.elasticsearch_service.queries import DELETE_BY_INGEST_TS_QUERY, DELETE_BY_QUERY, GET_ALL_AD, \
+from logsight.connectors.connectors.elasticsearch import ElasticsearchConfigProperties, ElasticsearchConnector
+from logsight.services.elasticsearch_service.queries import DELETE_BY_INGEST_TS_QUERY, DELETE_BY_QUERY, GET_ALL_AD, \
     GET_ALL_LOGS_INGEST, \
     GET_ALL_TEMPLATES
 
@@ -9,8 +9,9 @@ logger = logging.getLogger("logsight." + __name__)
 
 
 class ElasticsearchService(ElasticsearchConnector):
-    def __init__(self, scheme, host, port, username, password, **_kwargs):
-        super(ElasticsearchService, self).__init__(scheme, host, port, username, password, ingest_timestamp=False)
+    def __init__(self, config: ElasticsearchConfigProperties):
+        config.ingest_pipeline = None
+        super(ElasticsearchService, self).__init__(config)
 
     def __enter__(self):
         self.connect()
@@ -21,18 +22,18 @@ class ElasticsearchService(ElasticsearchConnector):
 
     def get_all_logs_for_index(self, index, start_time, end_time):
         query = self._parse_query(GET_ALL_AD, index, start_time, end_time)
-        res = self.es.search(**query, size=10000)
+        res = self.es.search(**query, size=self.max_fetch_size)
         return [row['_source'] for row in res['hits']['hits']]
 
     def get_all_logs_after_ingest(self, index, start_time, end_time):
         query = self._parse_query(GET_ALL_LOGS_INGEST, index, start_time=start_time, end_time=end_time)
 
-        res = self.es.search(**query, size=10000)
+        res = self.es.search(**query, size=self.max_fetch_size)
         return [row['_source'] for row in res['hits']['hits']]
 
     def get_all_templates_for_index(self, index):
         query = self._parse_query(GET_ALL_TEMPLATES, index)
-        res = self.es.search(**query, size=10000)
+        res = self.es.search(**query, size=self.max_fetch_size)
         return [row['key'] for row in res['aggregations']['aggregations']['buckets']]
 
     def delete_logs_for_index(self, index, start_time, end_time):
@@ -57,3 +58,12 @@ class ElasticsearchService(ElasticsearchConnector):
         if end_time:
             query = query.replace("$end_time", end_time)
         return eval(query)
+
+    def get_all_logs_for_tag(self, index, ingest_start_time, ingest_end_time, tags):
+        query = self._parse_query(GET_ALL_LOGS_INGEST, index, start_time=ingest_start_time, end_time=ingest_end_time)
+
+        filter_query = [{"match_phrase": {f"tags.{tag_key}.keyword": tags[tag_key]}} for tag_key in tags]
+        query['body']['query']['bool']['filter'] = filter_query
+
+        res = self.es.search(**query, size=self.max_fetch_size)
+        return [row['_source'] for row in res['hits']['hits']]

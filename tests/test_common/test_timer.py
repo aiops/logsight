@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from common.patterns.timer import NamedTimer
+from logsight.common.patterns.timer import NamedTimer
 
 
 @pytest.fixture

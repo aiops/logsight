@@ -3,7 +3,8 @@ import unittest
 import zmq
 from zmq import ZMQError
 
-from connectors.connectors.zeromq import ConnectionTypes, ZeroMQConnector
+from logsight.connectors.connectors.zeromq import ZeroMQConfigProperties
+from logsight.connectors.connectors.zeromq.connector import ConnectionTypes, ZeroMQConnector
 
 
 class TestZeroMQBase(unittest.TestCase):
@@ -13,9 +14,11 @@ class TestZeroMQBase(unittest.TestCase):
     connections = {**connections_connect, **connections_bind}
 
     def test_socket_connect_success(self):
+
         for socket_type, connection_type in TestZeroMQBase.connections.items():
-            zeromq_base = ZeroMQConnector(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
-                                          connection_type=connection_type)
+            config = ZeroMQConfigProperties(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
+                                            connection_type=connection_type)
+            zeromq_base = ZeroMQConnector(config)
             try:
                 zeromq_base.connect()
             except ConnectionError as e:
@@ -32,10 +35,10 @@ class TestZeroMQBase(unittest.TestCase):
 
     def test_socket_connect_fail_in_use(self):
         for socket_type, connection_type in TestZeroMQBase.connections_bind.items():
-            zeromq_base1 = ZeroMQConnector(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
-                                           connection_type=connection_type)
-            zeromq_base2 = ZeroMQConnector(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
-                                           connection_type=connection_type)
+            config = ZeroMQConfigProperties(endpoint=TestZeroMQBase.endpoint, socket_type=socket_type,
+                                            connection_type=connection_type)
+            zeromq_base1 = ZeroMQConnector(config)
+            zeromq_base2 = ZeroMQConnector(config)
             try:
                 zeromq_base1.connect()
             except ConnectionError as e:

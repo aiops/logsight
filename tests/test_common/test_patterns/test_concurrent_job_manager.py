@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from common.patterns.concurrent_job_manager import QueueableJobManager
-from common.patterns.job import Job
+from logsight.common.patterns.concurrent_job_manager import QueueableJobManager
+from logsight.common.patterns.job import Job
 
 
 @pytest.fixture

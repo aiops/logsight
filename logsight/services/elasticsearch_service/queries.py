@@ -14,7 +14,7 @@ GET_ALL_AD = {
 GET_ALL_TEMPLATES = {
 
     "index": _index_placeholder, "body": {
-        "aggs": {"aggregations": {"terms": {"field": "template.keyword", "order": {"_count": "desc"}, "size": 10000}}},
+        "aggs": {"aggregations": {"terms": {"field": "template.keyword", "order": {"_count": "desc"}}}},
         "fields": [{"field": "ingest_timestamp", "format": "date_time"}], "script_fields": {}, "stored_fields": ["*"],
         "runtime_mappings": {}, "_source": {"excludes": []},
         "sort": [

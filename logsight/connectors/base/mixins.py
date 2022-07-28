@@ -1,9 +1,9 @@
 from abc import ABC
 
-from connectors.base.connectable import Connectable
-from connectors.base.connector import Connector
-from connectors.base.sink import Sink
-from connectors.base.source import Source
+from logsight.connectors.base.connectable import Connectable
+from logsight.connectors.base.connector import Connector
+from logsight.connectors.base.sink import Sink
+from logsight.connectors.base.source import Source
 
 
 class ConnectableConnector(Connector, Connectable, ABC):

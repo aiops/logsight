@@ -3,8 +3,8 @@ from typing import Any
 
 import ujson
 
-from analytics_core.logs import LogBatch, LogsightLog
-from connectors.base.serializer import Serializer
+from logsight.analytics_core.logs import LogBatch, LogsightLog
+from logsight.connectors.base.serializer import Serializer
 
 
 class LogBatchSerializer(Serializer):

@@ -1,7 +1,8 @@
-from datetime import datetime
 import random
-from analytics_core.modules.log_parsing.mask_parser import ExtractedParameter
-from analytics_core.logs import LogsightLog, LogBatch
+from datetime import datetime
+
+from logsight.analytics_core.logs import LogBatch, LogsightLog
+from logsight.analytics_core.modules.log_parsing.mask_parser import ExtractedParameter
 
 
 class TestInputConfig:
@@ -18,9 +19,3 @@ class TestInputConfig:
     log_batch = LogBatch(logsight_logs, default_index)
 
 
-def random_times(start, end, n):
-    frmt = '%Y-%m-%d %H:%M:%S'
-    stime = datetime.strptime(start, frmt)
-    etime = datetime.strptime(end, frmt)
-    td = etime - stime
-    return [random.random() * td + stime for _ in range(n)]

@@ -4,7 +4,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
-from analytics_core.logs import LogsightLog
+from logsight.analytics_core.logs import LogsightLog
 
 logger = logging.getLogger("logsight." + __name__)
 

@@ -1,6 +1,6 @@
-from services.database.postgres.db import PostgresDBService
-from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
-from services.service_provider import ServiceProvider
+from logsight.services.database.db import PostgresDBService
+from logsight.services.elasticsearch_service.elasticsearch_service import ElasticsearchService
+from logsight.services.service_provider import ServiceProvider
 
 
 def test_create_postgres_connection():

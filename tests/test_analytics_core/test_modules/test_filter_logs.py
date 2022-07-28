@@ -2,8 +2,8 @@ from datetime import datetime
 
 import pytest
 
-from analytics_core.logs import LogsightLog
-from analytics_core.modules.filter.filter_logs import Filter
+from logsight.analytics_core.logs import LogsightLog
+from logsight.analytics_core.modules.filter.filter_logs import Filter
 
 
 @pytest.fixture()

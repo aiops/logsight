@@ -1,23 +1,15 @@
-import json
 import socket
 
-from connectors.base.mixins import ConnectableSource
+from logsight.connectors import Source
+from logsight.connectors.connectors.socket.configuration import SocketConfigProperties
+from logsight.connectors.connectors.socket.connector import SocketConnector
 
 
-class SocketSource(ConnectableSource):
+class SocketSource(Source, SocketConnector):
 
-    def __init__(self, host: str, port, max_size: int = 2048):
-        self.server_address = None
-        self.host = host
-        self.port = port
-        self.max_size = max_size
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._data = None
-        self.connected = False
-
-    def close(self):
-        self.socket.close()
-        self.connected = False
+    def __init__(self, config: SocketConfigProperties):
+        SocketConnector.__init__(self, config)
+        self.max_size = config.max_size
 
     def _connect(self):
         if self.connected:
@@ -28,7 +20,7 @@ class SocketSource(ConnectableSource):
         self.socket.listen(5)
         self.connected = True
 
-    def receive_message(self):
+    def receive_message(self) -> str:
         request, client_address = self.socket.accept()
         payload = request.recv(self.max_size).decode("utf-8").strip()
-        return json.loads(payload)
+        return payload

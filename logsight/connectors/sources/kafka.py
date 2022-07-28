@@ -3,29 +3,22 @@ import logging
 # noinspection PyPackageRequirements,PyProtectedMember
 from kafka import KafkaConsumer as Consumer, TopicPartition
 
-from connectors.base.mixins import ConnectableSource
+from logsight.connectors.base.mixins import ConnectableSource
+from logsight.connectors.connectors.kafka.configuration import KafkaConfigProperties
+from logsight.connectors.connectors.kafka.connector import KafkaConnector
 
 logger = logging.getLogger("logsight." + __name__)
 
 
-class KafkaSource(ConnectableSource):
+class KafkaSource(KafkaConnector, ConnectableSource):
     """Data source - a wrapper around a Kafka consumer that allows us to receive messages from a Kafka topic"""
 
-    def __init__(self, host: str, port: int, topic: str, group_id: int = None, offset: str = 'earliest'):
-        """
-        Args:
-            host:str: Specify the host of the kafka server
-            port:int: Specify the port of the kafka server
-            topic:str: Specify the topic to subscribe to
-            group_id:int=None: Set the group_id for the consumer
-            offset:str='earliest': Set the offset of the consumer group to read from
-        """
-
-        self.topic = topic
-        self.address = f"{host}:{port}"
-        self.offset = offset
-        self.group_id = group_id
-        self.kafka_source = None
+    def __init__(self, config: KafkaConfigProperties):
+        super().__init__(config)
+        self.config = config
+        self.offset = config.offset
+        self.group_id = config.group_id
+        self.conn = None
 
         self._first_message = True
 
@@ -43,23 +36,18 @@ class KafkaSource(ConnectableSource):
         logger.info(f"Creating kafka consumer via bootstrap server {self.address} for topic {self.topic} " +
                     f"with offset policy '{self.offset}'.")
         try:
-            self.kafka_source = Consumer(
+            self.conn = Consumer(
                 self.topic,
                 bootstrap_servers=self.address,
-                auto_commit_interval_ms=1000,
-                max_partition_fetch_bytes=5 * 1024 * 1024,
+                auto_commit_interval_ms=self.config.auto_commit_interval_ms,
+                max_partition_fetch_bytes=self.config.max_partition_fetch_bytes,
                 group_id=self.topic,
-                enable_auto_commit=True
+                enable_auto_commit=self.config.enable_auto_commit
             )
         except Exception as e:
             logger.info(f"Failed to connect to kafka consumer client on {self.address}. Reason: {e}. Retrying...")
             raise e
         logger.info(f"Connected to kafka on {self.address}")
-        # self._log_current_offset()
-
-    def close(self):
-        """ Close the connection."""
-        self.kafka_source.close()
 
     def _log_current_offset(self):
         """
@@ -74,14 +62,13 @@ class KafkaSource(ConnectableSource):
 
         """
         partitions = []
-        for partition in self.kafka_source.partitions_for_topic(self.topic):
+        for partition in self.conn.partitions_for_topic(self.topic):
             partitions.append(TopicPartition(self.topic, partition))
 
-        end_offsets = self.kafka_source.end_offsets(partitions)
+        end_offsets = self.conn.end_offsets(partitions)
         logger.info(f"Current offset for topic {self.topic}: {end_offsets}.")
 
     def receive_message(self) -> str:
         if self._first_message:
             self._first_message = False
-            # self._log_current_offset()
-        return next(self.kafka_source).value
+        return next(self.conn).value

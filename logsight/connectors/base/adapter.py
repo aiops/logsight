@@ -1,10 +1,10 @@
 from abc import ABC
 from typing import Any, Optional, Union
 
-from connectors.base.connectable import Connectable
-from connectors.base.serializer import Serializer
-from connectors.base.source import HasNextMixin, Source
-from connectors.base.sink import Sink
+from logsight.connectors.base.connectable import Connectable
+from logsight.connectors.base.serializer import Serializer
+from logsight.connectors.base.sink import Sink
+from logsight.connectors.base.source import HasNextMixin, Source
 
 
 class Adapter(ABC):

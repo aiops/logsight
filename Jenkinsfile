@@ -10,7 +10,7 @@ pipeline {
         stage('Test') {
             agent {
                 docker {
-                    image 'python:3.7'
+                    image 'python:3.8'
                 }
             }
             steps {
@@ -20,7 +20,7 @@ pipeline {
                 }
                 sh 'pip install -r requirements.txt'
                 sh 'PYTHONPATH=$PWD/logsight py.test --junitxml test-report.xml --cov-report xml:coverage-report.xml --cov=logsight tests/'
-                stash name: 'test-reports', includes: '*.xml' 
+                stash name: 'test-reports', includes: '*.xml'
             }
             post {
                 always {
@@ -73,25 +73,6 @@ pipeline {
                 }
             }
         }
-        stage ("Build and test Docker Image") {
-            steps {
-                sh "docker build . -t $DOCKER_REPO:${GIT_COMMIT[0..7]}"
-                // Add step/script to test (amd64) docker image
-            }
-        }
-        stage ("Build and push Docker Manifest") {
-            when {
-                // only run when building a tag (triggered by a release)
-                // tag name = BRANCH_NAME 
-                buildingTag()
-            }
-            steps {
-                sh "docker buildx rm"
-                sh "docker buildx create --driver docker-container --name multiarch --use --bootstrap"
-                sh "echo $DOCKER_PSW | docker login -u $DOCKER_USR --password-stdin"
-                sh "docker buildx build --push --platform linux/amd64,linux/arm64/v8 -t $DOCKER_REPO:$BRANCH_NAME -t $DOCKER_REPO:latest ."
-                sh "docker buildx rm"
-            }
-        }
+
     }
 }

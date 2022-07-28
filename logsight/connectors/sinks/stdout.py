@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from connectors.base.sink import Sink
+from logsight.connectors.base.sink import Sink
 
 
 class PrintSink(Sink):

@@ -1,6 +1,6 @@
 import unittest
 
-from analytics_core.modules.log_parsing.parsing_lib.mask_config import MaskParserConfig
+from logsight.analytics_core.modules.log_parsing.parsing_lib.mask_config import MaskParserConfig
 
 
 class TestMaskParserConfig(unittest.TestCase):

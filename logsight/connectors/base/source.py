@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 
-from connectors.base.connector import Connector
+from logsight.connectors.base.connector import Connector
 
 
 class HasNextMixin:
-    def has_next(self):
+    @staticmethod
+    def has_next():
         """Whether the source has a next message."""
         return True
 

@@ -1,6 +1,6 @@
 import pytest
 
-from analytics_core.modules.anomaly_detection.core.tokenizer import LogTokenizer
+from logsight.analytics_core.modules.anomaly_detection.core.tokenizer import LogTokenizer
 
 
 @pytest.fixture

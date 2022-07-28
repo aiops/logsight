@@ -1,27 +1,26 @@
 from typing import List, Union
 
-from connectors.base.mixins import ConnectableSource
+from logsight.connectors import Source
+from logsight.connectors.connectors.file.configuration import FileConfigProperties
+from logsight.connectors.connectors.file.connector import FileConnector
 
 
-class FileSource(ConnectableSource):
+class FileSource(FileConnector, Source):
+
+    def __init__(self, config: FileConfigProperties = None):
+        """
+        Args:
+           config: File configuration parameters
+        """
+        super().__init__(config)
+        self.files_list = config.path if isinstance(config.path, list) else [config.path]
+        self.i = self.cnt = 0
+        self.batch_size = config.batch_size
+        self.file = None
+        self.eof = False
 
     def _connect(self):
         self.file = open(self.files_list[self.i], 'r')
-
-    def close(self):
-        self.file.close()
-
-    def __init__(self, path: Union[str, List[str]], batch_size=None):
-        """
-        Args:
-            path:str: Specify the path to the file or files that will be used by this class
-            batch_size=None: Number of lines to read per function call
-        """
-        self.files_list = path if isinstance(path, list) else [path]
-        self.i = self.cnt = 0
-        self.batch_size = batch_size
-        self.file = None
-        self.eof = False
 
     def receive_message(self) -> Union[str, List[str]]:
         if self.batch_size:
