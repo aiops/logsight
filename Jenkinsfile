@@ -7,6 +7,28 @@ pipeline {
     }
 
     stages {
+        stage('Test') {
+            agent {
+                docker {
+                    image 'python:3.7'
+                }
+            }
+            steps {
+                script {
+                    env.RETRY_ATTEMPTS = 2
+                    env.RETRY_TIMEOUT = 1
+                }
+                sh 'pip install -r requirements.txt'
+                sh 'PYTHONPATH=$PWD/logsight py.test --junitxml test-report.xml --cov-report xml:coverage-report.xml --cov=logsight tests/'
+                stash name: 'test-reports', includes: '*.xml'
+            }
+            post {
+                always {
+                    junit 'test-report.xml'
+                    archiveArtifacts '*-report.xml'
+                }
+            }
+        }
         stage('Linting & SonarQube') {
             parallel {
                 stage('SonarQube') {
@@ -48,28 +70,6 @@ pipeline {
                             )
                         }
                     }
-                }
-            }
-        }
-        stage('Test') {
-            agent {
-                docker {
-                    image 'python:3.8'
-                }
-            }
-            steps {
-                script {
-                    env.RETRY_ATTEMPTS = 2
-                    env.RETRY_TIMEOUT = 1
-                }
-                sh 'pip install -r requirements.txt'
-                sh 'PYTHONPATH=$PWD/logsight py.test --junitxml test-report.xml --cov-report xml:coverage-report.xml --cov=logsight tests/'
-                stash name: 'test-reports', includes: '*.xml'
-            }
-            post {
-                always {
-                    junit 'test-report.xml'
-                    archiveArtifacts '*-report.xml'
                 }
             }
         }
