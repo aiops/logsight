@@ -2,8 +2,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from analytics_core.logs import LogBatch, LogsightLog
-from common.patterns.chain_of_responsibility import AbstractHandler, ForkHandler
+from logsight.analytics_core.logs import LogBatch, LogsightLog
+from logsight.common.patterns.chain_of_responsibility import AbstractHandler, ForkHandler
 
 
 @pytest.fixture
@@ -14,7 +14,8 @@ def log_batch():
 @pytest.fixture
 def handler(log_batch):
     class TestHandler(AbstractHandler):
-        def _handle(self, context: LogBatch) -> LogBatch:
+        @staticmethod
+        def _handle(context: LogBatch) -> LogBatch:
             return log_batch
 
     yield TestHandler()
@@ -23,7 +24,8 @@ def handler(log_batch):
 @pytest.fixture
 def fork_handler(log_batch):
     class TestForkHandler(ForkHandler):
-        def _handle(self, context: LogBatch) -> LogBatch:
+        @staticmethod
+        def _handle(context: LogBatch) -> LogBatch:
             return log_batch
 
     yield TestForkHandler()

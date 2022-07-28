@@ -1,7 +1,7 @@
 import logging
 
-from connectors.connectors.elasticsearch import ElasticsearchConnector, ElasticsearchConfigProperties
-from services.elasticsearch_service.queries import DELETE_BY_INGEST_TS_QUERY, DELETE_BY_QUERY, GET_ALL_AD, \
+from logsight.connectors.connectors.elasticsearch import ElasticsearchConfigProperties, ElasticsearchConnector
+from logsight.services.elasticsearch_service.queries import DELETE_BY_INGEST_TS_QUERY, DELETE_BY_QUERY, GET_ALL_AD, \
     GET_ALL_LOGS_INGEST, \
     GET_ALL_TEMPLATES
 

@@ -1,5 +1,5 @@
-from analytics_core.logs import LogsightLog
-from analytics_core.modules.risk_analysis.vars import *
+from logsight.analytics_core.logs import LogsightLog
+from logsight.analytics_core.modules.risk_analysis.vars import *
 
 
 class RiskAnalysis:

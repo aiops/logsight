@@ -5,7 +5,7 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.exc import DatabaseError, OperationalError
 from sqlalchemy.pool import NullPool
 
-from common.helpers import unpack_singleton
+from logsight.common.helpers import unpack_singleton
 from .configuration import DatabaseConfigProperties
 from .exceptions import DatabaseException
 from ... import ConnectableConnector

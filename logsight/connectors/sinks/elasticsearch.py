@@ -2,10 +2,9 @@ from typing import Optional
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from connectors.base.mixins import ConnectableSink
-from connectors.connectors.elasticsearch import ElasticsearchConnector, ElasticsearchConfigProperties
-
-from configs.properties import LogsightProperties
+from logsight.configs.properties import LogsightProperties
+from logsight.connectors.base.mixins import ConnectableSink
+from logsight.connectors.connectors.elasticsearch import ElasticsearchConfigProperties, ElasticsearchConnector
 
 config_properties = LogsightProperties()
 

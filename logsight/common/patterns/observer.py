@@ -3,8 +3,6 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
-from pipeline.modules.core.wrappers import synchronized
-
 
 class Subject(ABC):
     """
@@ -31,7 +29,6 @@ class Subject(ABC):
     def detach(self, observer: SubjectObserver) -> None:
         self._observers.remove(observer)
 
-    @synchronized
     def notify(self) -> None:
         for observer in self._observers:
             observer.on_update(self._state)

@@ -4,8 +4,8 @@ from dataclasses import asdict
 import pytest
 import ujson
 
-from analytics_core.logs import LogBatch, LogsightLog
-from connectors.serializers import LogBatchSerializer
+from logsight.analytics_core.logs import LogBatch, LogsightLog
+from logsight.connectors.serializers import LogBatchSerializer
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from connectors.base.connector import Connector
+from logsight.connectors.base.connector import Connector
 
 
 class HasNextMixin:

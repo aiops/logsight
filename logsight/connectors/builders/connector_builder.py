@@ -1,8 +1,7 @@
-from copy import deepcopy
 from typing import Type, Union
 
-from common.patterns.builder import Builder
-from connectors.builders.cls_dict import cls_conn
+from logsight.common.patterns.builder import Builder
+from logsight.connectors.builders.cls_dict import cls_conn
 from .config_provider import ConnectorConfigProvider
 from .properties import ConnectorConfigProperties
 from .. import Connectable, Sink, Source

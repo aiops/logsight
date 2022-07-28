@@ -3,9 +3,9 @@ import logging
 # noinspection PyPackageRequirements,PyProtectedMember
 from kafka import KafkaConsumer as Consumer, TopicPartition
 
-from connectors.base.mixins import ConnectableSource
-from connectors.connectors.kafka.configuration import KafkaConfigProperties
-from connectors.connectors.kafka.connector import KafkaConnector
+from logsight.connectors.base.mixins import ConnectableSource
+from logsight.connectors.connectors.kafka.configuration import KafkaConfigProperties
+from logsight.connectors.connectors.kafka.connector import KafkaConnector
 
 logger = logging.getLogger("logsight." + __name__)
 

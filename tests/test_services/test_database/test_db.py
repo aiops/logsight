@@ -2,9 +2,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from common.enums import LogBatchStatus
-from services.database.sql_statements import UPDATE_LOG_RECEIPT
-from services.service_provider import ServiceProvider
+from logsight.common.enums import LogBatchStatus
+from logsight.services.database.sql_statements import UPDATE_LOG_RECEIPT
+from logsight.services.service_provider import ServiceProvider
 
 
 @pytest.fixture

@@ -3,7 +3,7 @@ import logging
 from elasticsearch import Elasticsearch, NotFoundError, helpers
 from elasticsearch.client import IngestClient
 
-from connectors.base.mixins import ConnectableConnector
+from logsight.connectors.base.mixins import ConnectableConnector
 from .configuration import ElasticsearchConfigProperties
 
 logger = logging.getLogger("logsight." + __name__)
@@ -26,7 +26,7 @@ class ElasticsearchConnector(ConnectableConnector):
         self._create_timestamp_pipeline()
 
     def _verify_connection(self):
-        if not self.es.ping():
+        if not self.es.ping(human=True):
             msg = f"Elasticsearch endpoint {self.host}:{self.port} is unreachable."
             logger.error(msg)
             raise ConnectionError(msg)

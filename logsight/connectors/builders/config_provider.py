@@ -1,9 +1,9 @@
-from connectors.connectors.kafka import KafkaConfigProperties
-from connectors.connectors.file import FileConfigProperties
-from connectors.connectors.zeromq import ZeroMQConfigProperties
-from connectors.connectors.sql_db import DatabaseConfigProperties
-from connectors.connectors.socket import SocketConfigProperties
-from connectors.connectors.elasticsearch import ElasticsearchConfigProperties
+from logsight.connectors.connectors.elasticsearch import ElasticsearchConfigProperties
+from logsight.connectors.connectors.file import FileConfigProperties
+from logsight.connectors.connectors.kafka import KafkaConfigProperties
+from logsight.connectors.connectors.socket import SocketConfigProperties
+from logsight.connectors.connectors.sql_db import DatabaseConfigProperties
+from logsight.connectors.connectors.zeromq import ZeroMQConfigProperties
 
 
 class ConnectorConfigProvider(object):

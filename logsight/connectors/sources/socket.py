@@ -1,8 +1,8 @@
 import socket
 
-from connectors import Source
-from connectors.connectors.socket.configuration import SocketConfigProperties
-from connectors.connectors.socket.connector import SocketConnector
+from logsight.connectors import Source
+from logsight.connectors.connectors.socket.configuration import SocketConfigProperties
+from logsight.connectors.connectors.socket.connector import SocketConnector
 
 
 class SocketSource(Source, SocketConnector):

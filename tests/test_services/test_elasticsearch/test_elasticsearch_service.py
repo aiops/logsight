@@ -3,10 +3,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 from elasticsearch import helpers
 
-from connectors.connectors.elasticsearch import ElasticsearchConfigProperties
-from connectors.connectors.elasticsearch.connector import ElasticsearchException
+from logsight.connectors.connectors.elasticsearch import ElasticsearchConfigProperties
+from logsight.connectors.connectors.elasticsearch.connector import ElasticsearchException
+from logsight.services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 from ...inputs import processed_logs
-from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 
 
 @pytest.fixture

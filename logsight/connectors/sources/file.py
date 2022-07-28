@@ -1,8 +1,8 @@
 from typing import List, Union
 
-from connectors import Source
-from connectors.connectors.file.configuration import FileConfigProperties
-from connectors.connectors.file.connector import FileConnector
+from logsight.connectors import Source
+from logsight.connectors.connectors.file.configuration import FileConfigProperties
+from logsight.connectors.connectors.file.connector import FileConnector
 
 
 class FileSource(FileConnector, Source):

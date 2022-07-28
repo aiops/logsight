@@ -1,6 +1,6 @@
 from typing import Any
 
-from connectors.base import Serializer
+from logsight.connectors.base import Serializer
 
 
 class DefaultSerializer(Serializer):

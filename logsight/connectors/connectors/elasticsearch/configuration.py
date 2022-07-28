@@ -1,7 +1,8 @@
 from typing import Optional
 
-from configs.properties import ConfigProperties
 from pydantic import BaseModel
+
+from logsight.configs.properties import ConfigProperties
 
 
 @ConfigProperties(prefix="connectors.elasticsearch")

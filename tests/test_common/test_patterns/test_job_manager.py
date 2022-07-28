@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from common.patterns.job import Job
-from common.patterns.job_manager import JobManager
+from logsight.common.patterns.job import Job
+from logsight.common.patterns.job_manager import JobManager
 
 
 @pytest.fixture

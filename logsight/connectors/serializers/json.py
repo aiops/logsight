@@ -2,7 +2,7 @@ from typing import Dict
 
 import ujson
 
-from connectors.base.serializer import Serializer
+from logsight.connectors.base.serializer import Serializer
 
 
 class JSONSerializer(Serializer):

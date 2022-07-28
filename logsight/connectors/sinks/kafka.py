@@ -4,8 +4,8 @@ from typing import Any, Optional
 
 from kafka import KafkaProducer
 
-from connectors import Sink
-from connectors.connectors.kafka import KafkaConnector, KafkaConfigProperties
+from logsight.connectors import Sink
+from logsight.connectors.connectors.kafka import KafkaConfigProperties, KafkaConnector
 
 logger = logging.getLogger("logsight." + __name__)
 

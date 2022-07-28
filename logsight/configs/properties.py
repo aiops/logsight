@@ -1,14 +1,16 @@
-from config import Config
-from pydantic import BaseModel
+import os
 from functools import partial
 
-from configs.global_vars import CONFIG_PATH
+from config import Config
+from pydantic import BaseModel
+
+from logsight.configs.global_vars import CONFIG_PATH
 
 
 class ConfigProperties(object):
-    def __init__(self, prefix="base", path=CONFIG_PATH):
+    def __init__(self, prefix="base", path=os.environ.get('CONFIG_PATH', CONFIG_PATH)):
         cfg = Config(str(path))
-        self.cfg = cfg.get(prefix, cfg.as_dict())
+        self.cfg = cfg.get(prefix, cfg.get(".".join(["logsight", prefix]), {}))
 
     def __call__(self, cls):
         return partial(cls, **self.cfg)
@@ -16,6 +18,7 @@ class ConfigProperties(object):
 
 @ConfigProperties(prefix='logsight')
 class LogsightProperties(BaseModel):
-    debug: bool = False
+    debug: bool = True
     retry_attempts: int = 6
     retry_timeout: int = 10
+    pipeline_index_ext: str = "pipeline"

@@ -2,8 +2,8 @@ import json
 import os
 from typing import Any, Optional
 
-from connectors import Sink
-from connectors.connectors.file import FileConnector, FileConfigProperties
+from logsight.connectors import Sink
+from logsight.connectors.connectors.file import FileConfigProperties, FileConnector
 
 
 class FileSink(FileConnector, Sink):

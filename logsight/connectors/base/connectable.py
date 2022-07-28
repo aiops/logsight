@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from configs.properties import LogsightProperties
+from logsight.configs.properties import LogsightProperties
 
 config_properties = LogsightProperties()
 

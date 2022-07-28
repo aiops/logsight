@@ -1,6 +1,6 @@
 from typing import Dict
 
-from analytics_core.logs import LogsightLog
+from logsight.analytics_core.logs import LogsightLog
 
 
 def unpack_singleton(x):

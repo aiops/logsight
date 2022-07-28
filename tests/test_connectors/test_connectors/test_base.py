@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from connectors.connectors.sql_db import DatabaseConnector, DatabaseConfigProperties
+from logsight.connectors.connectors.sql_db import DatabaseConfigProperties, DatabaseConnector
 
 
 @pytest.fixture

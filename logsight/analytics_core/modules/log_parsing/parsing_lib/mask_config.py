@@ -2,7 +2,7 @@ import configparser
 import json
 import os
 
-from analytics_core.modules.log_parsing.parsing_lib.masking import MaskingInstruction
+from logsight.analytics_core.modules.log_parsing.parsing_lib.masking import MaskingInstruction
 
 
 class MaskParserConfig:

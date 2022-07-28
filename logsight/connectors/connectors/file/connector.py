@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from connectors import ConnectableConnector
+from logsight.connectors import ConnectableConnector
 from .configuration import FileConfigProperties
 
 

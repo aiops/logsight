@@ -1,2 +1,2 @@
-from .connector import ElasticsearchConnector
 from .configuration import ElasticsearchConfigProperties
+from .connector import ElasticsearchConnector

@@ -1,9 +1,9 @@
 import logging
 from typing import Optional
 
-from zmq import Socket, Context
+from zmq import Context, Socket
 
-from connectors.base.mixins import ConnectableConnector
+from logsight.connectors.base.mixins import ConnectableConnector
 from .configuration import ZeroMQConfigProperties
 from .conn_types import ConnectionTypes
 

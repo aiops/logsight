@@ -1,13 +1,12 @@
-from copy import deepcopy
-from typing import Optional, Type
+from typing import Type
 
-from common.patterns.builder import Builder
-from connectors.base import Adapter, Source
-from connectors.base.adapter import SinkAdapter, SourceAdapter
-from connectors.builders.connector_builder import ConnectorBuilder
-from connectors.builders.properties import AdapterConfigProperties
-from connectors.serializers import DefaultSerializer
-from connectors import Sink, serializers
+from logsight.common.patterns.builder import Builder
+from logsight.connectors import Sink, serializers
+from logsight.connectors.base import Adapter, Source
+from logsight.connectors.base.adapter import SinkAdapter, SourceAdapter
+from logsight.connectors.builders.connector_builder import ConnectorBuilder
+from logsight.connectors.builders.properties import AdapterConfigProperties
+from logsight.connectors.serializers import DefaultSerializer
 
 
 class AdapterBuilder(Builder):

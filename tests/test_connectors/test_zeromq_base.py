@@ -3,8 +3,8 @@ import unittest
 import zmq
 from zmq import ZMQError
 
-from connectors.connectors.zeromq import ZeroMQConfigProperties
-from connectors.connectors.zeromq.connector import ConnectionTypes, ZeroMQConnector
+from logsight.connectors.connectors.zeromq import ZeroMQConfigProperties
+from logsight.connectors.connectors.zeromq.connector import ConnectionTypes, ZeroMQConnector
 
 
 class TestZeroMQBase(unittest.TestCase):

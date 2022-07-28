@@ -1,7 +1,7 @@
-from common.enums import LogBatchStatus
+from logsight.common.enums import LogBatchStatus
+from logsight.connectors.connectors.sql_db import DatabaseConfigProperties, DatabaseConnector
+from logsight.connectors.connectors.sql_db.exceptions import DatabaseException
 from .sql_statements import SELECT_TABLES, UPDATE_LOG_RECEIPT
-from connectors.connectors.sql_db import DatabaseConnector, DatabaseConfigProperties
-from connectors.connectors.sql_db.exceptions import DatabaseException
 
 
 class PostgresDBService(DatabaseConnector):

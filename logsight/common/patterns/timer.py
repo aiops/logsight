@@ -15,8 +15,7 @@ class NamedTimer:
         self.timer.name = self.name
 
     def start(self) -> 'NamedTimer':
-        # logger.debug(f"Starting timer {self.name} {self}")
-        # self.timer.daemon = True
+        self.timer.daemon = True
         self.timer.start()
         return self
 

@@ -1,6 +1,6 @@
 import socket
 
-from connectors import ConnectableConnector
+from logsight.connectors import ConnectableConnector
 from .configuration import SocketConfigProperties
 
 

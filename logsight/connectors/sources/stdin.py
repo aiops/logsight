@@ -1,4 +1,4 @@
-from connectors.base.source import Source
+from logsight.connectors.base.source import Source
 
 
 class StdinSource(Source):

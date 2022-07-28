@@ -1,7 +1,7 @@
 import json
 
-from configs.properties import LogsightProperties
-from logger.properties import LoggerConfigProperties
+from logsight.configs.properties import LogsightProperties
+from logsight.logger.properties import LoggerConfigProperties
 
 
 class LogConfig:

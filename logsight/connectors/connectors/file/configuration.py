@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from configs.properties import ConfigProperties
+from logsight.configs.properties import ConfigProperties
 
 
 @ConfigProperties(prefix="connectors.file")

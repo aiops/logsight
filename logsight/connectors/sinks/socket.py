@@ -2,9 +2,9 @@ import json
 import logging
 from typing import Any, Optional
 
-from connectors import Sink
-from connectors.connectors.socket.configuration import SocketConfigProperties
-from connectors.connectors.socket.connector import SocketConnector
+from logsight.connectors import Sink
+from logsight.connectors.connectors.socket.configuration import SocketConfigProperties
+from logsight.connectors.connectors.socket.connector import SocketConnector
 
 logger = logging.getLogger("logsight." + __name__)
 

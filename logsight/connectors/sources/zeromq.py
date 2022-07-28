@@ -2,9 +2,9 @@ import logging
 
 import zmq
 
-from connectors.base.mixins import ConnectableSource
-from connectors.connectors.zeromq import ZeroMQConfigProperties
-from connectors.connectors.zeromq.connector import ConnectionTypes, ZeroMQConnector
+from logsight.connectors.base.mixins import ConnectableSource
+from logsight.connectors.connectors.zeromq import ZeroMQConfigProperties
+from logsight.connectors.connectors.zeromq.connector import ConnectionTypes, ZeroMQConnector
 
 logger = logging.getLogger("logsight." + __name__)
 

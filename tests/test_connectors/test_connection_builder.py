@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from connectors.builders.properties import ConnectorConfigProperties
-from connectors import ConnectableConnector, Sink, Source
-from connectors.builders.connector_builder import ConnectorBuilder
+from logsight.connectors import ConnectableConnector, Sink, Source
+from logsight.connectors.builders.connector_builder import ConnectorBuilder
+from logsight.connectors.builders.properties import ConnectorConfigProperties
 
 
 @pytest.fixture(params=['name1', 'name2', 'name3'])

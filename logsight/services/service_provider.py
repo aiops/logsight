@@ -1,6 +1,6 @@
-from connectors.builders.config_provider import ConnectorConfigProvider
-from services.database.db import PostgresDBService
-from services.elasticsearch_service.elasticsearch_service import ElasticsearchService
+from logsight.connectors.builders.config_provider import ConnectorConfigProvider
+from logsight.services.database.db import PostgresDBService
+from logsight.services.elasticsearch_service.elasticsearch_service import ElasticsearchService
 
 
 class ServiceProvider:

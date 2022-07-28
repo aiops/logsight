@@ -3,9 +3,8 @@ from typing import Any, Optional
 
 import zmq
 
-from connectors.base import Sink
-from connectors.connectors.zeromq.conn_types import ConnectionTypes
-from connectors.connectors.zeromq.connector import ZeroMQConnector, ZeroMQConfigProperties
+from logsight.connectors.base import Sink
+from logsight.connectors.connectors.zeromq.connector import ZeroMQConfigProperties, ZeroMQConnector
 
 logger = logging.getLogger("logsight." + __name__)
 

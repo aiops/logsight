@@ -1,6 +1,8 @@
 import os
+
 from pydantic import BaseModel
-from configs.properties import ConfigProperties
+
+from logsight.configs.properties import ConfigProperties
 
 
 @ConfigProperties(prefix="pipeline")

@@ -1,2 +1,2 @@
-from .connector import FileConnector
 from .configuration import FileConfigProperties
+from .connector import FileConnector

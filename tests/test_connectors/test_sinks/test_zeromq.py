@@ -4,9 +4,9 @@ import unittest
 import zmq
 from zmq import ZMQError
 
-from connectors.connectors.zeromq import ZeroMQConfigProperties
-from connectors.connectors.zeromq.connector import ConnectionTypes
-from connectors.sinks import ZeroMQPubSink
+from logsight.connectors.connectors.zeromq import ZeroMQConfigProperties
+from logsight.connectors.connectors.zeromq.connector import ConnectionTypes
+from logsight.connectors.sinks import ZeroMQPubSink
 
 
 class TestZeroMQPubSink(unittest.TestCase):
