@@ -7,5 +7,6 @@ setup(
     version='1.3.0',
     author='Logsight.ai',
     author_email='contact@logsight.ai',
-    keywords=['analytics', 'logsight', 'log']
+    keywords=['analytics', 'logsight', 'log'],
+    url="https://github.com/aiops/logsight"
 )
