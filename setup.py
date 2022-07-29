@@ -19,6 +19,7 @@ def pull_first():
     os.chdir(gitdir)
     g = git.cmd.Git(gitdir)
     try:
+        g.execute(['git', 'lfs', 'install'])
         g.execute(['git', 'lfs', 'pull'])
     except git.exc.GitCommandError:
         raise RuntimeError("Make sure git-lfs is installed!")
