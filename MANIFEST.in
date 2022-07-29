@@ -1,0 +1,2 @@
+recursive-include logsight/configs *.cfg
+recursive-include logsight/logger *.cfg
