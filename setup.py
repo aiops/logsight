@@ -45,7 +45,7 @@ setup(
         "logsight.analytics_core.modules.anomaly_detection.models": ["*.pickle", "*.onnx", "*.json"]
     },
     install_requires=[
-        'config'
+        'config',
         'pandas',
         'pytest',
         'elasticsearch',
