@@ -42,7 +42,8 @@ setup(
     package_data={
         "logsight.logger": ['*.cfg'],
         "logsight.configs": ['*.cfg'],
-        "logsight.analytics_core.modules.anomaly_detection.models": ["*.pickle", "*.onnx", "*.json"]
+        "logsight.analytics_core.modules.anomaly_detection.models": ["*.pickle", "*.onnx", "*.json"],
+        "logsight.analytics_core.modules.log_parsing.parsing_lib": ["*.ini"]
     },
     install_requires=[
         'config',
