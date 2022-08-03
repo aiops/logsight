@@ -15,4 +15,5 @@ kafka-python
 dacite
 onnxruntime
 psycopg2-binary
-git
+gitpython
+pytest-cov

@@ -2,7 +2,7 @@ import json
 import logging
 from typing import Any, Optional
 
-from kafka import KafkaProducer
+from kafka.producer.kafka import KafkaProducer
 
 from logsight.connectors import Sink
 from logsight.connectors.connectors.kafka import KafkaConfigProperties, KafkaConnector

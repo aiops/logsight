@@ -3,6 +3,8 @@ import os
 import sys
 from typing import Optional
 
+import numpy as np
+
 from logsight.analytics_core.modules.anomaly_detection.core.base import BaseAnomalyDetector
 from logsight.analytics_core.modules.anomaly_detection.core.config import AnomalyDetectionConfig
 from logsight.analytics_core.modules.anomaly_detection.core.tokenizer import LogTokenizer
@@ -27,6 +29,7 @@ class LogAnomalyDetector(BaseAnomalyDetector):
 
         padded = pad_sequences(tokenized, maxlen=self.config.pad_len)
         prediction = self.model.predict(padded)
+        # prediction = [np.random.randint(0, 1) for _ in range(len(padded))]
         for i, log in enumerate(log_batch.logs):
             try:
                 log_batch.logs[i].metadata['prediction'] = 1 if prediction[i] == 0 else 0

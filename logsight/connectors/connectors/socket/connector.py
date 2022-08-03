@@ -1,4 +1,5 @@
 import socket
+from abc import abstractmethod
 
 from logsight.connectors import ConnectableConnector
 from logsight.connectors.connectors.socket.configuration import SocketConfigProperties
@@ -11,6 +12,7 @@ class SocketConnector(ConnectableConnector):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connected = False
 
+    @abstractmethod
     def _connect(self):
         raise NotImplementedError
 

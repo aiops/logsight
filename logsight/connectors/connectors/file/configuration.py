@@ -9,4 +9,4 @@ from logsight.configs.properties import ConfigProperties
 class FileConfigProperties(BaseModel):
     path: str = ""
     mode: Optional[str]
-    batch_size: Optional[int]
+    batch_size: Optional[int] = 0

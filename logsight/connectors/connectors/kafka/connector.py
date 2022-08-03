@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from logsight.connectors import ConnectableConnector
 from .configuration import KafkaConfigProperties
 
@@ -8,6 +10,7 @@ class KafkaConnector(ConnectableConnector):
         self.topic = config.topic
         self.conn = None
 
+    @abstractmethod
     def _connect(self):
         raise NotImplementedError
 

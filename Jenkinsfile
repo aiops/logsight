@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER = credentials('dockerhub')
         DOCKER_REPO = "logsight/logsight"
+        DOCKER_BUILDKIT='1'
     }
 
     stages {
