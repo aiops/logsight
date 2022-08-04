@@ -24,7 +24,7 @@ class RiskAnalysis:
 
     @staticmethod
     def state_to_code(state):
-        state_codes = {"added": 0, "recurring": 1, "deleted": -1}
+        state_codes = {"added": 1, "recurring": 0, "deleted": -1}
         return state_codes.get(state, 1)
 
     def calculate_risk(self, log: LogsightLog):
