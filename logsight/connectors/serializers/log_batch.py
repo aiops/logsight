@@ -19,7 +19,7 @@ class LogBatchSerializer(Serializer):
             data:LogBatch: Pass the data that is to be serialized
 
         Returns:
-            A dictionary
+            A JSON string
 
         """
         return ujson.dumps(asdict(data))
