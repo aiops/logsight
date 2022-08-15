@@ -14,11 +14,11 @@ class SocketSink(Sink, SocketConnector):
     def __init__(self, config: SocketConfigProperties):
         SocketConnector.__init__(self, config)
 
-    def send(self, data: Any, target: Optional[Any] = None):
+    def send(self, data: str, target: Optional[Any] = None):
         if not isinstance(data, list):
             data = [data]
         for d in data:
-            self.socket.sendall(bytes(json.dumps(d, default=list) + "\n", "utf-8"))
+            self.socket.sendall(bytes(d, "utf-8"))
 
     def _connect(self):
         if self.connected:

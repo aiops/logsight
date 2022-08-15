@@ -60,6 +60,3 @@ class TestZeroMQPubSink(unittest.TestCase):
         except Exception as e:
             self.fail(f"ZeroMQPubSink.close() raised ConnectionError unexpectedly while closing the connection: {e}")
 
-
-if __name__ == '__main__':
-    unittest.main()

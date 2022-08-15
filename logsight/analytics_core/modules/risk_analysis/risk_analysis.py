@@ -1,21 +1,21 @@
 from logsight.analytics_core.logs import LogsightLog
-from logsight.analytics_core.modules.risk_analysis.vars import *
+from logsight.analytics_core.modules.risk_analysis import vars
 
 
 class RiskAnalysis:
     # tuple (added_state,prediction,level)
-    states = {(0, 0, 0): RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_REPORT,
-              (0, 0, 1): RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_REPORT,
-              (0, 1, 0): RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_FAULT,
-              (0, 1, 1): RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_FAULT,
-              (1, 0, 0): RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_REPORT,
-              (1, 0, 1): RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_REPORT,
-              (1, 1, 0): RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_FAULT,
-              (1, 1, 1): RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_FAULT,
-              (-1, 0, 0): RISK_SCORE_DELETED_STATE_LEVEL_INFO_SEMANTICS_REPORT,
-              (-1, 0, 1): RISK_SCORE_DELETED_STATE_LEVEL_ERROR_SEMANTICS_REPORT,
-              (-1, 1, 0): RISK_SCORE_DELETED_STATE_LEVEL_INFO_SEMANTICS_FAULT,
-              (-1, 1, 1): RISK_SCORE_DELETED_STATE_LEVEL_ERROR_SEMANTICS_FAULT
+    states = {(0, 0, 0): vars.RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_REPORT,
+              (0, 0, 1): vars.RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_REPORT,
+              (0, 1, 0): vars.RISK_SCORE_RECURRING_STATE_LEVEL_INFO_SEMANTICS_FAULT,
+              (0, 1, 1): vars.RISK_SCORE_RECURRING_STATE_LEVEL_ERROR_SEMANTICS_FAULT,
+              (1, 0, 0): vars.RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_REPORT,
+              (1, 0, 1): vars.RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_REPORT,
+              (1, 1, 0): vars.RISK_SCORE_ADDED_STATE_LEVEL_INFO_SEMANTICS_FAULT,
+              (1, 1, 1): vars.RISK_SCORE_ADDED_STATE_LEVEL_ERROR_SEMANTICS_FAULT,
+              (-1, 0, 0): vars.RISK_SCORE_DELETED_STATE_LEVEL_INFO_SEMANTICS_REPORT,
+              (-1, 0, 1): vars.RISK_SCORE_DELETED_STATE_LEVEL_ERROR_SEMANTICS_REPORT,
+              (-1, 1, 0): vars.RISK_SCORE_DELETED_STATE_LEVEL_INFO_SEMANTICS_FAULT,
+              (-1, 1, 1): vars.RISK_SCORE_DELETED_STATE_LEVEL_ERROR_SEMANTICS_FAULT
               }
 
     @staticmethod
@@ -24,7 +24,7 @@ class RiskAnalysis:
 
     @staticmethod
     def state_to_code(state):
-        state_codes = {"added": 0, "recurring": 1, "deleted": -1}
+        state_codes = {"added": 1, "recurring": 0, "deleted": -1}
         return state_codes.get(state, 1)
 
     def calculate_risk(self, log: LogsightLog):

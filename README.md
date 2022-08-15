@@ -1,2 +1,4 @@
-# logsight-monolith
+# Logsight core library
+
+
 

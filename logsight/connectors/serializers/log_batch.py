@@ -24,14 +24,14 @@ class LogBatchSerializer(Serializer):
         """
         return ujson.dumps(asdict(data))
 
-    def deserialize(self, data: Any) -> LogBatch:
+    def deserialize(self, data: str) -> LogBatch:
         """
         The deserialize function takes a string and returns the corresponding
         LogBatch object. It is used to convert data from JSON format into a LogBatch
         object, which can then be used for further processing.
 
         Args:
-            data:Any: Deserialize the data into a LogBatch object
+            data:str: Deserialize the data into a LogBatch object
 
         Returns:
             A LogBatch object
