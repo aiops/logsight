@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER = credentials('dockerhub')
         DOCKER_REPO = "logsight/logsight"
-        DOCKER_BUILDKIT='1'
     }
 
     stages {
@@ -54,24 +53,7 @@ pipeline {
                         }
                     }
                 }
-                stage ("Lint Dockerfile") {
-                    agent {
-                        docker {
-                            image 'hadolint/hadolint:latest-debian'
-                        }
-                    }
-                    steps {
-                        sh 'hadolint --format json Dockerfile | tee -a hadolint.json'
-                    }
-                    post {
-                        always {
-                            archiveArtifacts 'hadolint.json'
-                            recordIssues(
-                                tools: [hadoLint(pattern: "hadolint.json", id: "dockerfile")]
-                            )
-                        }
-                    }
-                }
+
             }
         }
 
