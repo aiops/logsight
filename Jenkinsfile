@@ -6,7 +6,7 @@ pipeline {
         DOCKER_REPO = "logsight/logsight"
     }
 
-    stages {
+    stages   {
         stage('Test') {
             agent {
                 docker {
@@ -29,33 +29,28 @@ pipeline {
                 }
             }
         }
-        stage('Linting & SonarQube') {
-            parallel {
-                stage('SonarQube') {
-                    agent {
-                        docker {
-                            image 'sonarsource/sonar-scanner-cli'
-                        }
-                    }
-                    steps {
-                        script {
-                            unstash "test-reports"
-                            withSonarQubeEnv('logsight-sonarqube') {
-                                sh """ 
-                                    sonar-scanner -Dsonar.projectKey=aiops_logsight -Dsonar.branch.name=$BRANCH_NAME \
-                                        -Dsonar.organization=logsight \
-                                        -Dsonar.sources=logsight -Dsonar.tests=tests/. \
-                                        -Dsonar.inclusions="**/*.py" \
-                                        -Dsonar.python.coverage.reportPaths=coverage-report.xml \
-                                        -Dsonar.test.reportPath=test-report.xml
-                                """
-                            }
-                        }
+
+        stage('SonarQube') {
+            agent {
+                docker {
+                    image 'sonarsource/sonar-scanner-cli'
+                }
+            }
+            steps {
+                script {
+                    unstash "test-reports"
+                    withSonarQubeEnv('logsight-sonarqube') {
+                        sh """ 
+                            sonar-scanner -Dsonar.projectKey=aiops_logsight -Dsonar.python.version=3 -Dsonar.branch.name=$BRANCH_NAME \
+                                -Dsonar.organization=logsight \
+                                -Dsonar.sources=logsight -Dsonar.tests=tests/. \
+                                -Dsonar.inclusions="**/*.py" \
+                                -Dsonar.python.coverage.reportPaths=coverage-report.xml \
+                                -Dsonar.test.reportPath=test-report.xml
+                        """
                     }
                 }
-
             }
         }
-
-    }
+    }   
 }
