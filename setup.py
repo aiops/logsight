@@ -47,6 +47,7 @@ setup(
     },
     install_requires=[
         "pandas~=1.4.3",
+        "config~=0.5.1",
         "pytest~=7.1.2",
         "elasticsearch==8.3.3",
         "pydantic==1.9.2",

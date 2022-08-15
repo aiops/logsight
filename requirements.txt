@@ -1,5 +1,6 @@
 pandas~=1.4.3
 pytest~=7.1.2
+config~=0.5.1
 elasticsearch==8.3.3
 pydantic==1.9.2
 tenacity~=8.0.1
