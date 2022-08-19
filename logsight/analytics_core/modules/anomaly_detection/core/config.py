@@ -7,7 +7,7 @@ class AnomalyDetectionConfig:
     pad_len: int = 50
     max_len: int = 20
     log_mapper: dict = field(default_factory=dict)
-    prediction_threshold: float = float(os.environ.get('PREDICTION_THRESHOLD', 0.85))
+    prediction_threshold: float = float(os.environ.get('PREDICTION_THRESHOLD', 0.95))
 
     def __post_init__(self):
         if not len(self.log_mapper.keys()):
