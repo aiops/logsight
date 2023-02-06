@@ -16,11 +16,17 @@ class Adapter(ABC):
 
 
 class SourceAdapter(Adapter, HasNextMixin):
+    """
+    It's an adapter that receives messages from a connector and deserializes them
+    """
     def receive(self) -> Any:
         return self.serializer.deserialize(self.connector.receive_message())
 
 
 class SinkAdapter(Adapter, HasNextMixin):
+    """
+    It's a sink adapter that can be used to send data to a connector
+    """
     def send(self, data: Any, target: Optional[Any] = None):
         self.connector.send(self.serializer.serialize(data), target)
 

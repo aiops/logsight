@@ -13,6 +13,13 @@ class IncidentsStatus:
 
 
 def calculate_risk(data):
+    """
+    It takes a dataframe, sorts it by risk score, takes the top 30% of the dataframe, and then returns
+    the maximum risk score plus the average risk score of the top 30% of the dataframe
+    
+    :param data: The dataframe that contains the data for the risk calculation
+    :return: The risk score of the top 30% of the data.
+    """
     if not (len(data)):
         return 0
     data = data.sort_values(by=['risk_score'], ascending=False)
@@ -29,6 +36,13 @@ def calculate_risk(data):
 
 
 def level_as_binary(level):
+    """
+    It returns 1 if the input is a string that matches one of the strings in the list ["ERROR", "ERR",
+    "CRITICAL", "FAULT"], and 0 otherwise
+    
+    :param level: The level of the log message
+    :return: the binary value of the level.
+    """
     if str(level).upper() in ["ERROR", "ERR", "CRITICAL", "FAULT"]:
         return 1
     else:
@@ -39,6 +53,14 @@ class IncidentDetector:
 
     @staticmethod
     def calculate_incidents(logs: List[Dict]):
+        """
+        It takes a list of dictionaries, converts it to a dataframe, groups it by timestamp and tags,
+        and then calculates the risk score for each group
+        
+        :param logs: List[Dict]
+        :type logs: List[Dict]
+        :return: A list of dictionaries.
+        """
         df = pd.DataFrame(logs).set_index('timestamp')
         df.index = pd.to_datetime(df.index)
         df['tag_string'] = df.tags.astype(str)

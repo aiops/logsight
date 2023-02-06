@@ -28,12 +28,31 @@ class RiskAnalysis:
         return state_codes.get(state, 1)
 
     def calculate_risk(self, log: LogsightLog):
+        """
+        The function takes a log object, adds a new metadata field called 'added_state' and sets it to
+        0, then adds another metadata field called 'risk_score' and sets it to the value of the 'states'
+        dictionary, which is a 3-tuple of the 'added_state' value, the 'prediction' value, and the
+        'level_as_binary' value
+        
+        :param log: LogsightLog - the log object that is being processed
+        :type log: LogsightLog
+        :return: The log with the added metadata.
+        """
         log.metadata['added_state'] = 0
         log.metadata['risk_score'] = self.states[
             (log.metadata['added_state'], int(log.metadata['prediction']), (self.level_as_binary(log.level)))]
         return log
 
     def calculate_verification_risk(self, state, prediction, level):
+        """
+        > Given a state, a prediction, and a level, return the verification risk associated with that
+        state, prediction, and level
+        
+        :param state: the state
+        :param prediction: 0 or 1
+        :param level: the level of the prediction
+        :return: The probability of the state, prediction, and level.
+        """
         state = self.state_to_code(state)
         prediction = int(prediction)
         level = self.level_as_binary(level)

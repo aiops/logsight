@@ -5,6 +5,10 @@ from uuid import uuid4
 
 @dataclass
 class LogsightLog:
+    """
+    `LogsightLog` is a class that has the following attributes: `message`, `timestamp`, `level`, `id`,
+    `metadata`, and `tags`
+    """
     message: str
     timestamp: str
     level: str
@@ -20,6 +24,11 @@ class LogsightLog:
 
 @dataclass
 class LogBatch:
+    """
+    `LogBatch` is a class that contains a list of `LogsightLog` objects, an index name, an id, and a
+    metadata dictionary
+    """
+    
     logs: List[LogsightLog]
     index: str
     id: Optional[str] = str(uuid4())

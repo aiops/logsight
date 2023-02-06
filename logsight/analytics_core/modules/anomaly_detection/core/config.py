@@ -4,6 +4,9 @@ from dataclasses import dataclass, field
 
 @dataclass
 class AnomalyDetectionConfig:
+    """
+    It's a class that holds the configuration for the anomaly detection model
+    """
     pad_len: int = 50
     max_len: int = 20
     log_mapper: dict = field(default_factory=dict)

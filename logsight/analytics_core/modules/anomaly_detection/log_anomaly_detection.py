@@ -15,8 +15,11 @@ from logsight.analytics_core.logs import LogBatch
 sys.path.append(os.path.join(os.path.dirname(__file__), "core"))
 logger = logging.getLogger("logsight." + __name__)
 
-
 class LogAnomalyDetector(BaseAnomalyDetector):
+    """
+    The LogAnomalyDetector class loads the pre-trained model and tokenizer, and then uses them to
+    predict the anomaly score for each log message in the batch.
+    """
     def __init__(self, config: Optional[AnomalyDetectionConfig] = None):
         super().__init__()
         self.config = config or AnomalyDetectionConfig()
@@ -24,12 +27,18 @@ class LogAnomalyDetector(BaseAnomalyDetector):
         self.tokenizer = LogTokenizer.load_from_pickle()
 
     def predict(self, log_batch: LogBatch) -> LogBatch:
+        """
+        We take a LogBatch, tokenize the messages, pad the sequences, and then predict the labels
+        
+        :param log_batch: LogBatch
+        :type log_batch: LogBatch
+        :return: The LogBatch with the prediction added to the metadata
+        """
 
         tokenized = [self.tokenizer.tokenize(log.message) for log in log_batch.logs]
 
         padded = pad_sequences(tokenized, maxlen=self.config.pad_len)
         prediction = self.model.predict(padded)
-        # prediction = [np.random.randint(0, 1) for _ in range(len(padded))]
         for i, log in enumerate(log_batch.logs):
             try:
                 log_batch.logs[i].metadata['prediction'] = 1 if prediction[i] == 0 else 0

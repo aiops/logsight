@@ -2,14 +2,32 @@ import numpy as np
 
 
 def softmax(x):
+    """
+    It takes an array of numbers and returns an array of the same size where each number is the softmax
+    of the corresponding number in the input array
+    
+    :param x: the input matrix
+    :return: The softmax function is being returned.
+    """
     e_x = np.exp(x - np.max(x, axis=1, keepdims=True))  # subtracts each row with its max value
     _sum = np.sum(e_x, axis=1, keepdims=True)  # returns sum of each row and keeps same dims
     f_x = e_x / _sum
     return f_x
 
 
-def pad_sequences(sequences, maxlen=None, dtype='int64',
-                  padding='post', truncating='post', value=0):
+def pad_sequences(sequences, maxlen=None, dtype='int64', padding='post', truncating='post', value=0):
+    """
+    It takes a list of lists of integers and pads each list with zeros to make them all the same length
+    
+    :param sequences: list of lists, where each element is a sequence
+    :param maxlen: Int. Maximum sequence length. Default is None
+    :param dtype: The data type of the output array, defaults to int64 (optional)
+    :param padding: One of "pre" or "post", default is "post", defaults to post (optional)
+    :param truncating: one of 'pre' or 'post', specifying whether to truncate, defaults to post
+    (optional)
+    :param value: The value to pad the sequences to the desired value, defaults to 0 (optional)
+    :return: A list of lists of integers.
+    """
     if not hasattr(sequences, '__len__'):
         raise ValueError('`sequences` must be iterable.')
     num_samples = len(sequences)

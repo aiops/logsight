@@ -4,6 +4,9 @@ from typing import Any, Dict, Optional
 
 @dataclass
 class ConnectorConfigProperties:
+    """
+    This class is used to define the configuration properties of a connector
+    """
     connector_type: str
     connection: str
     params: Dict[str, Any] = field(default_factory=dict)

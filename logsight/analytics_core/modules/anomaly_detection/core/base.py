@@ -4,8 +4,10 @@ from logsight.analytics_core.logs import LogBatch
 
 
 class BaseAnomalyDetector:
-    """A base class for all detectors"""
-
+    """
+    The `BaseAnomalyDetector` class is an abstract class that defines the interface for all anomaly
+    detectors
+    """
     def __init__(self):
         self._module_name = self.__class__.__name__
 
@@ -26,8 +28,9 @@ class BaseAnomalyDetector:
 
 
 class BaseModel:
-    """A base class for all models"""
-
+    """
+    The BaseModel class is an abstract class that defines the basic structure of a model
+    """
     def __init__(self):
         self._module_name = self.__class__.__name__
 

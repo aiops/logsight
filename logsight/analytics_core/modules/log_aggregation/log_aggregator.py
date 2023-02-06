@@ -11,6 +11,14 @@ class LogAggregator:
 
     @staticmethod
     def aggregate_logs(logs: List[Dict]) -> List:
+        """
+        We take a list of dictionaries, convert it to a dataframe, group by timestamp, aggregate the
+        prediction and level columns, and return a list of dictionaries
+        
+        :param logs: List[Dict]
+        :type logs: List[Dict]
+        :return: A list of dictionaries.
+        """
         df = pd.DataFrame(logs).set_index('timestamp')
         df.index = pd.to_datetime(df.index)
         grouped = df.groupby(pd.Grouper(freq='T')).agg(prediction=('prediction', 'sum'),
