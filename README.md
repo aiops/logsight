@@ -1,2 +1,2 @@
-# logsight-monolith
+# logsight
 
